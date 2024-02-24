@@ -16,7 +16,7 @@ Published by MIT Press Dec 5th 2023.
 - [x] Chapter 5 - Loss functions 损失函数
 - [x] Chapter 6 - Fitting models 训练模型
 - [x] Chapter 7 - Gradients and initialization 梯度和初始化
-- [ ] Chapter 8 - Measuring performance 性能评估
+- [x] Chapter 8 - Measuring performance 性能评估
 - [ ] Chapter 9 - Regularization 正则化
 - [ ] Chapter 10 - Convolutional networks 卷积网络
 - [ ] Chapter 11 - Residual networks 残差网络
