@@ -6,7 +6,7 @@ Understanding DeepLearning 中文翻译
 by Simon J.D. Prince  
 Published by MIT Press Dec 5th 2023.
 
-本仓库暂时基于2023-12-23版本的原书进行翻译，只翻译正文部分，不包括前言和附录。使用ChatGPT进行机翻并进行人工审核，如有翻译错误还请指正。后续原书若有修改，本仓库不一定会及时更新，还请各位以原版内容为准，也欢迎大家提交PR一起优化翻译。
+本仓库1-9章基于2023-12-23版本，第10章开始基于2024-02-15版本的原书进行翻译，只翻译正文部分，不包括前言和附录。使用ChatGPT进行机翻并进行人工审核，如有翻译错误还请指正。后续原书若有修改，本仓库不一定会及时更新，还请各位以原版内容为准，也欢迎大家提交PR一起优化翻译。
 
 本书正文一共21章，涵盖了深度学习领域的许多关键概念，无论是初学者还是已经有工作经验的开发者都有极高的阅读价值。
 ## 目录
@@ -20,7 +20,7 @@ Published by MIT Press Dec 5th 2023.
 - [x] Chapter 8 - Measuring performance 性能评估
 - [x] Chapter 9 - Regularization 正则化
 - [x] Chapter 10 - Convolutional networks 卷积网络
-- [ ] Chapter 11 - Residual networks 残差网络
+- [x] Chapter 11 - Residual networks 残差网络
 - [ ] Chapter 12 - Transformers 变形金刚😄
 - [ ] Chapter 13 - Graph neural networks 图神经网络
 - [ ] Chapter 14 - Unsupervised learning 无监督学习
