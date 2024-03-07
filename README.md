@@ -21,7 +21,7 @@ Published by MIT Press Dec 5th 2023.
 - [x] Chapter 9 - Regularization 正则化
 - [x] Chapter 10 - Convolutional networks 卷积网络
 - [x] Chapter 11 - Residual networks 残差网络
-- [ ] Chapter 12 - Transformers 变形金刚😄
+- [x] Chapter 12 - Transformers 变形金刚😄
 - [ ] Chapter 13 - Graph neural networks 图神经网络
 - [ ] Chapter 14 - Unsupervised learning 无监督学习
 - [ ] Chapter 15 - Generative adversarial networks 生成对抗网络
