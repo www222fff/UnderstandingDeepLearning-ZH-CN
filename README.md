@@ -24,7 +24,7 @@ Published by MIT Press Dec 5th 2023.
 - [x] Chapter 12 - Transformers 变形金刚😄
 - [x] Chapter 13 - Graph neural networks 图神经网络
 - [x] Chapter 14 - Unsupervised learning 无监督学习
-- [ ] Chapter 15 - Generative adversarial networks 生成对抗网络
+- [x] Chapter 15 - Generative adversarial networks 生成对抗网络
 - [ ] Chapter 16 - Normalizing flows 标准化流
 - [ ] Chapter 17 - Variational autoencoders 变分自编码器
 - [ ] Chapter 18 - Diffusion models 扩散模型
