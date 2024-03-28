@@ -8,15 +8,14 @@
 潜在变量模型 (Latent variable models) 采取了一种间接的方法来描述多维变量 $x$ 上的概率分布 $Pr(x)$。它们不直接给出 $Pr(x)$ 的表达式，而是构建数据 $x$ 与未观测的*隐变量*（*latent variable*）$z$ 的联合分布 $Pr(x, z)$。接着，通过将这个联合概率边缘化来描述 $Pr(x)$ 的概率，形式为：
 
 $$
-Pr(x) = \int Pr(x, z)dz.
+Pr(x) = \int Pr(x, z)dz. \tag{17.1}
 $$
 
 一般情况下，联合概率 $Pr(x, z)$ 通过条件概率规则被分解为关于潜变量的*似然*（likelihood）$Pr(x|z)$ 和*先验*（prior）$Pr(z)$：
 
 $$
-Pr(x) = \int Pr(x|z)Pr(z)dz.
+Pr(x) = \int Pr(x|z)Pr(z)dz. \tag{17.2}
 $$
-(17.2)
 
 虽然这是描述 $Pr(x)$ 的一种较间接的方法，但由于 $Pr(x|z)$ 和 $Pr(z)$ 的表达式相对简单，它可以用来定义 $Pr(x)$ 的复杂分布。
 
@@ -25,25 +24,21 @@ $$
 在一维高斯混合模型（图 17.1a）中，潜在变量 $z$ 是离散的，其先验 $Pr(z)$ 为分类分布（图 5.9），每个可能的 $z$ 值对应一个概率 $\lambda_n$。当潜变量 $z$ 取值为 $n$ 时，数据 $x$ 的似然 $Pr(x|z = n)$ 符合均值为 $\mu_n$、方差为 $\sigma^2_n$ 的正态分布：
 
 $$
-Pr(z = n) = \lambda_n
+\begin{align}
+&Pr(z = n) = \lambda_n \\
+&Pr(x|z = n) = \mathcal{N}_{x}(\mu_n, \sigma^2_n).
+\end{align} \tag{17.3}
 $$
-$$
-Pr(x|z = n) = \mathcal{N}_{x}(\mu_n, \sigma^2_n).
-$$
-(17.3)
 
 正如方程 17.2 中所示，$Pr(x)$ 的似然通过对潜变量 $z$ 进行边缘化得到（图 17.1b）。在这里，潜变量是离散的，因此我们对其所有可能的值进行求和以实现边缘化：
 
 $$
-Pr(x) = \sum_{n=1}^{N} Pr(x, z = n)
+\begin{align}
+Pr(x) &= \sum_{n=1}^{N} Pr(x, z = n) \\
+&= \sum_{n=1}^{N} Pr(x|z = n) \cdot Pr(z = n) \\
+&= \sum_{n=1}^{N} \lambda_n \cdot \mathcal{Norm}_x(\mu_n, \sigma^2_n).
+\end{align} \tag{17.4}
 $$
-$$
-= \sum_{n=1}^{N} Pr(x|z = n) \cdot Pr(z = n)
-$$
-$$
-= \sum_{n=1}^{N} \lambda_n \cdot \mathcal{N}(\mu_n, \sigma^2_n).
-$$
-(17.4)
 
 从简单的似然和先验表达式出发，我们描述了一个复杂的多峰概率分布。
 
@@ -56,33 +51,26 @@ $$
 在非线性潜在变量模型中，数据 $x$ 和潜变量 $z$ 均为连续且多维的。其先验 $Pr(z)$ 为标准多元正态分布：
 
 $$
-Pr(z) = \mathcal{N}_z(0, I).
+Pr(z) = \mathcal{N}_z(0, I). \tag{17.5}
 $$
-(17.5)
 
 似然 $Pr(x|z, \phi)$ 亦服从正态分布，其均值由潜变量的非线性函数 $f(z, \phi)$ 确定，协方差 $\sigma^2 I$ 为球形：
 
 $$
-Pr(x|z, \phi) = \text{Norm}_x\left[f(z, \phi), \sigma^2 I\right].
+Pr(x|z, \phi) = \text{Norm}_x\left[f(z, \phi), \sigma^2 I\right]. \tag{17.6}
 $$
-(17.6)
 
 函数 $f(z, \phi)$ 由带参数 $\phi$ 的深度网络所定义。潜变量 $z$ 的维度小于数据 $x$ 的维度。模型 $f(z, \phi)$ 描述了数据的关键特征，而未建模的部分则归咎于噪声 $\sigma^2I$。
 
 数据概率 $Pr(x|\phi)$ 通过对潜变量 $z$ 进行边缘化得到：
 
 $$
-Pr(x|\phi) = \int Pr(x|z, \phi) dz
+\begin{align}
+Pr(x|\phi) &= \int Pr(x|z, \phi) dz \\
+&= \int Pr(x|z, \phi) \cdot Pr(z) dz \\
+&= \int \text{Norm}_x\left[f(z, \phi), \sigma^2 I\right] \cdot \text{Norm}_z[0, I] dz.
+\end{align} \tag{17.7}
 $$
-
-$$
-= \int Pr(x|z, \phi) \cdot Pr(z) dz
-$$
-
-$$
-= \int \text{Norm}_x\left[f(z, \phi), \sigma^2 I\right] \cdot \text{Norm}_z[0, I] dz.
-$$
-(17.7)
 
 这可以被理解为具有不同均值的球形高斯分布的无限加权和（即无限混合），其中权重为 $Pr(z)$，均值为网络输出 $f(z, \phi)$（见图 17.2）。
 
@@ -102,17 +90,13 @@ $$
 为了训练模型，我们需要最大化训练数据集 $\{x_i\}_{i=1}^I$ 上模型参数的对数似然值。为了简化问题，我们假定似然表达式中的方差项 $\sigma^2$ 是已知的，并专注于学习 $\phi$：
 
 $$
-\hat{\phi} = \underset{\phi}{\mathrm{argmax}} \left[ \sum_{i=1}^I \log Pr(x_i|\phi) \right],
+\hat{\phi} = \underset{\phi}{\mathrm{argmax}} \left[ \sum_{i=1}^I \log Pr(x_i|\phi) \right], \tag{17.8}
 $$
-(17.8)
-
 其中：
 
 $$
-Pr(x_i|\phi) = \int \text{Norm}_{x_i} \left[ f(z, \phi), \sigma^2 I \right] \cdot \text{Norm}_z [0, I] dz.
+Pr(x_i|\phi) = \int \text{Norm}_{x_i} \left[ f(z, \phi), \sigma^2 I \right] \cdot \text{Norm}_z [0, I] dz. \tag{17.9}
 $$
-(17.9)
-
 不幸的是，这是不切实际的。这个积分没有封闭形式的解，并且没有简单的方法可以用来评估特定 $x$ 的积分值。
 
 ### 17.3.1 证据下界 (ELBO)
@@ -123,30 +107,26 @@ $$
 
 詹森不等式表明，对于数据 $y$ 的期望的凹函数 $g(\cdot)$，有 $g(\mathbb{E}[y])$ 大于或等于该函数的期望值：
 $$
-g(\mathbb{E}[y]) \geq \mathbb{E}[g(y)].
+g(\mathbb{E}[y]) \geq \mathbb{E}[g(y)]. \tag{17.10}
 $$
-(17.10)
-
 在本例中，凹函数是对数函数，因此我们有：
 
 $$
-\log(\mathbb{E}[y]) \geq \mathbb{E}[\log(y)],
+\log(\mathbb{E}[y]) \geq \mathbb{E}[\log(y)], \tag{17.11}
 $$
-(17.11)
 
 或者更完整地写出期望的表达式：
 
 $$
-\log \left( \int Pr(y)ydy \right) \geq \int Pr(y)\log(y)dy.
+\log \left( \int Pr(y)ydy \right) \geq \int Pr(y)\log(y)dy. \tag{17.12}
 $$
-(17.12)
 
 这在图 17.4–17.5 中被详细探讨。实际上，更通用的陈述也是成立的：
 
 $$
-\log \left( \int Pr(y)h(y)dy \right)
-
+\log \left[ \int Pr(y|h)[y] dy \right] \geq \int Pr(y) \log[h(y)]dy. \tag{17.13}
 $$
+
 
 ![Figure17.4](figures/chapter17/VAEJensenUnder.svg)
 
@@ -161,27 +141,22 @@ $$
 现在我们利用詹森不等式来导出对数似然的下界。首先，我们通过乘除以潜变量上的任意概率分布 $q(z)$ 来处理对数似然：
 
 $$
-\log[Pr(x|\phi)] = \log \left[ \int Pr(x, z|\phi) dz \right]
+\begin{align}
+\log[Pr(x|\phi)] &= \log \left[ \int Pr(x, z|\phi) dz \right] \\
+&= \log \left[ \int \frac{q(z)}{q(z)} Pr(x, z|\phi) dz \right],
+\end{align} \tag{17.14}
 $$
-
-$$
-= \log \left[ \int \frac{q(z)}{q(z)} Pr(x, z|\phi) dz \right],
-$$
-(17.14)
 
 接着我们应用对数函数的詹森不等式（方程 17.12）来寻找一个下界：
 
 $$
-\log \left[ \int \frac{q(z)}{q(z)} Pr(x, z|\phi) dz \right] \geq \int q(z) \log \left[ \frac{Pr(x, z|\phi)}{q(z)} \right] dz,
+\log \left[ \int \frac{q(z)}{q(z)} Pr(x, z|\phi) dz \right] \geq \int q(z) \log \left[ \frac{Pr(x, z|\phi)}{q(z)} \right] dz, \tag{17.15}
 $$
-(17.15)
-
 右侧称为*证据下界*（Evidence Lower Bound, ELBO）。之所以这样命名，是因为在贝叶斯法则的背景下 $Pr(x|\phi)$ 被称为证据（方程 17.19）。在实践中，分布 $q(z)$ 具有参数 $\theta$，因此ELBO可以表示为：
 
 $$
-ELBO[\phi, \theta] = \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\theta)} \right] dz.
+ELBO[\phi, \theta] = \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\theta)} \right] dz. \tag{17.16}
 $$
-(17.16)
 
 为了学习非线性潜在变量模型，我们要将此量作为 $\phi$ 和 $\Theta$ 的函数最大化。执行这一计算的神经架构是变分自编码器（VAE）。
 
@@ -196,25 +171,14 @@ $$
 在 $\phi$ 固定的条件下，如果 ELBO 与似然函数相等，我们认为 ELBO 达到了紧密度（tight）。为寻找使边界达到紧密度的分布 $q(z|\theta)$，我们根据条件概率的定义展开 ELBO 的对数项分子：
 
 $$
-ELBO[\theta, \phi] = \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\theta)} \right] dz
+\begin{align}
+ELBO[\theta, \phi] &= \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\theta)} \right] dz \\
+&= \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)Pr(x|\phi)}{q(z|\theta)} \right] dz \\
+&= \int q(z|\theta) \log [Pr(x|\phi)] dz + \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)}{q(z|\theta)} \right] dz \\
+&= \log [Pr(x|\phi)] + \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)}{q(z|\theta)} \right] dz \\
+&= \log [Pr(x|\phi)] - D_{KL} \left[ q(z|\theta) || Pr(z|x, \phi) \right].
+\end{align} \tag{17.17}
 $$
-
-$$
-= \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)Pr(x|\phi)}{q(z|\theta)} \right] dz
-$$
-
-$$
-= \int q(z|\theta) \log [Pr(x|\phi)] dz + \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)}{q(z|\theta)} \right] dz
-$$
-
-$$
-= \log [Pr(x|\phi)] + \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)}{q(z|\theta)} \right] dz
-$$
-
-$$
-= \log [Pr(x|\phi)] - D_{KL} \left[ q(z|\theta) || Pr(z|x, \phi) \right].
-$$
-(17.17)
 
 在第三至第四行间，由于 $\log[Pr(x|\phi)]$ 与 $z$ 无关，故其积分消失，同时概率分布 $q(z|\theta)$ 的积分为一。最终一行中我们应用了 Kullback-Leibler (KL) 散度的定义。
 
@@ -223,38 +187,29 @@ $$
 ![Figure17.7](figures/chapter17/VAENonLinearLVMPost2.svg)
 
 `图 17.7 潜变量上的后验分布。a) 后验分布 Pr(z|x∗, ϕ) 表示潜变量 z 的值分布，这些值可能导致了数据点 x∗。我们通过贝叶斯规则来计算这个分布，即 Pr(z|x∗, ϕ) ∝ Pr(x∗|z, ϕ)Pr(z)。b) 通过评估数据点 x∗ 针对每个 z 值的对称高斯分布的概率来计算似然项。在这个场景中，数据点 x∗ 由 z1 生成的可能性比由 z2 生成的大。第二个因素是潜变量的先验概率 Pr(z)。将这两个因素结合并归一化，使得总和为一，得到后验分布 Pr(z|x∗, ϕ)。`
-### 17.4.2 ELBO as reconstruction loss minus KL distance to prior
+### 17.4.2   ELBO 为重构损失与先验的 KL 距离之差
 方程式 17.16 和 17.17 描述了 ELBO 的两种不同表达方式。另一种方式是理解为重建误差与先验之间的距离之差：
 
 $$
-ELBO[\theta, \phi] = \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\theta)} \right] dz
+\begin{align}
+ELBO[\theta, \phi] &= \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\theta)} \right] dz \\
+&= \int q(z|\theta) \log \left[ \frac{Pr(x|z, \phi)Pr(z)}{q(z|\theta)} \right] dz \\
+&= \int q(z|\theta) \log [Pr(x|z, \phi)] dz + \int q(z|\theta) \log \left[ \frac{Pr(z)}{q(z|\theta)} \right] dz \\
+&= \int q(z|\theta) \log [Pr(x|z, \phi)] dz - D_{KL} \left[ q(z|\theta) || Pr(z) \right],
+\end{align} \tag{17.18}
 $$
-
-$$
-= \int q(z|\theta) \log \left[ \frac{Pr(x|z, \phi)Pr(z)}{q(z|\theta)} \right] dz
-$$
-
-$$
-= \int q(z|\theta) \log [Pr(x|z, \phi)] dz + \int q(z|\theta) \log \left[ \frac{Pr(z)}{q(z|\theta)} \right] dz
-$$
-
-$$
-= \int q(z|\theta) \log [Pr(x|z, \phi)] dz - D_{KL} \left[ q(z|\theta) || Pr(z) \right],
-$$
-(17.18)
 
 在这里，联合分布 $Pr(x, z|\phi)$ 被分解为条件概率 $Pr(x|z, \phi)Pr(z)$，并在最后一步中再次应用了 KL 散度的定义。
 
 在此表达中，第一项用于衡量潜变量与数据之间的平均符合度 $Pr(x|z, \phi)$，即所谓的*重建损失*。第二项则衡量辅助分布 $q(z|\theta)$ 与先验分布的吻合程度。这种表述方式在变分自编码器（Variational Autoencoder, VAE）中得到应用。
 
 
-## 17.5Variational approximation
+## 17.5 变分近似
 如方程 17.17 所示，当 $q(z|\theta)$ 等同于后验 $Pr(z|x, \phi)$ 时，我们称 ELBO 达到紧密度。理论上我们可以通过贝叶斯规则计算后验：
 
 $$
-Pr(z|x, \phi) = \frac{Pr(x|z, \phi)Pr(z)}{Pr(x|\phi)},
+Pr(z|x, \phi) = \frac{Pr(x|z, \phi)Pr(z)}{Pr(x|\phi)}, \tag{17.19}
 $$
-(17.19)
 
 但实践中这是不可行的，因为我们无法计算分母中的数据似然（参见第 17.3 节）。
 
@@ -263,51 +218,44 @@ $$
 鉴于 $q(z|\theta)$ 的最优选择是依赖于数据样本 $x$ 的后验 $Pr(z|x, \phi)$，变分近似也应该遵循这一点，因此我们选取：
 
 $$
-q(z|x, \theta) = \text{Norm}_z \left[ g_\mu[x, \theta], g_\Sigma[x, \theta] \right],
+q(z|x, \theta) = \text{Norm}_z \left[ g_\mu[x, \theta], g_\Sigma[x, \theta] \right], \tag{17.20}
 $$
-(17.20)
 
 其中 $g_\mu[x, \theta]$ 是一个以 $\theta$ 为参数的第二神经网络，用于预测正态变分近似的均值 $\mu$ 和方差 $\Sigma$。
 
 ![Figure17.8](figures/chapter17/VAEVariational.svg)
 
 `图 17.8 变分近似。后验分布 Pr(z|x∗, ϕ) 无法闭式解算。变分近似选择一族分布 q(z|x, θ)（这里是高斯分布）并试图找到最接近真实后验的分布。a) 有时候，近似值（青色曲线）与真实后验（橙色曲线）非常接近。b) 然而，如果后验是多峰的（如图 17.7 所示），高斯近似的效果会较差。`
-## 17.6 The variational autoencoder
-
+## 17.6 变分自编码器（VAE）
 最终，我们可以阐述变分自编码器（VAE）。我们建立了一个网络来计算 ELBO：
 
 $$
-ELBO[\theta, \phi] = \int q(z|x, \theta) \log \left[ Pr(x|z, \phi) \right] dz - D_{KL} \left[ q(z|x, \theta) || Pr(z) \right],
+ELBO[\theta, \phi] = \int q(z|x, \theta) \log \left[ Pr(x|z, \phi) \right] dz - D_{KL} \left[ q(z|x, \theta) || Pr(z) \right], \tag{17.21}
 $$
-(17.21)
 
 这里的分布 $q(z|x, \theta)$ 是基于方程 17.20 的近似。
 
 第一项包含一个难以直接计算的积分，但因为它是相对于 $q(z|x, \theta)$ 的期望值，我们可以通过采样来进行近似。对于任意函数 $a[z]$，我们得到：
 
 $$
-\mathbb{E}_z [a[z]] = \int a[z] q(z|x, \theta) dz \approx \frac{1}{N} \sum_{n=1}^N a[z^n],
+\mathbb{E}_z [a[z]] = \int a[z] q(z|x, \theta) dz \approx \frac{1}{N} \sum_{n=1}^N a[z^n], \tag{17.22}
 $$
-(17.22)
 
 其中 $z^n$ 是从 $q(z|x, \theta)$ 中抽取的第 $n$ 个样本。这种方法被称为蒙特卡罗（Monte Carlo）估计。对于一个非常近似的估计，我们可以仅使用来自 $q(z|x, \theta)$ 的单一样本 $z^*$：
 
 $$
-ELBO[\theta, \phi] \approx \log \left[ Pr(x|z^*, \phi) \right] - D_{KL} \left[ q(z|x, \theta) || Pr(z) \right].
+ELBO[\theta, \phi] \approx \log \left[ Pr(x|z^*, \phi) \right] - D_{KL} \left[ q(z|x, \theta) || Pr(z) \right]. \tag{17.23}
 $$
-(17.23)
 
 第二项是变分分布 $q(z|x, \theta) = \text{Norm}_z[\mu, \Sigma]$ 与先验 $Pr(z) = \text{Norm}_z[0, I]$ 之间的 KL 散度。两个正态分布之间的 KL 散度可以通过封闭形式计算。特别是，当一个分布的参数为 $\mu, \Sigma$，而另一个为标准正态分布时，其 KL 散度可由以下公式给出：
 
 $$
-D_{KL} \left[ q(z|x, \theta) || Pr(z) \right] = \frac{1}{2} \left( \text{Tr}[\Sigma] + \mu^T \mu - D_z - \log \left| \text{det}[\Sigma] \right| \right).
+D_{KL} \left[ q(z|x, \theta) || Pr(z) \right] = \frac{1}{2} \left( \text{Tr}[\Sigma] + \mu^T \mu - D_z - \log \left| \text{det}[\Sigma] \right| \right). \tag{17.24}
 $$
-(17.24)
-
 这里 $D_z$ 代表潜在空间的维度。
 
 
-### 17.6.1 VAE algorithm
+### 17.6.1 VAE 算法
 总结来说，我们旨在构建一个模型，用于计算数据点 $x$ 的证据下界（ELBO）。随后，我们利用优化算法在整个数据集上最大化这一下界，以此提高对数似然值。计算 ELBO 的步骤包括：
 
 - 利用网络 $g(x, \theta)$ 为数据点 $x$ 计算变分后验分布 $q(z|\theta, x)$ 的均值 $\mu$ 和方差 $\Sigma$，
@@ -326,14 +274,13 @@ VAE 将 ELBO 作为 $\theta$ 和 $\phi$ 的函数进行计算。为了最大化�
 
 `图 17.10 VAE 在每次迭代时更新影响下界的两个因子。解码器的参数 ϕ 和编码器的参数 θ 会被调整以提高这个下界。`
 
-## 17.7 The reparameterization trick
-
+## 17.7 重参数化技巧
 另外，还有一个难题：网络涉及一个抽样步骤，而对这种随机过程进行微分操作具有一定难度。但是，为了更新网络之前的参数 $\theta$，必须对这一步骤进行微分。
 
 幸运的是，这里有一个简便的方法；我们可以把随机过程部分移到网络的一个分支中，这个分支从标准正态分布 $\text{Norm}[0, I]$ 抽取一个样本 $e^*$，然后利用以下关系式：
 
 $$
-z^* = \mu + \Sigma^{1/2} \cdot e^*,
+z^* = \mu + \Sigma^{1/2} \cdot e^*, \tag{17.25}
 $$
 
 从而从目标的高斯分布中抽取样本。如此一来，我们就可以像通常一样计算导数了，因为反向传播算法无需经过随机过程的分支。这种方法被称为*重参数化技巧*（图 17.11）。
@@ -343,42 +290,33 @@ $$
 `图 17.11 重参数化技巧。在原始架构（图 17.9）下，通过采样步骤进行反向传播不太直接。重参数化技巧消除了主流程中的采样步骤；我们从标准正态分布中取样，然后将这些样本与预测的均值和协方差结合，从而获取变分分布的样本。`
 
 ## 17.8 应用
-
 变分自编码器 (Variational Autoencoders) 在多个领域有广泛的应用，包括去噪 (denoising)、异常检测 (anomaly detection) 和数据压缩 (compression)。本节将回顾这些技术在图像处理领域的若干应用场景。
 
-### 17.8.1 Approximating sample probability
+### 17.8.1 样本概率的近似
 在第 17.3 节中，我们讨论了为什么无法使用 VAE (Variational Autoencoder) 准确评估样本的概率，这个概率的表达式为：
 
 $$
-Pr(x) = \int Pr(x|z)Pr(z)dz
-$$
-
-$$
-= \mathbb{E}_{z} [Pr(x|z)]
-$$
-
-$$
-= \mathbb{E}_{z} [\text{Norm}_x[f(z, \phi), \sigma^2 I]].
+\begin{align}
+Pr(x) &= \int Pr(x|z)Pr(z)dz \\
+&= \mathbb{E}_{z} [Pr(x|z)] \\
+&= \mathbb{E}_{z} [\text{Norm}_x[f(z, \phi), \sigma^2 I]]. \tag{17.26}
+\end{align}
 $$
 
 理论上，我们可以根据公式 17.22 通过从正态分布 $Pr(z) = \text{Norm}_z[0,I]$ 中抽样来*近似*这个概率，并计算：
 
 $$
-Pr(x) \approx \frac{1}{N} \sum_{n=1}^{N} Pr(x|z_n).
+Pr(x) \approx \frac{1}{N} \sum_{n=1}^{N} Pr(x|z_n). \tag{17.27}
 $$
 
 但是，由于维度灾难的影响，我们抽取的几乎所有 $z_n$ 的值都将具有非常低的概率；因此，我们需要抽取大量样本以获得可靠的估计。一个更优的策略是采用*重要性采样 (importance sampling)*。在这种方法中，我们从一个辅助分布 $q(z)$ 中抽取 $z$，计算 $Pr(x|z_n)$，并利用新分布下 $q(z)$ 的概率对结果值进行调整：
 
 $$
-Pr(x) = \int \frac{Pr(x|z)Pr(z)}{q(z)}q(z)dz
-$$
-
-$$
-= \mathbb{E}_{q(z)} \left[\frac{Pr(x|z)Pr(z)}{q(z)}\right]
-$$
-
-$$
-\approx \frac{1}{N} \sum_{n=1}^{N} \frac{Pr(x|z_n)Pr(z_n)}{q(z_n)},
+\begin{align}
+Pr(x) &= \int \frac{Pr(x|z)Pr(z)}{q(z)}q(z)dz \\
+&= \mathbb{E}_{q(z)} \left[\frac{Pr(x|z)Pr(z)}{q(z)}\right] \\
+&\approx \frac{1}{N} \sum_{n=1}^{N} \frac{Pr(x|z_n)Pr(z_n)}{q(z_n)},
+\end{align} \tag{17.28}
 $$
 
 此时，样本抽取自 $q(z)$。如果 $q(z)$ 接近 $Pr(x|z)$ 高似然的 $z$ 区域，那么我们可以将采样集中在这一关键区域，从而更加高效地估计 $Pr(x)$。
@@ -387,7 +325,7 @@ $$
 
 通过这种方法，我们可以近似估算新样本的概率。当有充足的样本时，这种方法将提供比下限更好的估计值，并可用于通过评估测试数据的对数似然度来衡量模型的质量。此外，它还可以作为一种判别依据，用来确定新的样例是属于现有的分布还是属于异常值。
 
-### 17.8.2 Generation
+### 17.8.2 生成
 VAEs 构建了一个概率模型，可以轻松从该模型中抽样。具体方法是，从潜在变量的先验 $Pr(z)$ 抽样，将结果传递给解码器 $f(z, \phi)$，并根据 $Pr(x|f(z, \phi))$ 添加噪声。遗憾的是，原始 VAEs 生成的样本通常质量较低（见图 17.12a-c）。这种情况部分是由于简单的球形高斯噪声模型，部分是因为先验和变分后验采用的高斯模型。
 
 一种提升生成质量的方法是，从*聚合后验* $q(z|\theta) = (1/L) \sum_{i} q(z|x_i, \theta)$ 抽样，而不是直接从先验抽样。聚合后验是基于所有样本的平均后验，它是一个在潜在空间中更能代表真实分布的高斯混合模型。
@@ -398,7 +336,7 @@ VAEs 构建了一个概率模型，可以轻松从该模型中抽样。具体方
 
 `图 17.12 从训练于 CELEBA 数据集的标准 VAE 中抽样。在每列中，一个潜变量 z∗ 被抽取并传递通过模型来预测均值 f[z∗, ϕ]，之后加上独立的高斯噪声（参见图 17.3）。a) 样本集合是 b) 预测均值和 c) 球形高斯噪声向量的总和。在加入噪声前图像过于平滑，加入后则过于嘈杂。这是典型情况，通常展示无噪声版本，因为噪声被视为表示图像中未被模型捕捉的部分。改编自 Dorta 等（2018）。d) 通过使用分层先验、特殊架构和精细的正则化，现在可以利用 VAE 生成高质量的图像。改编自 Vahdat & Kautz (2020)。`
 
-### 17.8.3 Resynthesis
+### 17.8.3 重新合成
 VAEs 不仅可以生成数据，还能修改真实数据。将数据点 $x$ 投影到潜在空间可以通过两种方法：（i）取编码器预测分布的均值；（ii）通过优化过程寻找最大化后验概率的潜在变量 $z$，后者依据贝叶斯规则与 $Pr(x|z)Pr(z)$ 成比例。
 
 在图 17.13 中，标为“中性”和“微笑”的多个图像被映射到潜在空间。这种变化的向量是通过计算两组均值在潜在空间中的差来估算的。同样，用于表示“闭嘴”和“张嘴”状态的向量也是如此估算得出。
@@ -411,13 +349,13 @@ VAEs 不仅可以生成数据，还能修改真实数据。将数据点 $x$ 投�
 
 `图 17.13 重合成。原始图像通过编码器被投影到潜空间，并且图像被预测的高斯均值所代表。网格中心左侧的图像是输入的重建。其他图像是在调整潜空间中代表微笑/中性（水平方向）和嘴巴张开/闭合（垂直方向）的方向后重建的图像。改编自 White (2016)。`
 
-### 17.8.4 Disentanglement
+### 17.8.4 解耦
 在上述再合成的示例中，需要用带标签的训练数据来估计代表可解释特性的空间方向。其他研究旨在优化潜在空间的特性，以便其坐标轴能对应到现实世界的属性。当每个维度代表一个独立的现实世界因素时，我们称潜在空间为*解耦*的。例如，在面部图像建模中，我们期望识别出头部姿态或头发颜色等独立因素。
 
-为了促进解耦，常常在损失函数中加入基于潜在变量 $z$ 的后验 $q(z|x, \theta)$ 或聚合后验 $q(z|\theta) = (1/L) \sum_{i} q(z|x_i, \theta)$ 的正则化项。
+促进解耦的方法通常会在损失函数中加入基于以下两种情形的正则化项：(i) 基于潜变量 $z$ 的后验 $q(z|x, \theta)$，或 (ii) 基于聚合后验 $q(z|\theta) = (1/I) \sum_i q(z|x_i, \theta)$：
 
 $$
-L_{\text{new}} = -\text{ELBO}(\theta, \phi) + \lambda_1 \mathbb{E}_{Pr(x)} \left[ \frac{1}{L} \sum_{i} \log q(z|x_i, \theta) \right] + \lambda_2 \mathbb{E}_{q(z|\theta)} [\log q(z|\theta)].
+L_{new} = -ELBO[\theta, \phi] + \lambda_1 E_{P_{r(x)}} [r_1(q(z|x, \theta))] + \lambda_2 r_2 [q(z|\theta)]. \tag{17.29}
 $$
 
 其中，正则化项 $r_1[\cdot]$ 是后验的函数，并且由 $\lambda_1$ 加权。项 $r_2[\cdot]$ 是聚合后验的函数，并且由 $\lambda_2$ 加权。
@@ -425,7 +363,7 @@ $$
 例如，在 *beta VAE* 中，增加了 ELBO（方程 17.18）的第二项权重：
 
 $$
-\text{ELBO}[\theta, \phi] \approx \log[Pr(x|z^*, \phi)] - \beta \cdot D_{KL} [q(z|x, \theta) || Pr(z)],
+\text{ELBO}[\theta, \phi] \approx \log[Pr(x|z^*, \phi)] - \beta \cdot D_{KL} [q(z|x, \theta) || Pr(z)], \tag{17.30}
 $$
 
 这里的 $\beta > 1$ 表示与重构误差相比，先验 $Pr(z)$ 偏差的相对权重。因为先验通常是具有球形协方差矩阵的多元正态分布，其各维度是独立的。因此，增加这一项的权重有助于使后验分布之间的相关性降低。另一个变体是总相关性 VAE，它通过增加一个项来降低潜空间中变量之间的总相关性（参见图 17.14），并致力于最大化潜变量的一个小子集与观测数据之间的互信息。
@@ -434,7 +372,7 @@ $$
 
 `图 17.14 在总相关性 VAE 中的解耦。VAE 模型被修改，使得损失函数鼓励潜变量的总相关性最小化，从而鼓励解耦。在对椅子图像的数据集进行训练时，几个潜在维度具有明确的现实世界解释，包括 a) 旋转，b) 总体大小，和 c) 腿部（旋转椅与普通椅）。在每种情况下，中心列展示了模型的样本，当我们左右移动时，我们在潜空间中减去或添加一个坐标向量。改编自 Chen 等人（2018d）。`
 
-## 17.9 Summary
+## 17.9 总结
 VAE 是一种帮助学习 $x$ 上的非线性潜在变量模型的架构。通过从潜在变量抽样、通过深度网络处理抽样结果、再加上独立高斯噪声，这个模型能够生成新的数据样本。
 
 我们无法精确计算数据点的似然度，这在最大似然训练方法中造成了难题。不过，我们可以确定似然度的一个下限，并尽量使这个下限最大化。但遗憾的是，为了使这个下限足够接近真实似然度，我们需要计算观测数据的潜在变量的后验概率，这一计算过程同样复杂。因此，采用变分近似成为了解决这一问题的方法。这种简化的分布（通常是高斯分布）可以近似地代表后验概率，并且其参数通过另一个编码器网络得到计算。
@@ -493,7 +431,7 @@ VAE 存在的另一个问题是潜空间中可能出现不对应任何现实样�
 **问题 17.3** 对于凸函数，Jensen 不等式是相反的：
 
 $$
-g[\mathbb{E}[y]] \leq \mathbb{E}[g[y]].
+g[\mathbb{E}[y]] \leq \mathbb{E}[g[y]]. \tag{17.31}
 $$
 
 如果一个函数的二阶导数在任何地方都大于或等于零，则该函数是凸的。证明函数 $g[x] = x^{2n}$ 对于任意的 $n \in \{1, 2, 3, \ldots\}$ 是凸的。利用这个结果和 Jensen 不等式证明分布 $Pr(x)$ 的平均值的平方 $\mathbb{E}[x]^2$ 必须小于或等于其二阶矩 $\mathbb{E}[x^2]$。
@@ -501,23 +439,27 @@ $$
 **问题 17.4** 展示如何从变分分布 $q(z|x)$ 与真实后验分布 $Pr(z|x, \phi)$ 之间的 KL 散度出发，推导出 ELBO 的表达式（如方程 17.18 所示）：
 
 $$
-D_{KL} [q(z|x) || Pr(z|x, \phi)] = \int (q(z|x) \log \frac{q(z|x)}{Pr(z|x, \phi)}) dz.
+D_{KL} [q(z|x) || Pr(z|x, \phi)] = \int (q(z|x) \log \frac{q(z|x)}{Pr(z|x, \phi)}) dz. \tag{17.32}
 $$
 
 从贝叶斯定理（方程 17.19）开始。
 
-**问题 17.5** 重参数化技巧计算函数 $f[x]$ 期望的导数：
+问题 17.5 重参数化技巧用于计算函数 $f[x]$ 关于其期望的导数：
 
 $$
-\frac{\partial}{\partial \phi} \mathbb{E}_{Pr(x|\phi)} [f[x]] = \mathbb{E}_{Pr(x|\phi)} [f[x] \frac{\partial}{\partial \phi} \log[Pr(x|\phi)]]
+\frac{\partial}{\partial\phi} E_{P_{r(x|\phi)}} [f[x]], \tag{17.33}
 $$
 
+这里的导数是关于分布 $P_{r(x|\phi)}$ 参数 $\phi$ 的。证明这个导数还可以表示为：
+
 $$
-\approx \frac{1}{I} \sum_{i=1}^{I} [f[x_i] \frac{\partial}{\partial \phi} \log[Pr(x_i|\phi)]],
+\begin{align}
+\frac{\partial}{\partial\phi} E_{P_{r(x|\phi)}} [f[x]] &= E_{P_{r(x|\phi)}} \left[ f[x] \frac{\partial}{\partial\phi} \log(P_{r(x|\phi)}) \right] \\
+&\approx \frac{1}{I} \sum_{i=1}^{I} f[x_i] \frac{\partial}{\partial\phi} \log(P_{r(x_i|\phi)}).
+\end {align} \tag{17.34}
 $$
 
-此方法被称为 **REINFORCE 算法** 或 **得分函数估计器**。
-
+这种方法称为 **REINFORCE** 算法或 *得分函数估计器*（score function estimator）。
 
 **问题 17.6** 在潜在空间中移动时，为什么使用球面线性插值而不是常规线性插值更为合适？提示：参考图 8.13。
 
