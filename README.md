@@ -28,6 +28,6 @@ Published by MIT Press Dec 5th 2023.
 - [x] Chapter 16 - Normalizing flows 标准化流
 - [x] Chapter 17 - Variational autoencoders 变分自编码器
 - [x] Chapter 18 - Diffusion models 扩散模型
-- [ ] Chapter 19 - Deep reinforcement learning 深度强化学习
-- [ ] Chapter 20 - Why does deep learning work? 为什么深度学习有效？
+- [x] Chapter 19 - Deep reinforcement learning 深度强化学习
+- [x] Chapter 20 - Why does deep learning work? 为什么深度学习有效？
 - [ ] Chapter 21 - Deep learning and ethics 深度学习与伦理

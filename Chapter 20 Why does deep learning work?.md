@@ -191,50 +191,66 @@ Zagoruyko & Komodakis（2017）进一步推动了学生网络的激活空间图�
 ## 附图
 
 ![Figure20.1](figures/chapter20/WhyZhangResults.svg)
+
 图 20.1 拟合随机数据。训练在 CIFAR-10 数据集上的 AlexNet 架构所得的损失。当像素从一个与原始数据有相同均值和方差的高斯随机分布中抽取时，尽管速度更慢，但模型仍然能够拟合。当标签随机化后，模型的拟合过程进一步放缓。改编自 Zhang et al. (2017a)。
 
 ![Figure20.2](figures/chapter20/WhyGDResults.svg)
+
 图 20.2 MNIST-1D 训练。利用完全批量梯度下降、He 初始化（He initialization）、无动量或正则化，以及 0.0025 的学习率，四个全连接网络被用来拟合 4000 个带有随机标签的 MNIST-1D 示例。1、2、3、4 层的模型分别具有 298、100、75、63 个隐藏单元，以及 15208、15210、15235、15139 个参数。所有模型均成功训练，但深层模型需要的训练周期更少。
 
 ![Figure20.3](figures/chapter20/WhyOverparam.svg)
+
 图 20.3 过参数化。作为卷积网的过参数化（相对于数据集大小的倍数）的函数，ImageNet 的性能展示了大部分模型的参数是训练样例的 10 至 100 倍。比较的模型包括 ResNet (He et al., 2016a,b)、DenseNet (Huang et al., 2017b)、Xception (Chollet, 2017)、EfficientNet (Tan & Le, 2019)、Inception (Szegedy et al., 2017)、ResNeXt (Xie et al., 2017) 和 AmoebaNet (Cubuk et al., 2019)。
 
 ![Figure20.4](figures/chapter20/WhyOmniGrok2.svg)
+
 图 20.4 初始化和拟合。一个具有每层 200 个隐藏单元的三层全连接网络在使用 AdamW、一位热目标（one-hot targets）和均方误差损失（mean-squared error loss）训练的 1000 个 MNIST 示例上进行了训练。使用较大倍数的 He 初始化时，虽然拟合网络需要更长时间，但最终结果不受影响。这可能仅仅反映了权重需要移动更长的距离。改编自 Liu et al. (2023c)。
 
 ![Figure20.5](figures/chapter20/WhyGoodFellowRoute.svg)
+
 图 20.5 通过损失函数的线性切片。a) 一个在 MNIST 上训练的两层全连接 ReLU 网络，其损失沿着从初始参数（δ=0）到训练参数（δ=1）的直线单调下降。b) 然而，在 MNIST 上的这个两层全连接 MaxOut 网络中，损失在一个解（δ=0）和另一个解（δ=1）之间的直线上却有所增加。改编自 Goodfellow et al. (2015b)。
 
 ![Figure20.6](figures/chapter20/WhySubspace.svg)
+
 图 20.6 子空间训练。一个包含两个隐藏层、每层 200 个单元的全连接网络在 MNIST 上进行训练。参数通过标准方法（如 He 初始化）初始化后，被限制在一个随机子空间内。在这个子空间为 750D（即内在维度）时，性能可达到无约束模型性能的 90%，仅占原始参数的 0.4%。改编自 Li et al. (2018a)。
 
 
 ![Figure20.7](figures/chapter20/WhyDraxler.svg)
+
 图 20.7 极小值之间的连接。对 CIFAR-10 上 DenseNet 的损失函数进行切片分析。参数 φ1 和 φ2 代表两个独立发现的极小值。这些参数之间的线性插值展示了一个能量障碍（虚线所示）。但是，在足够深且宽的网络中，能够在两个极小值间找到一条低能量的曲线路径（显示为青色线）。改编自 Draxler et al. (2018)。
 
 ![Figure20.8](figures/chapter20/WhyDauphin.svg)
+
 图 20.8 损失函数的临界点。a) 在随机高斯函数中，函数在零梯度点下降的方向数随函数值的增加而减少，从而所有极小值都位于较低的函数值。b) Dauphin et al. (2014) 在神经网络的损失面上找到了临界点（即零梯度的点）。研究表明，负特征值（指向下方的方向）的比例随损失的增加而减少，这表明所有的极小值（零梯度且没有向下指向的点）均对应于较低的损失。改编自 Dauphin et al. (2014) 和 Bahri et al. (2020)。
 
 ![Figure20.9](figures/chapter20/WhyGoldilocks.svg)
+
 图 20.9 适中区域。在一个随机子空间内，对于一个应用了 ReLU 函数、有两层全连接的网络，在 MNIST 上相对于 Xavier 初始化的参数平方半径 r2，Hessian 的正特征值（反映正曲率/凸性）比例显示了一个明显的正曲率区域，称为适中区域。改编自 Fort & Scherlis (2019)。
 
 ![Figure20.10](figures/chapter20/WhyBatchSizeLearningRate.svg)
+
 图 20.10 批大小与学习率的比率。在 CIFAR-10 数据库上，两种模型的泛化性依赖于批大小与学习率的比例。随着批大小的增加，泛化性下降；随着学习率的增加，泛化性提升。改编自 He et al. (2019)。
 
 ![Figure20.11](figures/chapter20/WhyFlatness.svg)
+
 图 20.11 平坦与尖峭极小值。平坦极小值通常具有更好的泛化能力。在估计参数或训练和测试损失函数的对齐时，小误差在平坦区域中的影响较小。改编自 Keskar et al. (2017)。
 
 ![Figure20.12](figures/chapter20/WhyGoldilocks2.svg)
+
 图 20.12 在超球面上进行泛化。一个具有两个隐藏层、每层 200 个单元（198,450 个参数）的全连接网络在 MNIST 数据库上进行了训练。参数被初始化到一个给定的 l2 范数，并被限制在这个范数下维持在一个子空间（垂直方向）。这个网络在由 Xavier 初始化定义的半径 r 的小范围内表现出良好的泛化能力（青色虚线表示）。改编自 Fort & Scherlis (2019)。
 
 ![Figure20.13](figures/chapter20/WhyOmniGrok3.svg)
+
 图 20.13 Grokking 现象。当参数初始化使其 l2 范数（半径）远大于 He 初始化所指定的时，训练需要更长时间（表示为虚线），泛化过程则更加缓慢（表示为实线）。泛化的滞后归因于权重的范数减少回到“适中区”所需的时间。改编自 Liu et al. (2023c)。
 
 ![Figure20.14](figures/chapter20/WhyAdversarial.svg)
+
 图 20.14 对抗样本。在每个例子中，左侧图像被 AlexNet 正确分类。通过考虑网络输出对输入的梯度，可以找到一个小的扰动（中间图，为了可见性放大了 10 倍），这个扰动加到原始图像（右侧）上时，会使网络错误地将其分类为鸵鸟。这是尽管原始图像和扰动图像对人类来说几乎无法区分的情况下。改编自 Szegedy et al. (2014)。
 
 ![Figure20.15](figures/chapter20/WhyPruning.svg)
+
 图 20.15 神经网络剪枝。目标是在不影响性能的前提下尽可能剪枝权重。这通常基于权重的幅值来进行。剪枝后，网络通常需要进行细微调整。a) 示例全连接网络。b) 剪枝后。
 
 ![Figure20.16](figures/chapter20/WhyDistill.svg)
+
 图 20.16 知识蒸馏。a) 教师网络用于图像分类，按照常规方法进行训练，采用多类交叉熵作为分类损失。b) 学生网络则使用相同的损失进行训练，并额外增加了蒸馏损失，该损失鼓励学生网络在 softmax 操作前的激活值与教师网络的相同。
