@@ -59,29 +59,29 @@ AI 模型中的偏见可能通过以下途径引入（Fazelpour & Danks, 2021）
 
 一些研究人员对人工道德代理的可行性提出了质疑，并主张道德代理对确保安全并非必需（van Wynsberghe & Robbins, 2019）。Cervantes et al.（2019）对人工道德代理进行了最新的调查研究，而 Tolmeijer et al.（2020）则对人工道德代理的技术方法进行了最新的调查研究。
 
-### 21.1.3  Transparency and opacity
+### 21.1.3 透明与不透明
 当一个复杂的计算系统的运作细节全部明晰时，我们称之为透明。如果人们能够理解它如何做决策，那么这个系统便是可解释的。透明性或可解释性的缺失导致用户与 AI 系统间的信息不对称，这使得确保价值对齐变得困难。
 
 Creel（2020）从不同的粒度级别对透明性进行了阐述。功能性透明性关乎系统算法功能的知擂（即输入与输出间的逻辑规则）。本书所述方法即在此层面详细介绍。结构透明性则是指了解程序如何执行算法，在高级编程语言编写的命令被机器码执行时，这种透明性可能受到阻碍。而运行透明性要求理解程序在特定情况下如何运行，对于深度网络而言，这涉及对硬件、输入数据、训练数据及其互动的了解，这些细节无法仅通过审查代码来获取。
 
 以 GPT3 为例，其在功能上是透明的，其架构已在 Brown 等人（2020）的研究中描述。然而，由于无法访问代码，它在结构上不透明，同样，由于无法获取到学习过的参数、硬件或训练数据，它在运行上也不透明。其后续产品 GPT4 则完全缺乏透明性，这个商业产品的运作细节尚不为外界所知。
 
-### 21.1.4  Explainability and interpretability
+### 21.1.4 可解释性与可解读性
 即使系统透明，我们也不一定能理解其决策如何形成，或决策依据何种信息。深度网络含有数十亿参数，单凭检查无法完全明了其工作机制。然而，在某些地区，公众有权获取决策解释。例如，欧盟通用数据保护条例第22条指出，在决策完全基于自动化过程时，所有数据主体都应享有获得决策解释的权利。
 
 这种挑战催生了解释性 AI 的子领域。在这一领域内，局部解释取得了一定成效。虽然无法对整个系统进行解释，但我们可以解释特定输入如何被分类。比如，LIME（Local interpretable model-agnostic explanations, Ribeiro 等，2016）通过采样模型在临近输入上的输出，构建一个简化模型（图 21.3），为分类决策提供了洞见，哪怕原模型不透明且难以解释。
 
 复杂决策系统是否能对用户乃至其创造者完全可理解，目前尚无定论。对于系统何为可解释、可理解或可诠释，学界仍有持续讨论（Erasmus 等，2021）；目前这些概念尚无确切定义。关于这一主题的更多信息，可参考 Molnar（2022）。
 
-## 21.2 Intentional misuse
+## 21.2 故意误用
 上文提到的问题主要是由于目标不明确和信息不对称造成的。但即使在系统正常运行的情况下，也可能出现不道德的行为或被有意滥用。这一节将着重探讨由于 AI 系统被滥用而引发的一些特别的伦理问题。
 
-### 21.2.1 Face recognition and analysis
+### 21.2.1 人脸识别与分析
 面部识别技术极易被滥用。例如，威权国家可能利用这项技术识别和镇压抗议者，危及民主的核心价值，如言论自由和抗议权。Smith & Miller（2022）指出，自由民主的价值观（如安全、隐私、自治和问责）与这些技术的潜在应用场景（如边境安全、刑事侦查、国家安全和个人数据商业化）之间存在冲突。因此，不少研究人员、活动家和政策制定者开始质疑这项技术的存在合理性（Barrett，2020）。
 
 而且，这些技术经常未能实现它们所宣称的功能（Raji et al., 2022）。比如纽约大都会交通局在面部识别的概念验证试验中100%失败率的情况下，仍推进并扩大了该技术的使用（Berger，2019）。类似地，面部分析工具常常夸大其能力，如声称能推断个人的性取向（Leuner，2019）、情感（Stark & Hoey，2021）、聘用潜力（Fetscherin et al., 2020）或犯罪可能性（Wu & Zhang，2016）。Stark & Hutson（2022）强调，计算机视觉系统已促使面相学和颅相学这些无科学依据、被广泛驳斥的伪科学领域重新浮现。
 
-### 21.2.2 Militarization and political interference
+### 21.2.2 军事化与政治干涉
 政府因国家安全和国家建设的需要而投资 AI 研究，这种做法可能引起国家间的武器竞赛，导致高投资、透明度低、相互猜疑和恐惧，以及抢先部署的倾向（Sisson 等人，2020）。
 
 致命的自主武器系统因其容易被想象并且多个系统正在开发中而成为关注焦点（Heikkilä，2022）。同时，AI 也加剧了网络攻击和虚假信息活动的风险，即传播意图欺骗的不准确或误导性信息。AI 系统使得制作极其逼真的假内容成为可能，并有助于信息的针对性传播（Akers 等人，2018）和大规模传播（Bontridder & Poullet，2021）。
@@ -100,10 +100,10 @@ Kosinski 等人（2013）研究表明，通过社交媒体上的“点赞”就�
 
 因此，在医疗和金融等高风险领域应用深度学习技术时，采用以隐私为先的设计策略极为重要。可以采用差分隐私和语义安全（如同态加密或安全多方计算）技术来保障模型训练过程中的数据安全（见 Mireshghallah 等，2020；Boulemtafes 等，2020）。
 
-## 21.3 Other social, ethical, and professional issues
+## 21.3 其它社会、伦理及专业议题
 上一节讨论了 AI 可能被有意滥用的情形。这一节将探讨 AI 大规模应用可能带来的其他副作用。
 
-### 21.3.1 Intellectual property
+### 21.3.1 知识产权
 知识产权（IP）被视为非物理财产，是原创思维的产物（Moore & Himma, 2022）。实际上，许多AI模型的训练基于版权材料。因此，这些模型的部署可能引发法律和道德风险，甚至触犯知识产权（Henderson et al., 2023）。
 
 有时，这些问题非常明显。例如，当语言模型以版权材料的摘录作为输入时，其输出可能直接包含版权文本。在扩散模型中生成图像的情境中，也面临着相似的问题（Henderson et al., 2023; Carlini et al., 2022, 2023）。即便这种训练属于“合理使用”，也可能在某些情况下侵犯内容创作者的道德权利（Weidinger et al., 2022）。
@@ -137,97 +137,102 @@ Kosinski 等人（2013）研究表明，通过社交媒体上的“点赞”就�
 
 显然，用于判断性取向的面部分析模型对 LGBTQ+ 社群没有任何正面影响。如果它真要造福社会，最关键的问题是特定的研究、实验、模型、应用或技术是否真正符合所涉及社群的利益。
 
-## 21.5 The value-free ideal of science
+## 21.5 科学的价值中立理想
+本章列举了多种情况，展示了 AI 系统的目标可能无意中或通过误用偏离了人类的价值观。我们进而认为，科学家并非中立的参与者；他们的价值观不可避免地影响到了他们的研究工作。
 
-This chapter has enumerated a number of ways that the objectives of AI systems can unintentionally, or through misuse, diverge from the values of humanity. We now argue that scientists are not neutral actors; their values inevitably impinge on their work.
+这可能令人意外。普遍存在一种观点，认为科学是或应当是客观的，这一观点被科学的无价值观理念所体现。许多人认为，机器学习之所以客观，是因为算法本质上是数学。然而，与算法偏见（第21.1.1节）相似，AI 实践者的价值观可能在以下四个阶段影响其工作（Reiss & Sprenger, 2017）：
 
-Perhaps this is surprising. There is a broad belief that science is—or ought to be— objective. This is codified by the value-free ideal of science. Many would argue that machine learning is objective because algorithms are just mathematics. However, analogous to algorithmic bias (section 21.1.1), there are four stages at which the values of AI practitioners can affect their work (Reiss & Sprenger, 2017):
+1. 研究问题的选择。
+2. 收集与研究问题相关的证据。
+3. 将某一科学假设接受为问题的解答。
+4. 应用科学研究结果。
 
-1. The choice of research problem.  
-2. Gathering evidence related to a research problem.  
-3. Accepting a scientific hypothesis as an answer to a problem. 4. Applying the results of scientific research.
+在这些阶段中，价值观在第一和最后阶段发挥着重要作用是较为普遍接受的。研究问题的初选和随后应用的选择，受到科学家、机构和资助机构利益的影响。然而，科学的无价值观理念主张在科学过程中尽量减少道德、个人、社会、政治和文化价值观的影响。这种理念基于价值中立的假设，认为科学家可以（至少在原则上）在处理第（2）和（3）阶段时，避免做出这些价值判断。
 
-It is perhaps uncontroversial that values play a significant role in the first and last of these stages. The initial selection of research problems and the choice of subsequent applications are influenced by the interests of scientists, institutions, and funding agencies. However, the value-free ideal of science prescribes minimizing the influence of moral, personal, social, political, and cultural values on the intervening scientific process. This idea presupposes the value-neutrality thesis, which suggests that scientists can (at least in principle) attend to stages (2) and (3) without making these value judgments.
+然而，无论是有意还是无意，价值观都已融入机器学习研究。这些价值观多数被视为认知价值（例如，性能、泛化能力、基于过去工作、效率、创新性）。但决定这些价值观本身就是一个带有价值倾向的决策；很少有研究明确讨论社会需求，更不用说潜在的负面影响了（Birhane et al., 2022b）。科学哲学家质疑科学的无价值理念是否可行或者理想。例如，Longino（1990, 1996）认为这些认知价值并非完全是认知性的。Kitcher（2011a,b）则认为，科学家通常不是单纯追求真理；而是追求与他们的目标和兴趣相关的真理。
 
-However, whether intentional or not, values are embedded in machine learning re- search. Most of these values would be classed as epistemic (e.g., performance, generalization, building on past work, eﬀiciency, novelty). But deciding the set of values is itself a value-laden decision; few papers explicitly discuss societal need, and fewer still discuss potential negative impacts (Birhane et al., 2022b). Philosophers of science have questioned whether the value-free ideal of science is attainable or desirable. For example, Longino (1990, 1996) argues that these epistemic values are not purely epistemic. Kitcher (2011a,b) argues that scientists don’t typically care about truth itself; instead, they pursue truths relevant to their goals and interests.
+机器学习依赖于归纳推理，因此容易承担归纳风险。模型只能在训练数据点上受到约束，而维度的诅咒意味着这只是输入空间的一小部分；无论我们使用多少数据来训练模型，输出结果总有可能是错误的。因此，选择接受或拒绝一个模型的预测本身就涉及价值判断：即接受错误的风险是否低于拒绝错误的风险。
 
-Machine learning depends on inductive inference and is hence prone to inductive risk. Models are only constrained at the training data points, and the curse of dimensionality means this is a tiny proportion of the input space; outputs can always be wrong, regard- less of how much data we use to train the model. It follows that choosing to accept or reject a model prediction requires a value judgment: that the risks if we are wrong in acceptance are lower than the risks if we are wrong in rejection.
+因此，归纳推理的使用意味着机器学习模型本质上包含了价值观（Johnson, 2022）。实际上，如果不包含价值观，它们就无法发挥作用：它们之所以有用，正是因为它们包含了价值观。因此，认识到算法在现实世界中被用于排名、分类、过滤、推荐、标记、预测等，意味着这些过程将对现实世界产生影响。随着机器学习系统越来越多地商业化和应用，它们在我们关心的领域中的影响也越来越深。
 
-Hence, the use of inductive inference implies that machine learning models are deeply value-laden (Johnson, 2022). In fact, if they were not, they would have no application: it is precisely because they are value-laden that they are useful. Thus, accepting that algorithms are used for ranking, sorting, filtering, recommending, categorizing, label- ing, predicting, etc., in the real world implies that these processes will have real-world effects. As machine learning systems become increasingly commercialized and applied, they become more entrenched in the things we care about.
+这些见解对于那些认为算法比人类决策者更客观（因此，在我们认为客观性重要的领域应取代人类决策者）的研究者有重要启示。
 
-These insights have implications for researchers who believe that algorithms are some- how more objective than human decision-makers (and, therefore, ought to replace human decision-makers in areas where we think objectivity matters).
 
-## 21.6 Responsible AI research as a collective action problem
-It is easy to defer responsibility. Students and professionals who read this chapter might think their work is so far removed from the real world or a small part of a larger machine that their actions could not make a difference. However, this is a mistake. Researchers often have a choice about the projects to which they devote their time, the companies or institutions for which they work, the knowledge they seek, the social and intellectual circles in which they interact, and the way they communicate.
+## 21.6 将负责任的 AI 研究视为集体行动的问题
+推卸责任很容易。读过这一章的学生和专业人士可能会认为，他们的工作与现实世界相去甚远，或仅是庞大体系中的一小部分，认为他们的行为无法产生影响。然而，这种想法是错误的。研究者通常可以选择他们投入时间的项目、为之工作的公司或机构、追求的知识、他们交流的社交及智力圈子，以及他们的沟通方式。
 
-Doing the right thing, whatever that may comprise, often takes the form of a social dilemma; the best outcomes depend upon cooperation, although it isn’t necessarily in any individual’s interest to cooperate: responsible AI research is a collective action problem.
+做正确的事情，无论这涉及什么，往往会呈现为一个社会难题；最好的结果需要依靠合作，尽管对任何个人来说合作不一定符合其个人利益：负责任的 AI 研究是一个集体性的行动难题。
 
-### 21.6.1 Scientific communication
-One positive step is to communicate responsibly. Misinformation spreads faster and persists more readily than the truth in many types of social networks (LaCroix et al., 2021; Ceylan et al., 2023). As such, it is important not to overstate machine learning systems’ abilities (see case study above) and to avoid misleading anthropomorphism. It is also important to be aware of the potential for the misapplication of machine learning techniques. For example, pseudoscientific practices like phrenology and physiognomy have found a surprising resurgence in AI (Stark & Hutson, 2022).
+### 21.6.1 科学交流
+一个积极的措施是负责任地进行交流。在多种社交网络中，错误信息比真相传播得更快、更容易持久化（LaCroix et al., 2021; Ceylan et al., 2023）。因此，不夸大机器学习系统的能力（参见上述案例研究）并避免误导性的拟人化非常重要。同样重要的是意识到机器学习技术可能被误用的风险。例如，颅相学和面相学这样的伪科学实践在 AI 领域意外复兴（Stark & Hutson, 2022）。
 
-### 21.6.2 Diversity and heterogeneity
-A second positive step is to encourage diversity. When social groups are homogeneous (composed mainly of similar members) or homophilous (comprising members that tend to associate with similar others), the dominant group tends to have its conventions recapitulated and stabilized (O’Connor & Bruner, 2019). One way to mitigate systems of oppression is to ensure that diverse views are considered. This might be achieved through equity, diversity, inclusion, and accessibility initiatives (at an institutional level), participatory and community-based approaches to research (at the research level), and increased awareness of social, political, and moral issues (at an individual level).
+### 21.6.2 多样性和异质性
+鼓励多样性是第二个积极措施。当社会群体同质化（主要由相似成员构成）或趋同（成员倾向于与相似者交往）时，主导群体往往会巩固并稳定其习俗（O’Connor & Bruner, 2019）。一种减轻压迫系统的方法是确保考虑多样化的观点。这可以通过机构层面的公平、多样性、包容性和可访问性举措，研究层面的参与式和基于社区的研究方法，以及个人层面对社会、政治和道德问题的深入了解来实现。
 
-The theory of standpoint epistemology (Harding, 1986) suggests that knowledge is socially situated (i.e., depends on one’s social position in society). Homogeneity in tech circles can give rise to biased tech (Noble, 2018; Eubanks, 2018; Benjamin, 2019; Broussard, 2023). Lack of diversity implies that the perspectives of the individuals who create these technologies will seep into the datasets, algorithms, and code as the default perspec- tive. Broussard (2023) argues that because much technology is developed by able-bodied, white, cisgender, American men, that technology is optimized for able-bodied, white, cis- gender, American men, the perspective of whom is taken as the status quo. Ensuring technologies benefit historically marginalized communities requires researchers to under- stand the needs, wants, and perspectives of those communities (Birhane et al., 2022a). Design justice and participatory- and community-based approaches to AI research con- tend that the communities affected by technologies should be actively involved in their design (Constanza-Chock, 2020).
+立场认识论（Harding, 1986）认为，知识是受社会位置影响的。技术圈子的同质性可能导致技术偏见（Noble, 2018; Eubanks, 2018; Benjamin, 2019; Broussard, 2023）。缺乏多样性意味着创建技术的个体视角将默认地渗透到数据集、算法和代码中。Broussard（2023）指出，因为许多技术是由健康的白人、顺性别、美国男性开发的，这些技术最优化地服务于这一群体，其视角成为默认标准。确保技术惠及历史上被边缘化的社区，要求研究人员理解这些社区的需求、愿望和视角（Birhane et al., 2022a）。设计正义和参与式及基于社区的 AI 研究方法主张，受技术影响的社区应积极参与技术的设计过程（Constanza-Chock, 2020）。
 
-## 21.7 Ways forward
-It is undeniable that AI will radically change society for better or worse. However, optimistic visions of a future Utopian society driven by AI should be met with caution and a healthy dose of critical reflection. Many of the touted benefits of AI are beneficial only in certain contexts and only to a subset of society. For example, Green (2019) highlights that one project developed using AI to enhance police accountability and alternatives to incarceration and another developed to increase security through predictive policing are both advertised as “AI for Social Good.” Assigning this label is a value judgment that lacks any grounding principles; one community’s good is another’s harm.
+## 21.7 前行之道
+毫无疑问，人工智能 (AI) 将从正面或负面根本改变社会。然而，我们应该谨慎对待那些乐观的、由 AI 驱动的乌托邦式未来社会愿景，并进行深思熟虑的批判性反思。许多所谓的 AI 带来的好处，实际上只在特定情境下对部分社会群体有利。例如，Green (2019) 强调，有项目利用 AI 来提升警察问责制和寻找监禁的替代方案，还有项目旨在通过预测性警务增强安全性，这些都被宣称为“社会良善的 AI”。这种标签的使用实际上是一种缺乏基础原则的价值判断；对一个社区可能是利益，对另一个则可能造成伤害。
 
-When considering the potential for emerging technologies to benefit society, it is necessary to reflect on whether those benefits will be equally or equitably distributed. It is often assumed that the most technologically advanced solution is the best one— so-called technochauvinism (Broussard, 2018). However, many social issues arise from underlying social problems and do not warrant technological solutions.
+在考虑新兴技术对社会潜在益处时，我们必须深入思考这些益处是否能够公平或均等地分配。人们往往误认为最先进的技术方案就是最佳选择，这种观点被称为技术优越主义 (technochauvinism, Broussard, 2018)。但实际上，许多社会问题根源于深层的社会问题，它们并不适合用技术手段解决。
 
-Some common themes emerged throughout this chapter, and we would like to impress four key points upon the reader:
+本章讨论了一些共通主题，我们希望向读者强调以下四个关键点：
 
-1. Research in machine learning cannot avoid ethics. Historically, researchers could focus on fundamental aspects of their work in a controlled laboratory setting. However, this luxury is dwindling due to the vast economic incentives to commercialize AI and the degree to which academic work is funded by industry (see Abdalla & Abdalla, 2021); even theoretical studies may have social impacts, so researchers must engage with the social and ethical dimensions of their work.
-2. Even purely technical decisions can be value-laden. There is still a widely- held view that AI is fundamentally just mathematics and, therefore, it is “objective,” and ethics are irrelevant. This assumption is not true when we consider the creation of AI systems or their deployment.
-3. We should question the structures within which AI work takes place. Much research on AI ethics focuses on specific situations rather than questioning the larger social structures within which AI will be deployed. For example, there is considerable interest in ensuring algorithmic fairness, but it may not always be possible to instantiate conceptions of fairness, justice, or equity within extant social and political structures. Therefore, technology is inherently political.
-4. Social and ethical problems don’t necessarily require technical solutions. Many potential ethical problems surrounding AI technologies are primarily social and structural, so technical innovation alone cannot solve these problems; if scien- tists are to effect positive change with new technology, they must take a political and moral position.
+1. 机器学习 (Machine Learning) 研究无法回避伦理问题。历史上，研究者可以在受控实验室环境中专注于其工作的基本方面。但现在，由于将 AI 商业化的巨大经济激励，以及学术工作受到行业资金的影响（参见 Abdalla & Abdalla, 2021），这种奢侈正在消失；即使是理论研究也可能带来社会影响，因此研究者必须考虑他们工作的社会和伦理维度。
+2. 纯技术决策亦充满价值判断。尽管普遍认为 AI 基本上是数学，因此是“客观的”，与伦理无关，但这种观点在我们考虑 AI 系统的创建或部署时并不成立。
+3. 我们应质疑 AI 工作所处的结构环境。大量关于 AI 伦理的研究仅聚焦于具体案例，却未对 AI 将运作的更广泛的社会结构提出质疑。例如，确保算法公正性引起了广泛关注，但要在现行的社会和政治结构中实现公正、正义或平等的理念可能并非总是可行的。因此，技术本质上具有政治属性。
+4. 社会和伦理问题并非总需要技术方案来解决。围绕 AI 技术的众多潜在伦理问题主要是社会和结构性的，技术创新本身不能解决这些问题；如果科学家想通过新技术带来积极变革，他们必须持有政治和道德立场。
 
-Where does this leave the average scientist? Perhaps with the following imperative: it is necessary to reflect upon the moral and social dimensions of one’s work. This might require actively engaging those communities that are likely to be most affected by new technologies, thus cultivating relationships between researchers and communities and em- powering those communities. Likewise, it might involve engagement with the literature beyond one’s own discipline. For philosophical questions, the Stanford Encyclopedia of Philosophy is an invaluable resource. Interdisciplinary conferences are also useful in this regard. Leading work is published at both the Conference on Fairness, Accountability, and Transparency (FAccT) and the Conference on AI, Ethics, and Society (AIES).
+对于普通科学家，这意味着什么？或许他们需要深思自己工作的道德和社会维度。这可能意味着积极参与那些最有可能受到新技术影响的社区，建立研究人员与社区间的联系，并赋权给这些社区。同样，这也可能涉及到跨越自己专业领域的文献研究。对于哲学问题而言，斯坦福哲学百科全书是极为宝贵的资源。跨学科会议在此也大有裨益，尤其是在公平、问责和透明度会议 (FAccT) 和 AI、伦理与社会会议 (AIES) 上发表的领先工作。
 
-## 21.8 Summary
-This chapter considered the ethical implications of deep learning and AI. The value alignment problem is the task of ensuring that the objectives of AI systems are aligned with human objectives. Bias, explainability, artificial moral agency, and other topics can be viewed through this lens. AI can be intentionally misused, and this chapter detailed some ways this can happen. Progress in AI has further implications in areas as diverse as IP law and climate change.
+## 21.8 总结
+本章探讨了深度学习和人工智能 (AI) 的伦理含义。价值对齐问题关乎确保 AI 系统的目标与人类目标保持一致。偏见、可解释性、人工道德代理性以及其它相关主题均可从这个角度进行考量。AI 可能被有意地误用，本章详细介绍了这种情况可能发生的一些途径。AI 的发展对知识产权法、气候变化等多个领域都产生了深远的影响。
 
-Ethical AI is a collective action problem, and the chapter concludes with an appeal to scientists to consider the moral and ethical implications of their work. Every ethical issue is not within the control of every individual computer scientist. However, this does not imply that researchers have no responsibility whatsoever to consider—and mitigate where they can—the potential for misuse of the systems they create.
+伦理 AI 是一个集体的行动难题。本章最后呼吁科学家们深思他们的工作对道德和伦理的影响。每一个伦理问题并非每个计算机科学家都能掌控。然而，这并不意味着研究人员就完全无需考虑或尽力减少他们所开发的系统可能被误用的风险。
 
 ## Problems
-**Problem 21.1** It was suggested that the most common specification of the value alignment problem for AI is “the problem of ensuring that the values of AI systems are aligned with the values of humanity.” Discuss the ways in which this statement of the problem is underspecified. Discussion Resource: LaCroix (2023).
+**问题 21.1** 通常认为 AI 的价值对齐问题可以定义为“确保 AI 系统的价值观与人类价值观保持一致”。讨论这种问题描述的不足之处。讨论资料来自 LaCroix (2023)。
 
-**Problem 21.2** Goodhart’s law states that “when a measure becomes a target, it ceases to be a good measure.” Consider how this law might be reformulated to apply to value alignment for artificial intelligence, given that the loss function is a mere proxy for our true objectives.
+**问题 21.2** 古德哈特法则指出，当一个衡量指标变成了追求的目标，它就不再是一个好的衡量指标。考虑这个法则如何针对 AI 的价值对齐问题进行改编，特别是当损失函数只是我们真实目标的一个近似时。
 
-**Problem 21.3** Suppose a university uses data from past students to build models for predicting “student success,” where those models can support informed changes in policies and practices. Consider how biases might affect each of the four stages of the development and deployment of this model.
-*Discussion Resource: Fazelpour & Danks (2021).*
+**问题 21.3** 假设一所大学利用过去学生的数据建模，预测“学生成功”，以便支持政策和实践的知情决策。思考在这个模型的开发和部署的四个阶段中，偏见可能如何产生影响。 讨论资料来自 Fazelpour & Danks (2021)。
 
-**Problem 21.4** We might think of functional transparency, structural transparency, and run transparency as orthogonal. Provide an example of how an increase in one form of transparency may not lead to a concomitant increase in another form of transparency.  
-*Discussion Resource: Creel (2020).*
+**问题 21.4** 功能透明性、结构透明性和运行透明性可以被视为相互独立的。举例说明，在某一透明度方面的增加可能不会导致另一方面透明度的相应增加。 讨论资料来自 Creel (2020)。
 
-**Problem 21.5** If a computer scientist writes a research paper on AI or pushes code to a public repository, do you consider them responsible for future misuse of their work?
+**问题 21.5** 如果一位计算机科学家撰写了一篇关于 AI 的研究论文或将代码推送到公开仓库，你认为他们应对其工作未来可能的误用负责吗？
 
-**Problem 21.6** To what extent do you think the militarization of AI is inevitable?  
+**问题 21.6** 你认为 AI 军事化的程度有多大的不可避免性？
 
-**Problem 21.7** In light of the possible misuse of AI highlighted in section 21.2, make arguments both for and against the open-source culture of research in deep learning.
+**问题 21.7** 考虑到第 21.2 节所强调的 AI 可能的误用问题，分析深度学习研究中开源文化的利弊。
 
-**Problem 21.8** Some have suggested that personal data is a source of power for those who own it. Discuss the ways personal data is valuable to companies that utilize deep learning and consider the claim that losses to privacy are experienced collectively rather than individually. 
-*Discussion Resource: Véliz (2020).*
+**问题 21.8** 有观点认为，个人数据是其所有者的一种力量来源。讨论个人数据对于采用深度学习的公司的价值，并考虑这种观点：隐私的损失是集体而不是个体所经历的。
+*讨论资源：Véliz (2020)*。
 
-**Problem 21.9** What are the implications of generative AI for the creative industries? How do you think IP laws should be modified to cope with this new development?
+**问题 21.9** 生成式 AI（Generative AI）将如何影响创意产业？你认为应该如何修改知识产权法以应对这一新变化？
 
-**Problem 21.10** A good forecast must (i) be specific enough to know when it is wrong, (ii) account for possible cognitive biases, and (iii) allow for rationally updating beliefs. Consider any claim in the recent media about future AI and discuss whether it satisfies these criteria. Discussion Resource: Tetlock & Gardner (2016).
+**问题 21.10** 有效的预测必须（i）足够具体，以便知道何时判断错误，（ii）顾及可能的认知偏误，并（iii）允许理性更新信念。分析最近媒体关于 AI 未来的任何预测，并讨论它是否符合这些标准。
+*讨论资源：Tetlock & Gardner (2016)*。
 
-**Problem 21.11** Some critics have argued that calls to democratize AI have focused too heavily on the participatory aspects of democracy, which can increase risks of errors in collective perception, reasoning, and agency, leading to morally-bad outcomes. Reflect on each of the following: What aspects of AI should be democratized? Why should AI be democratized? How should AI be democratized?
-*Discussion Resource: Himmelreich (2022).*
+**问题 21.11** 有批评者认为，呼吁 AI 民主化过分强调了民主的参与性，这可能增加在集体感知、推理和行动中犯错的风险，导致道德上的负面结果。思考下列问题：AI 的哪些方面应该民主化？为什么要民主化 AI？如何实现 AI 的民主化？
+*讨论资源：Himmelreich (2022)*。
 
-**Problem 21.12** In March 2023, the Future of Life Institute published a letter, “Pause Giant AI Experiments,” in which they called on all AI labs to immediately pause for at least six months the training of AI systems more powerful than GPT-4. Discuss the motivations of the authors in writing this letter, the public reaction, and the implications of such a pause. Relate this episode to the view that AI ethics can be considered a collective action problem (section 21.6). *Discussion Resource: Gebru et al. (2023).*
+**问题 21.12** 2023年3月，未来生活研究所发表了一封题为“暂停巨型 AI 实验”的公开信，呼吁所有 AI 实验室至少暂停六个月训练超过 GPT-4 的强大 AI 系统。分析作者发此信的动机、公众反应及此类暂停的影响，并将此事件与 AI 伦理被视为一种集体行动问题的观点（第 21.6 节）联系起来。
+*讨论资源：Gebru et al. (2023)*。
 
-**Problem 21.13** Discuss the merits of the four points in section 21.7. Do you agree with them?
+**问题 21.13** 讨论第 21.7 节提出的四个观点的优点。你对这些观点持何看法？
+
 
 ## 附图
 
 ![Figure21.1](figures/chapter21/EthicsStructural.svg)
 
-Figure 21.1 Structural description of the value alignment problem. a) Problems arise from a) misaligned objectives (e.g., bias) or b) informational asymmetries between a (human) principal and an (artificial) agent (e.g., lack of explainability). Adapted from LaCroix (2023).
+
+图 21.1 值对齐问题的结构描述。a) 问题源于 a) 目标不匹配（如偏差）或 b) 信息不对称，这种不对称存在于人类委托人与人工代理之间（例如，缺乏可解释性）。据 LaCroix (2023) 改编。
 
 ![Figure21.2](figures/chapter21/212.png)
-Figure 21.2 Bias mitigation. Methods have been proposed to compensate for bias at all stages of the training pipeline, from data collection to post-processing of already trained models. See Barocas et al. (2023) and Mehrabi et al. (2022).
+
+图 21.2 缓解偏见。已提出多种方法，在训练流程的各个阶段对偏见进行补偿，从数据收集到对已训练模型的后处理。参考 Barocas 等人 (2023) 和 Mehrabi 等人 (2022)。
 
 ![Figure21.3](figures/chapter21/EthicsLIME.svg)
-Figure 21.3 LIME. Output functions of deep networks are complex; in high di- mensions, it’s hard to know why a decision was made or how to modify the inputs to change it without access to the model. a) Consider trying to under- stand why Pr(y = 1|x) is low at the white cross. LIME probes the network at nearby points to see if it identifies these as Pr(y = 1|x) < 0.5 (cyan points) or Pr(y = 1|x) ≥ 0.5 (gray points). It weights these points by proximity to the point of interest (weight indicated by circle size). b) The weighted points are used to train a simpler model (here, logistic regression — a linear function passed through a sigmoid). c) Near the white cross, this approximation is close to d) the original function. Even though we did not have access to the original model, we can deduce from the parameters of this approximate model, that if we increase x1 or decrease x2, Pr(y = 1|x) will increase, and the output class will change. Adapted from Prince (2022).
+
+图 21.3 LIME。深度网络的输出函数非常复杂；在高维情况下，很难知道决策的形成原因或在无法接触模型的情况下如何修改输入以改变结果。a) 尝试理解在白色十字处 Pr(y = 1|x) 为何较低。LIME 通过探测临近点来分析网络，查看这些点是否被识别为 Pr(y = 1|x) < 0.5（青色点）或 Pr(y = 1|x) ≥ 0.5（灰色点），并根据与关注点的接近度对这些点进行加权（权重由圆圈大小表示）。b) 这些加权点用于训练一个更简单的模型（此处为逻辑回归——一个通过 sigmoid 函数的线性函数）。c) 在白色十字附近，这个近似值接近于 d) 原始函数。虽然我们无法接触原始模型，但我们可以通过这个近似模型的参数推断，增加 x1 或减少 x2 将使 Pr(y = 1|x) 增加，进而改变输出类别。根据 Prince (2022) 改编。
