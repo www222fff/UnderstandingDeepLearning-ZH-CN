@@ -21,11 +21,7 @@
 *.ps
 *.eps
 
-# Figures
-*.png
-*.jpg
-*.svg
-*.jpeg
+
 
 # Temporary files
 *~
