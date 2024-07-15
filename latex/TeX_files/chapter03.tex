@@ -25,6 +25,12 @@ a[z] = ReLU[z] =
 
 这个函数在输入为正时返回输入值，否则返回零（参见图 3.1）。
 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowReLU.png}
+\caption{图 3.1 整流线性单元 (Rectified Linear Unit, ReLU)。这种激活函数在输入小于零时输出为零，否则保持输入值不变。简而言之，它将所有负数输入值变为零。需要注意的是，虽然有许多其他激活函数可供选择（参见图 3.13），但 ReLU 由于其简单易懂，成为最常用的选择。}
+\end{figure}
+
 方程 3.1 描述了哪一类输入/输出关系可能不是一目了然的。但是，前一章节提到的所有概念都适用于这里。方程 3.1 表示了一个函数族，具体的函数取决于 φ 中的十个参数。如果我们知道这些参数，就可以通过对给定输入 \(x\) 计算该方程来进行推断（预测 \(y\)）。给定一个训练数据集 \(\{{x_i,y_i}\}^I_{i=1}\)，我们可以定义一个最小二乘损失函数 \(L[\phi]\)，用它来评估对于任意参数值 \(\phi\)，模型描述该数据集的效果。为了训练这个模型，我们要找出能够最小化这个损失的参数值 \(\hat \phi\)。
 
 
@@ -46,6 +52,17 @@ y = \phi_0 + \phi_1h1 + \phi_2h2 + \phi_3h3 \tag{3.4}
 
 图 3.3 展示了形成图 3.2a 中函数的计算流程。每个隐藏单元内包含了一个关于输入的线性函数 \(\theta_0 + \theta_1x\)，该线性函数在零点以下被 ReLU 函数 \(a[\cdot]\) 截断。这三条线在零点交叉的位置形成了最终输出函数的三个“拐点”。然后，分别用 \(\phi_1, \phi_2, \phi_3\) 对这三条被截断的线加权。最后，加上偏移量 \(\phi_0\) 来控制最终函数的整体高度。
 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowFunctions.png}
+\caption{图 3.2 由方程 3.1 定义的函数族。a-c) 展示了三种不同参数 \(\phi\) 的选择下的函数。在这些函数中，输入与输出的关系均为分段线性。不过，各个拐点的位置、拐点间线段的斜率，以及整体高度各不相同。}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowBuildUp.png}
+\caption{展示图 3.2a 中函数的计算过程。a-c) 输入 x 分别经过三个具有不同 y 截距 θ•0 和斜率 θ•1 的线性函数处理。d-f) 每个线性函数的输出再经过 ReLU 激活函数处理，将所有负数输出值变为零。g-i) 接着，这三个处理过的输出分别乘以权重 \(\phi_1 , \phi_2 , \phi_3\) 进行加权。j) 最后，将这些加权后的输出相加，并加上一个控制整体高度的偏移量 \(\phi_0\) 。每个线性段代表了隐层单元中的一种不同激活模式。在阴影区域，h2 处于非激活状态（被剪切），而 h1 和 h3 保持激活状态。}
+\end{figure}
 
 在图 3.3j 中，每个线性区域对应于隐藏单元中的一种不同激活模式。当一个单元在 ReLU 函数下被截断时，我们称其为不活跃状态；相反，如果没有被截断，则处于活跃状态。例如，在阴影区域内，得到 \(h1\) 和 \(h3\)（处于活跃状态）的贡献，但没有 \(h2\)（处于不活跃状态）的贡献。每个线性区域的斜率取决于两个因素：（i）这个区域内活跃输入的原始斜率 \(\theta_1\) 和（ii）随后应用的权重 \(\phi\)。例如，在阴影区域（参见问题 3.3），斜率是 \(\phi_1\theta_{11} + \theta_{31}\phi_3\)，其中第一项是图中（g）面板的斜率，第二项是（i）面板的斜率。
 
@@ -53,6 +70,11 @@ y = \phi_0 + \phi_1h1 + \phi_2h2 + \phi_3h3 \tag{3.4}
 \subsection{描绘神经网络}
 我们此前一直探讨的是一种神经网络，它由一个输入层、一个输出层和三个隐藏单元组成。在图 3.4a 中，我们将这个网络形象化。图中，最左边的是输入层，中间部分是隐藏单元，右边则是输出层。图中的每一条连接线代表了这个神经网络的十个参数中的一个。而为了图像表示的简洁，我们通常不会特别标出截距参数，所以大多数情况下，这个网络的表达方式如图 3.4b 所示。
 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowNet.png}
+\caption{图 3.4 描述神经网络结构。a) 输入变量 x 位于左侧，隐层单元 h1 , h2 , 和 h3 位于中间，输出变量 y 位于右侧。计算过程从左向右进行。输入变量用于计算隐层单元的值，这些隐层单元的组合进而生成输出值。图中的十个箭头分别代表一个参数，橙色代表截距，黑色代表斜率。每个参数将其来源的值乘以自己，然后将结果加到其目标上。例如，我们将参数 φ1 与来源于 h1 的值相乘，再将结果加到 y 上。为了将偏移量纳入这一计算框架，引入了值为 1 的额外节点（橙色圆圈），例如我们将 φ0 乘以 1（实际上无变化）后加到 y 上。ReLU 函数被应用于隐层单元。b) 通常情况下，网络图中会省略截距、ReLU 函数和参数名称的显示；这种简化后的表示方式实际上描述了同一个网络。}
+\end{figure}
 
 \section{通用逼近定理（Universal approximation theorem）}
 在上一节中，我们介绍了一个只有一个输入、一个输出、使用ReLU激活函数，并配备了三个隐藏单元的神经网络示例。现在，让我们稍微扩展这个概念，考虑一个拥有 \(D\) 个隐藏单元的网络，其中第 \(d^{th}\) 个隐藏单元表示为：
@@ -99,7 +121,23 @@ y = \phi_0 + \sum_{d=1}^{D} \phi_dh_d. \tag{3.6}
 
 如图 3.3 所示，分段函数的“接点”取决于隐藏单元处的 ReLU 函数 \(a[\cdot]\) 截断的初始线性函数 \(\theta_0 + \theta_1x\)。由于 \(y1\) 和 \(y2\) 都是相同四个隐藏单元的不同线性函数，因此它们各自的四个“接点”位置必须相同。然而，这些线性区域的斜率和整体的垂直偏移可能不同（参见图 3.6）。
 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowApproximate.png}
+\caption{图 3.5 用分段线性模型近似一维函数（虚线表示）。a-c) 随着分段区域的数量增加，该模型逐渐趋近于连续函数。一个只有单一输入的神经网络会为每个隐层单元新增一个线性区域。根据通用近似定理（Universal Approximation Theorem），只要隐层单元足够多，就能构建一个浅层神经网络，该网络能够以任意精度近似定义在 RDi 紧凑子集上的任何连续函数。}
+\end{figure}
 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowNetTwoOutputs.png}
+\caption{图 3.6 展示了一个具有一个输入、四个隐层单元和两个输出的网络。a) 网络结构的可视化展示。b) 该网络产生两个分段线性函数，y1[x] 和 y2[x]。由于这些函数共享相同的隐层单元，它们的四个“关节”（位于垂直虚线处）位置是固定的，但它们的斜率和整体高度可能有所不同。}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowNetTwoInputs.png}
+\caption{图 3.7 展示了具有二维多变量输入 $x = [x1, x2]^T$ 和单一输出 y 的神经网络的可视化。}
+\end{figure}
 
 \subsection{可视化多变量输入}
 
@@ -123,8 +161,19 @@ y = \phi_0 + \phi_1h1 + \phi_2h2 + \phi_3h3 \tag{3.10}
 
 图 3.8 展示了这个网络的处理过程。每个隐藏单元接收两个输入的线性组合，这在三维输入/输出空间中形成了一个有方向的平面。激活函数将这些平面的负值剪切为零。接着，这些被剪切的平面在第二个线性函数（方程 3.10）中被重新组合，形成了一个由凸多边形区域组成的连续分段线性表面（见图 3.8j）。每个区域代表了一种不同的激活模式。例如，在中央的三角形区域中，第一个和第三个隐藏单元处于激活状态，而第二个则未激活。当模型有超过两个输入时，可视化变得更加困难。不过，其基本原理是相似的：输出将是输入的连续分段线性函数，其中线性区域在多维输入空间中呈现为凸多面体。
 
-
 需要注意的是，随着输入维度的增加，线性区域的数量迅速增长（参见图 3.9）。为了更好地理解这种增长速度，考虑每个隐藏单元定义了一个超平面，区分了单元活跃和不活跃的空间部分（见图 3.8d-f 中的青色线条）。如果我们的隐藏单元数量与输入维度 \(D_i\) 相等，我们可以将每个超平面与一个坐标轴对齐（见图 3.10）。对于两个输入维度，这会将空间划分为四个象限。对于三个维度，这会形成八个八分区，而对于 \(D_i\) 维度，则会形成 \(2^{D_i}\) 个正交空间。由于浅层神经网络通常比输入维度有更多的隐藏单元，它们通常会创造出超过 \(2^{D_i}\) 个线性区域。
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowBuildUp2D.png}
+\caption{图 3.8 在一个具有两个输入 \(x = [x1,x2]^T\)、三个隐层单元 h1,h2,h3 和一个输出 y 的网络中的处理过程。a-c) 每个隐层单元的输入是两个输入变量的线性函数，对应于一个方向性平面。亮度代表函数的输出，例如，在面板 (a) 中，亮度表示 \(θ_10 + θ_{11}x_1 + θ_{12} x2\)。细线代表等值线。d-f) ReLU (Rectified Linear Unit) 激活函数对每个平面进行剪切处理（青色线相当于图 3.3d-f 中的“关节”）。g-i) 这些被剪切的平面随后被加权，j) 然后和一个决定表面整体高度的偏移量相加。最终得到的是一个由凸的分段线性多边形区域构成的连续表面。}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowRegions.png}
+\caption{图 3.9 隐层单元与线性区域的关系。a) 对于五种不同输入维度 Di = {1, 5, 10, 50, 100}，展示了隐层单元数与其能够产生的最大线性区域数之间的关系。在高维度下，线性区域的数量迅速增加；例如，在 D = 500 单元和输入维度 Di = 100 的情况下，线性区域的数量可以超过 $10^107$（实心圆所示）。b) 将相同的数据以参数数量作为函数进行绘制。实心圆表示与 a) 面板中相同的模型，拥有 D = 500 隐层单元。这个网络有 51,001 个参数，在现代标准下被认为非常小。}
+\end{figure}
 
 \section{浅层神经网络：一般情况}
 
@@ -145,6 +194,24 @@ y_j = \phi_{j0} + \sum_{d=1}^{D_h} \phi_{jd}h_d \tag{3.12}
 
 激活函数使得模型能描述输入与输出之间的非线性关系，因此它本身必须是非线性的；如果没有激活函数，或使用线性激活函数，从输入到输出的映射将被限制为线性映射。已尝试了多种不同的激活函数（见图 3.13），但最常用的选择是 ReLU（见图 3.1），它具有易于理解的优点。使用 ReLU 激活的网络将输入空间划分为由 ReLU 函数中的“接点”计算出的超平面交叉定义的凸多面体。每个凸多面体内包含一个不同的线性函数。尽管每个输出的多面体都相同，但它们包含的线性函数可能会有所不同。
 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowHyperplanes.png}
+\caption{图 3.10 输入维度与线性区域数量的关系。a) 对于单输入维度的模型，一个隐层单元可以创建一个分割点，将输入轴分为两个线性区域。b) 在两个输入维度的模型中，两个隐层单元可以使用两条线（此处与坐标轴对齐）划分输入空间，形成四个区域。c) 在三个输入维度的模型中，三个隐层单元可以用三个平面（同样与坐标轴对齐）划分输入空间，形成八个区域。延伸这一逻辑，一个具有 Di 输入维度和 Di 隐层单元的模型可以用 Di 超平面来划分输入空间，从而形成 $2^Di$ 个线性区域。}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowNetThreeInputsTwoOutputs.png}
+\caption{图 3.11 展示了一个具有三个输入和两个输出的神经网络的可视化。该网络共有二十个参数，包括十五个斜率（由箭头指示）和五个偏移（未显示）。}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowTerminology.png}
+\caption{图 3.12 术语: 一个浅层网络由一个输入层、一个隐层和一个输出层构成。每一层都通过前向连接（箭头所示）与下一层相连，因此这类模型被称为前向网络（feed-forward networks）。当每一层中的每个变量都与下一层的每个变量相连时，我们称之为全连接网络（fully connected network）。每个连接代表了底层方程中的斜率参数，这些参数称为权重（weights）。隐层中的变量被称为神经元（neurons）或隐层单元（hidden units）。进入隐层单元的值称为激活前值（pre-activations），而隐层单元上的值（即应用 ReLU 函数后的值）称为激活值（activations）。}
+\end{figure}
+
 \section{术语}
 在本章的结尾，我们来介绍一些术语。神经网络领域有很多专业术语。通常情况下，它们是通过层来描述的。在图 3.12 中，左边是输入层，中间是隐藏层，右边是输出层。我们可以说图 3.12 中的网络有一个包含四个隐藏单元的隐藏层。隐藏单元本身有时也被称为神经元。当数据通过网络传输时，隐藏层输入的值（即在应用 ReLU 函数之前的值）被称为预激活值。隐藏层的值（即在应用 ReLU 函数之后的值）被称为激活值。
 
@@ -156,8 +223,8 @@ y_j = \phi_{j0} + \sum_{d=1}^{D_h} \phi_{jd}h_d \tag{3.12}
 第 4 章将讨论深度神经网络，这些网络通过增加更多隐藏层来扩展本章所述的模型。第 5 至 7 章将描述如何训练这些模型。
 
 \section{Notes}
-\textbf{"神经"网络}：如果本章中的模型仅仅是函数，为什么它们被称为“神经网络”呢？这个连接实际上是比较脆弱的。像图 3.12 中的可视化包括节点（输入、隐藏单元和输出），它们之间有密集的连接。这与哺乳动物大脑中密集连接的神经元在表面上有相似之处。然而，几乎没有证据表明大脑计算的方式与神经网络相同，而且从生物学角度来考虑这一点是没有帮助的。
 
+\textbf{"神经"网络}：如果本章中的模型仅仅是函数，为什么它们被称为“神经网络”呢？这个连接实际上是比较脆弱的。像图 3.12 中的可视化包括节点（输入、隐藏单元和输出），它们之间有密集的连接。这与哺乳动物大脑中密集连接的神经元在表面上有相似之处。然而，几乎没有证据表明大脑计算的方式与神经网络相同，而且从生物学角度来考虑这一点是没有帮助的。
 
 \textbf{神经网络的历史}：1943年，McCulloch 和 Pitts 首次提出了人工神经元的概念，这种神经元能够将输入信号组合以产生输出，但缺乏有效的学习算法。1958年，Rosenblatt 开发出了感知机（Perceptron），一种通过线性组合输入信号并设定阈值来做出是/否决策的模型，并为其设计了一种从数据中学习权重的算法。1969年，Minsky 和 Papert 指出，仅用线性函数处理一般分类问题是不够的。他们认为，通过增加带有非线性激活函数的隐藏层（由此产生了“多层感知机（Multi-layer Perceptron）”这一术语），可以学习到更广泛的输入/输出关系。不过，他们也指出，Rosenblatt 的算法无法学习这些模型的参数。直到20世纪80年代，一个有效的学习算法——反向传播（Backpropagation，详见第7章）才被发明，此后神经网络的研究才重新获得显著发展。关于神经网络历史的详细记载可参见 Kurenkov (2020)、Sejnowski (2018) 和 Schmidhuber (2022) 的著作。
 
@@ -183,6 +250,19 @@ HardSwish[z] =
 \textbf{线性区域数量}：考虑一个拥有 \(D_i \geq 2\) 维输入和 D 个隐藏单元的浅层网络。其线性区域的数量取决于由 ReLU 函数的转折点所形成的 D 个超平面的相交情况（如图 3.8d-f 所示）。每个区域由 ReLU 函数对输入的剪切或不剪切的不同组合产生。Zaslavsky (1975) 指出，在 \(D_i \leq D\) 维输入空间内，由 D 个超平面所创造的区域数量最多可以达到 \(\sum_{j=0}^{D_i} \binom{D}{j}\)（即二项式系数之和）。一般而言，浅层神经网络的隐藏单元数 D 几乎总是大于输入维度 \(D_i\)，并能在 \(2^{D_i}\) 到 \(2^D\) 之间创造多个线性区域。
 
 \textbf{线性、仿射与非线性函数}：严格定义下，线性变换 \(f[\cdot]\) 是遵循叠加原理的任何函数，即  \(f[a + b] = f[a] + f[b]\)。根据这个定义，\(f[2a] = 2f[a]\)。加权和 \(f[h1, h2, h3] = \phi_{h1} + \phi_{h2} + \phi_{h3}\) 是线性的，但加上偏移（偏置）后，\(f[h1, h2, h3] = \phi_0 + \phi_{h1} + \phi_{h2} + \phi_{h3}\)，就不再是线性的。例如，当我们加倍前一个函数的参数时，输出也加倍，但后一个函数不是这样。后者更恰当地被称为仿射函数。在机器学习领域，这些术语常常混用。在本书中，我们也将遵循这一习惯，把这两种函数都称为线性。我们将遇到的所有其他函数都是非线性的。
+
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowActivations.png}
+\caption{图 3.13 激活函数（Activation functions）。a) Logistic sigmoid 函数和 tanh 函数。b) Leaky ReLU 函数和参数为 0.25 的 Parametric ReLU 函数。c) SoftPlus 函数、高斯误差线性激活函数（Gaussian error linear unit）和 sigmoid线性激活函数（sigmoid linear unit）。d) 参数为 0.5 和 1.0 的指数线性激活函数（Exponential Linear Unit）。e) 按比例调整的指数线性激活函数（Scaled Exponential Linear Unit）。f) 参数为 0.4，1.0，和 1.4 的 Swish 函数。}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowChangeSlope.png}
+\caption{图 3.14：针对问题 3.4, 描述了一个网络的处理过程，该网络具有一个输入，三个隐藏单元，以及一个输出。a-c) 所示的是，每个隐藏单元接受的输入来源是原输入的线性转换。前两个隐藏单元接收到的输入与图 3.3 中的一样，但是最后一个与它们不同。}
+\end{figure}
 
 \section{课后习题}
 \textbf{问题 3.1} 若方程 3.1 中的激活函数是线性的，即 \(a[z] = \phi_0 + \phi_{1}z\)，则输入到输出的映射将是怎样的？如果移除激活函数，使 \(a[z] = z\)，又将产生何种映射？
@@ -240,129 +320,3 @@ rect[z] = \begin{cases}
 
 \textbf{问题 3.18} 证明一个只有 \(D_i = 2\) 维输入、\(D_o = 1\) 维输出和 \(D = 3\) 个隐藏单元的浅层网络所能创建的最大区域数是七个，如图 3.8j 所示。根据 Zaslavsky (1975) 的结果，即用 \(D\) 个超平面划分 \(D_i\) 维空间时创造的最大区域数是 \(\sum_{j=0}^{D_i} \binom{D}{j}\)。如果在这个模型中增加两个隐藏单元，使 \(D = 5\)，那么最大区域数将是多少？
 
-\section{附图}
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowReLU.png}
-	\caption{Figure 3.1}
-\end{figure}
-
-图 3.1 整流线性单元 (Rectified Linear Unit, ReLU)。这种激活函数在输入小于零时输出为零，否则保持输入值不变。简而言之，它将所有负数输入值变为零。需要注意的是，虽然有许多其他激活函数可供选择（参见图 3.13），但 ReLU 由于其简单易懂，成为最常用的选择。
-
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowFunctions.png}
-	\caption{Figure 3.2}
-\end{figure}
-
-图 3.2 由方程 3.1 定义的函数族。a-c) 展示了三种不同参数 \(\phi\) 的选择下的函数。在这些函数中，输入与输出的关系均为分段线性。不过，各个拐点的位置、拐点间线段的斜率，以及整体高度各不相同。
-
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowBuildUp.png}
-	\caption{Figure 3.3}
-\end{figure}
-
-图 3.3 展示图 3.2a 中函数的计算过程。a-c) 输入 x 分别经过三个具有不同 y 截距 θ•0 和斜率 θ•1 的线性函数处理。d-f) 每个线性函数的输出再经过 ReLU 激活函数处理，将所有负数输出值变为零。g-i) 接着，这三个处理过的输出分别乘以权重 \(\phi_1 , \phi_2 , \phi_3\) 进行加权。j) 最后，将这些加权后的输出相加，并加上一个控制整体高度的偏移量 \(\phi_0\) 。每个线性段代表了隐层单元中的一种不同激活模式。在阴影区域，h2 处于非激活状态（被剪切），而 h1 和 h3 保持激活状态。
-
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowNet.png}
-	\caption{Figure 3.4}
-\end{figure}
-
-图 3.4 描述神经网络结构。a) 输入变量 x 位于左侧，隐层单元 h1 , h2 , 和 h3 位于中间，输出变量 y 位于右侧。计算过程从左向右进行。输入变量用于计算隐层单元的值，这些隐层单元的组合进而生成输出值。图中的十个箭头分别代表一个参数，橙色代表截距，黑色代表斜率。每个参数将其来源的值乘以自己，然后将结果加到其目标上。例如，我们将参数 φ1 与来源于 h1 的值相乘，再将结果加到 y 上。为了将偏移量纳入这一计算框架，引入了值为 1 的额外节点（橙色圆圈），例如我们将 φ0 乘以 1（实际上无变化）后加到 y 上。ReLU 函数被应用于隐层单元。b) 通常情况下，网络图中会省略截距、ReLU 函数和参数名称的显示；这种简化后的表示方式实际上描述了同一个网络。
-
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowApproximate.png}
-	\caption{Figure 3.5}
-\end{figure}
-
-图 3.5 用分段线性模型近似一维函数（虚线表示）。a-c) 随着分段区域的数量增加，该模型逐渐趋近于连续函数。一个只有单一输入的神经网络会为每个隐层单元新增一个线性区域。根据通用近似定理（Universal Approximation Theorem），只要隐层单元足够多，就能构建一个浅层神经网络，该网络能够以任意精度近似定义在 RDi 紧凑子集上的任何连续函数。
-
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowNetTwoOutputs.png}
-	\caption{Figure 3.6}
-\end{figure}
-
-图 3.6 展示了一个具有一个输入、四个隐层单元和两个输出的网络。a) 网络结构的可视化展示。b) 该网络产生两个分段线性函数，y1[x] 和 y2[x]。由于这些函数共享相同的隐层单元，它们的四个“关节”（位于垂直虚线处）位置是固定的，但它们的斜率和整体高度可能有所不同。
-
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowNetTwoInputs.png}
-	\caption{Figure 3.7}
-\end{figure}
-
-图 3.7 展示了具有二维多变量输入 $x = [x1, x2]^T$ 和单一输出 y 的神经网络的可视化。
-
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowBuildUp2D.png}
-	\caption{Figure 3.8}
-\end{figure}
-
-图 3.8 在一个具有两个输入 \(x = [x1,x2]^T\)、三个隐层单元 h1,h2,h3 和一个输出 y 的网络中的处理过程。a-c) 每个隐层单元的输入是两个输入变量的线性函数，对应于一个方向性平面。亮度代表函数的输出，例如，在面板 (a) 中，亮度表示 \(θ_10 + θ_{11}x_1 + θ_{12} x2\)。细线代表等值线。d-f) ReLU (Rectified Linear Unit) 激活函数对每个平面进行剪切处理（青色线相当于图 3.3d-f 中的“关节”）。g-i) 这些被剪切的平面随后被加权，j) 然后和一个决定表面整体高度的偏移量相加。最终得到的是一个由凸的分段线性多边形区域构成的连续表面。
-
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowRegions.png}
-	\caption{Figure 3.9}
-\end{figure}
-
-图 3.9 隐层单元与线性区域的关系。a) 对于五种不同输入维度 Di = {1, 5, 10, 50, 100}，展示了隐层单元数与其能够产生的最大线性区域数之间的关系。在高维度下，线性区域的数量迅速增加；例如，在 D = 500 单元和输入维度 Di = 100 的情况下，线性区域的数量可以超过 $10^107$（实心圆所示）。b) 将相同的数据以参数数量作为函数进行绘制。实心圆表示与 a) 面板中相同的模型，拥有 D = 500 隐层单元。这个网络有 51,001 个参数，在现代标准下被认为非常小。
-
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowHyperplanes.png}
-	\caption{Figure 3.10}
-\end{figure}
-
-
-图 3.10 输入维度与线性区域数量的关系。a) 对于单输入维度的模型，一个隐层单元可以创建一个分割点，将输入轴分为两个线性区域。b) 在两个输入维度的模型中，两个隐层单元可以使用两条线（此处与坐标轴对齐）划分输入空间，形成四个区域。c) 在三个输入维度的模型中，三个隐层单元可以用三个平面（同样与坐标轴对齐）划分输入空间，形成八个区域。延伸这一逻辑，一个具有 Di 输入维度和 Di 隐层单元的模型可以用 Di 超平面来划分输入空间，从而形成 $2^Di$ 个线性区域。
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowNetThreeInputsTwoOutputs.png}
-	\caption{Figure 3.11}
-\end{figure}
-
-图 3.11 展示了一个具有三个输入和两个输出的神经网络的可视化。该网络共有二十个参数，包括十五个斜率（由箭头指示）和五个偏移（未显示）。
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowTerminology.png}
-	\caption{Figure 3.12}
-\end{figure}
-
-
-图 3.12 术语: 一个浅层网络由一个输入层、一个隐层和一个输出层构成。每一层都通过前向连接（箭头所示）与下一层相连，因此这类模型被称为前向网络（feed-forward networks）。当每一层中的每个变量都与下一层的每个变量相连时，我们称之为全连接网络（fully connected network）。每个连接代表了底层方程中的斜率参数，这些参数称为权重（weights）。隐层中的变量被称为神经元（neurons）或隐层单元（hidden units）。进入隐层单元的值称为激活前值（pre-activations），而隐层单元上的值（即应用 ReLU 函数后的值）称为激活值（activations）。
-
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowActivations.png}
-	\caption{Figure 3.13}
-\end{figure}
-
-图 3.13 激活函数（Activation functions）。a) Logistic sigmoid 函数和 tanh 函数。b) Leaky ReLU 函数和参数为 0.25 的 Parametric ReLU 函数。c) SoftPlus 函数、高斯误差线性激活函数（Gaussian error linear unit）和 sigmoid线性激活函数（sigmoid linear unit）。d) 参数为 0.5 和 1.0 的指数线性激活函数（Exponential Linear Unit）。e) 按比例调整的指数线性激活函数（Scaled Exponential Linear Unit）。f) 参数为 0.4，1.0，和 1.4 的 Swish 函数。
-
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter3/ShallowChangeSlope.png}
-	\caption{Figure 3.14}
-\end{figure}
-
-图 3.14：针对问题 3.4, 描述了一个网络的处理过程，该网络具有一个输入，三个隐藏单元，以及一个输出。a-c) 所示的是，每个隐藏单元接受的输入来源是原输入的线性转换。前两个隐藏单元接收到的输入与图 3.3 中的一样，但是最后一个与它们不同。

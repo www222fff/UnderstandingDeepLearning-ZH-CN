@@ -1,4 +1,5 @@
 import re
+import os
 
 def convert_markdown_to_latex(md_text):
     # 转换一级标题，去掉序号
@@ -31,15 +32,33 @@ def convert_markdown_to_latex(md_text):
     
     return latex_text
 
-# 示例Markdown文本
-with open('Chapter 3 Shallow neural networks.md', 'r') as m:
-    md_text = m.read()
 
-latex_text = convert_markdown_to_latex(md_text)
+def list_files():
+    fs = []
+    # 遍历目录及其子目录下的所有文件
+    for root, dirs, files in os.walk('./'):
+        if root.startswith('./.git') or root.startswith('./figures') or root.startswith('./latex'):
+            continue
+        for file in files:
+            if not '.md' in file :
+                continue
+            if file == 'README.md':
+                continue
+            fs.append(file)
+    return fs
 
-# 输出转换后的LaTeX文本
-print(latex_text)
-
-# # 将转换后的内容保存到LaTeX文件latex/Tex_files/
-with open("chapter03.tex", "w") as f:
-    f.write(latex_text)
+fs = list_files()
+for f in fs:
+    if f in ['Chapter 1 Introduction.md', 'Chapter 2 Supervised learning.md', 'Chapter 3 Shallow neural networks.md']:
+        continue
+    print(f)
+    num = re.search(r'Chapter (\d+)', f).group(1)
+    if int(num) < 10:
+        num = '0' + num
+    tex_name = 'chapter' + num + '.tex'
+    
+    with open(f, 'r') as m:
+        md_text = m.read()
+    latex_text = convert_markdown_to_latex(md_text)
+    with open(tex_name, "w") as f:
+        f.write(latex_text)

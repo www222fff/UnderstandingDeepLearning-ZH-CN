@@ -1,54 +1,43 @@
-latex_text = r'''
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.7\linewidth]{png/chapter3/ShallowReLU.png}
-    \caption{Figure 3.1}
-\end{figure}
+import streamlit as st
 
-图 3.1 整流线性单元 (Rectified Linear Unit, ReLU)。这种激活函数在输入小于零时输出为零，否则保持输入值不变。简而言之，它将所有负数输入值变为零。需要注意的是，虽然有许多其他激活函数可供选择（参见图 3.13），但 ReLU 由于其简单易懂，成为最常用的选择。
+def parse(latex_text: str):
+    # 分割文本
+    parts = latex_text.split(r'\begin{figure}[h!]')
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.7\linewidth]{png/chapter3/ShallowFunctions.png}
-    \caption{Figure 3.2}
-\end{figure}
 
-图 3.2 由方程 3.1 定义的函数族。a-c) 展示了三种不同参数 \(\phi\) 的选择下的函数。在这些函数中，输入与输出的关系均为分段线性。不过，各个拐点的位置、拐点间线段的斜率，以及整体高度各不相同。
+    # 处理分割后的文本，跳过第一个因为它在第一个figure之前
+    new_parts = [parts[0]]
+    for i in range(1, len(parts)):
+        figure_block = r'\begin{figure}[h!]' + parts[i]
+        figure_lines = figure_block.split('\n')
+        figure_lines = [item for item in figure_lines if item]
 
-'''
+        # 找到caption所在的行并替换内容
+        for j in range(len(figure_lines)):
+            if figure_lines[j].strip().startswith(r'\caption'):
+                # 找到figure后的第一个段落
+                caption_text = figure_lines[-1].strip()
+                figure_lines[j] = r'\caption{' + caption_text + '}'
+                break
+        figure_lines = figure_lines[:-1]
+        new_parts.append('\n'.join(figure_lines))
 
-def replace_captions(text):
-    lines = text.splitlines()
-    result = []
-    i = 0
+    # 合并文本
+    new_latex_text = '\n\n'.join(new_parts)
+    return new_latex_text
 
-    while i < len(lines):
-        line = lines[i]
-        if line.startswith('\\begin{figure}'):
-            figure_block = [line]
-            i += 1
-            while i < len(lines) and not lines[i].startswith('\\end{figure}'):
-                figure_block.append(lines[i])
-                i += 1
-            if i < len(lines):
-                figure_block.append(lines[i])  # Append the \end{figure} line
-            i += 1
 
-            # Find the caption text
-            caption_text = ""
-            if i < len(lines) and lines[i].startswith('图'):
-                caption_text = lines[i].strip()
-                i += 1
+st.title('LaTeX Parser')
 
-            if caption_text:
-                figure_block = [line if not line.startswith('\\caption{') else f'\\caption{{{caption_text}}}' for line in figure_block]
+# 两个文本框布局
+col1, col2 = st.columns(2)
 
-            result.extend(figure_block)
-        else:
-            result.append(line)
-            i += 1
+with col1:
+    st.header('输入')
+    input_text = st.text_area("输入 LaTeX 文本", height=400)
 
-    return '\n'.join(result)
-
-updated_latex_text = replace_captions(latex_text)
-print(updated_latex_text)
+with col2:
+    st.header('输出')
+    if input_text:
+        output_text = parse(input_text)
+        st.text_area("输出 LaTeX 文本", value=output_text, height=400)
