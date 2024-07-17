@@ -12,15 +12,15 @@
 
 测试损失在训练的前 1500 步中下降，之后又有所上升。此时，测试误差率基本稳定，模型以更高的自信度重复犯同样的错误。这降低了正确答案的概率，从而增加了负对数似然值。这种增加的自信度是 softmax 函数一个副作用，为了让训练数据的概率趋向于 1（参见图 5.10），预 softmax 激活值被推向越来越极端的值。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter8/PerfMNIST1D.png}
 \caption{Figure8.1}
 \end{figure}
 
-`图 8.1 MNIST-1D。a) 以 0–9 十个数字为基础构建的十类 (y ∈ {0, . . . , 9}) 模板示例。b) 通过对一个模板进行随机变换并 c) 加入噪声，生成训练样本 x。d) 接着，对变换后的模板在 40 个垂直位置进行水平偏移采样。据 (Greydanus, 2020) 改编。`
+`图 8.1 MNIST-1D。a) 以 0–9 十个数字为基础构建的十类 \((y \in {0, . . . , 9})\) 模板示例。b) 通过对一个模板进行随机变换并 c) 加入噪声，生成训练样本 x。d) 接着，对变换后的模板在 40 个垂直位置进行水平偏移采样。据 (Greydanus, 2020) 改编。`
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter8/PerfMNIST1DResults.png}
 \caption{Figure8.2}
@@ -30,27 +30,27 @@
 \section{错误的来源}
 现在，让我们关注在模型泛化失败时产生错误的根本原因。为了便于理解，我们重新考虑一个一维线性最小二乘回归问题，该问题中我们完全了解生成地面真实数据的过程。如图 8.3 所示，展示了一个近似正弦波形的函数；通过在 [0, 1] 范围内采样输入值，并经过此函数处理再加上固定方差的高斯噪声，生成了训练和测试数据。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter8/PerfDataSet.png}
 \caption{Figure8.3}
 \end{figure}
 
-`图 8.3 回归函数。实心黑线代表真实函数。为生成 I 个训练样例 {xi,yi}，将输入空间 x ∈ [0,1] 等分为 I 段，每段内按均匀分布抽取一个样本 xi，并在 xi 点评估函数后加入高斯噪声得到对应的 yi 值（灰色区域显示正负两个标准差）。测试数据采用相同方式生成。`
+`图 8.3 回归函数。实心黑线代表真实函数。为生成 I 个训练样例 {xi,yi}，将输入空间 \(x \in [0,1]\) 等分为 I 段，每段内按均匀分布抽取一个样本 xi，并在 xi 点评估函数后加入高斯噪声得到对应的 yi 值（灰色区域显示正负两个标准差）。测试数据采用相同方式生成。`
 
 我们对这些数据应用了一个简化的浅层神经网络模型（见图 8.4）。该模型的输入层到隐藏层的权重和偏置被适当选择，以确保在整个区间内函数的转折点均匀分布。若隐藏单元为 D 个，那么这些转折点将出现在 0, 1/D, 2/D,...,(D−1)/D 的位置。该模型能够表示 [0, 1] 范围内分为 D 个等大部分的任意分段线性函数。这个模型不仅易于理解，而且它还有一个优点，即可以通过封闭形式进行拟合，无需依赖随机优化算法（参见问题 8.3）。因此，我们能够保证在训练过程中找到损失函数的全局最小值。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter8/PerfModel.png}
 \caption{Figure8.4}
 \end{figure}
 
-`图 8.4 三隐藏单元的简化神经网络。a) 输入层与隐藏层之间的权重和偏置固定（表示为虚线箭头）。b–d) 权重和偏置被设定，使得隐藏单元激活函数的斜率为 1，且其断点在区间内等距分布，分别位于 x = 0, x = 1/3, 和 x = 2/3。通过调整其余参数 φ = {β, ω1, ω2, ω3}，可在 x ∈ [0,1] 范围内生成任何断点位于 1/3 和 2/3 的分段线性函数。e–g) 展示了三个参数 φ 不同值下的示例函数。`
+`图 8.4 三隐藏单元的简化神经网络。a) 输入层与隐藏层之间的权重和偏置固定（表示为虚线箭头）。b–d) 权重和偏置被设定，使得隐藏单元激活函数的斜率为 1，且其断点在区间内等距分布，分别位于 x = 0, x = 1/3, 和 x = 2/3。通过调整其余参数 \(\phi = {\beta, \omega_1, \omega_2, \omega_3}\)，可在 \(x \in [0,1]\) 范围内生成任何断点位于 1/3 和 2/3 的分段线性函数。e–g) 展示了三个参数\(\phi\)不同值下的示例函数。`
 \subsection{噪声、偏差与方差}
 模型未能泛化时的错误可以来源于三个方面：噪声、偏差和方差（参见图 8.5）：
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter8/PerfNoiseBiasVariance.png}
 \caption{Figure8.5}
@@ -135,7 +135,7 @@ f_\mu[x] = \mathbb{E}_D[f[x, \phi[D]]].\tag{8.4}
 
 图 8.6 展示了使用 6、10 和 100 个样本训练的效果。对于每种数据集大小，我们都展示了三个训练数据集的最佳拟合模型。仅用六个样本时，每次拟合的函数都相差很大：方差显著。随着样本数的增加，拟合模型变得越来越相似，方差也随之减少。总的来说，增加训练数据几乎总能提升测试表现。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter8/PerfVariance.png}
 \caption{Figure8.6}
@@ -148,7 +148,7 @@ f_\mu[x] = \mathbb{E}_D[f[x, \phi[D]]].\tag{8.4}
 
 在简化的模型中，增加容量意味着增加更多的隐藏单元，使得区间 [0, 1] 被划分成更多的线性区域。图 8.7a–c 显示，增加线性区域的数量到十，如预期那样，确实减少了偏差；模型变得足够灵活，能够更紧密地拟合真实函数。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter8/PerfBias.png}
 \caption{Figure8.7}
@@ -162,7 +162,7 @@ f_\mu[x] = \mathbb{E}_D[f[x, \phi[D]]].\tag{8.4}
 
 我们发现，随着模型容量的增加，偏差会减少，但对于固定规模的训练数据集，方差却会增加。这表明存在一个最佳容量，在这一点上，偏差不过分而方差仍然相对较小。图 8.9 通过使用图 8.8 的数据展示了随着容量增加，这些项如何在数值上变化。对于回归模型，总期望误差是偏差与方差的和，在模型容量为四（即有四个隐藏单元和四个线性区域）时，这个和最小。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter8/PerfCapacityVariance.png}
 \caption{Figure8.8}
@@ -170,7 +170,7 @@ f_\mu[x] = \mathbb{E}_D[f[x, \phi[D]]].\tag{8.4}
 
 `图 8.8 过拟合现象。a–c) 对每个包含十五个数据点的三个不同数据集，拟合了一个三区域模型。所有三种情况下的结果都相似（即方差较低）。d–f) 对相同的数据集拟合了一个十区域模型，增加的灵活性并不一定能产生更好的预测。虽然这三个模型都更好地描述了训练数据，但它们并不一定更接近于真实的底层函数（黑色曲线）。相反，它们过度拟合了数据，只是描述了噪声，而方差（拟合曲线之间的差异）更大。`
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter8/PerfBiasVarianceTradeoff.png}
 \caption{Figure8.9}
@@ -186,7 +186,7 @@ f_\mu[x] = \mathbb{E}_D[f[x, \phi[D]]].\tag{8.4}
 
 这种现象被称为“双下降”现象。对于某些数据集，如 MNIST，在原始数据中就已经存在（见图 8.10c）。而对于其他数据集，如 MNIST-1D 和 CIFAR-100（见图 8.10d），在我们向标签中添加噪声后，这种现象会显现出来或变得更加明显。曲线的前半部分被认为是“经典”或“欠参数化”阶段，后半部分则被视为“现代”或“过参数化”阶段。而在误差上升的中间部分，则被称为“临界”阶段。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter8/PerfDoubleDescent.png}
 \caption{Figure8.10}
@@ -206,7 +206,7 @@ f_\mu[x] = \mathbb{E}_D[f[x, \phi[D]]].\tag{8.4}
 
 然而，这并未解释为什么过参数化模型会产生平滑的函数。图 8.12 展示了一个简化模型（拥有 50 个隐藏单元）可以创建的三种函数。在每种情况下，模型都完美拟合了数据，因此损失为零。如果双下降的“现代”阶段是通过增加平滑性来解释的，那么是什么驱使模型趋向于这种平滑性呢？
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter8/PerfSmoothness.png}
 \caption{Figure8.11}
@@ -214,7 +214,7 @@ f_\mu[x] = \mathbb{E}_D[f[x, \phi[D]]].\tag{8.4}
 
 `图 8.11 增加容量（隐藏单元）可以实现稀疏数据点之间更加平滑的插值。a) 在这个场景中，训练数据（橙色圆圈）分布稀疏，中心区域没有数据来限制模型以模仿真实函数（黑色曲线）。b) 若我们拟合一个仅具有足够容量以适应训练数据的模型（青色曲线），模型必须调整自身以通过训练点，导致输出预测缺乏平滑性。c–f) 但是，随着我们增加更多的隐藏单元，模型能够在点之间进行更平滑的插值（每种情况下绘制了尽可能平滑的曲线）。然而，值得注意的是，模型并非一定要这样做。`
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter8/PerfSmoothness2.png}
 \caption{Figure8.12}
@@ -267,7 +267,7 @@ Bubeck \& Sellke (2021) 证明了在高维情况下，过参数化是平滑插�
 
 基于序列模型的配置（SMAC）算法（Hutter 等人，2011）能够处理连续、离散和条件参数。其基本方法是利用随机森林模拟目标函数，其中树预测的均值是对目标函数最好的估计，它们的方差代表不确定性。完全不同的方法，也能处理连续、离散和条件参数的组合，即 Tree-Parzen 估计器（Bergstra 等人，2011）。这些方法模拟了给定超参数下模型性能的概率，与之相对，Tree-Parzen 估计器模拟了给定模型性能下超参数的概率。
 
-Hyperband（Li 等人，2017b）是一种针对超参数优化的多臂老虎机策略。它假设存在计算成本低但近似的性能测量方法（例如，未完全训练完成）并且可以与预算关联（例如，固定迭代次数训练）。抽样若干随机配置并运行，直到预算耗尽。然后保留最佳的一小部分 η 运行，并将预算乘以 1/η。重复此过程直到达到最大预算。此方法的优势在于效率；对于表现不佳的配置，无需将实验进行到底。然而，每个样本的选择都是随机的，这种方式效率不高。BOHB 算法（Falkner 等人，2018）结合了 Hyperband 的效率和来自 Tree Parzen 估计器更合理的超参数选择，构建出了更优秀的方法。
+Hyperband（Li 等人，2017b）是一种针对超参数优化的多臂老虎机策略。它假设存在计算成本低但近似的性能测量方法（例如，未完全训练完成）并且可以与预算关联（例如，固定迭代次数训练）。抽样若干随机配置并运行，直到预算耗尽。然后保留最佳的一小部分 \(\eta\) 运行，并将预算乘以 \(1/\eta\)。重复此过程直到达到最大预算。此方法的优势在于效率；对于表现不佳的配置，无需将实验进行到底。然而，每个样本的选择都是随机的，这种方式效率不高。BOHB 算法（Falkner 等人，2018）结合了 Hyperband 的效率和来自 Tree Parzen 估计器更合理的超参数选择，构建出了更优秀的方法。
 /section{Problems}
 \textbf{问题 8.1} 在图 8.2 中，多类交叉熵（multiclass cross-entropy）训练损失能达到零吗？请解释你的理由。
 
@@ -293,7 +293,7 @@ Hyperband（Li 等人，2017b）是一种针对超参数优化的多臂老虎机
 
 \textbf{问题 8.9} 图 8.13c 显示了随维度增加，标准正态分布样本距离的分布情况。通过在 25、100 和 500 维度下从标准正态分布采样并绘制距离中心的直方图来验证这一现象。哪种闭式概率分布（closed-form probability distribution）描述了这些距离？
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter8/PerfTypical.png}
 \caption{Figure8.13}

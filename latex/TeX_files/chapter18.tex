@@ -13,7 +13,7 @@
 
 第 18.2 节将详细探讨编码器的特性，这些特性虽不显眼，但对学习算法至关重要。第 18.3 节将讨论解码器。第 18.4 节将推导出训练算法，而第 18.5 节将对其进行改进，使之更加实用。第 18.6 节讨论实施细节，包括如何依据文本提示来指导生成过程。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter18/DiffusionOverview.png}
 \caption{Figure18.1}
@@ -23,14 +23,21 @@
 
 \section{编码器（前向过程）}
 
-扩散或前向过程（图 18.2）将数据样例 x 映射为一系列与 x 同维度的中间变量 \(z_1, z_2, \ldots, z_T\)，过程如下： \($ \begin{align} &z_1 = \sqrt{1 - \beta_1} \cdot x + \sqrt{\beta_1} \cdot \epsilon_1 \\ &z_t = \sqrt{1 - \beta_t} \cdot z_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t \quad \forall t \in 2, \ldots, T, \end{align} \tag{18.1} \)\( 其中 \)\epsilon_t\( 是从标准正态分布中抽取的噪声。第一项逐渐减弱原始数据和已添加噪声的影响，而第二项引入更多噪声。噪声级别 \)\beta_t \in [0, 1]$ 控制噪声融合的快慢，这一系列参数被称为_噪声调度_（noise schedule）。前向过程可以等价表达为：
+扩散或前向过程（图 18.2）将数据样例 \( x \) 映射为一系列与 \( x \) 同维度的中间变量 \( z_1, z_2, \ldots, z_T \)，过程如下：
+
+\begin{align}
+&z_1 = \sqrt{1 - \beta_1} \cdot x + \sqrt{\beta_1} \cdot \epsilon_1 \\
+&z_t = \sqrt{1 - \beta_t} \cdot z_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t \quad \forall t \in \{2, \ldots, T\}, \tag{18.1}
+\end{align} 
+
+其中 \( \epsilon_t \) 是从标准正态分布中抽取的噪声。第一项逐渐减弱原始数据和已添加噪声的影响，而第二项引入更多噪声。噪声级别 \( \beta_t \in [0, 1] \) 控制噪声融合的快慢，这一系列参数被称为 \textit{噪声调度}（noise schedule）。前向过程可以等价表达为：
 
 
 
 \begin{align}
 &q(z_1|x) = \text{Norm}_{z_1} \left[ \sqrt{1 - \beta_1}, \beta_1 \right] \\
-&q(z_t|z_{t-1}) = \text{Norm}_{z_t} \left[ \sqrt{1 - \beta_{t-1}}, \beta_t \right] \quad \forall t \in \{2, \ldots, T\}.
-\end{align} \tag{18.2}
+&q(z_t|z_{t-1}) = \text{Norm}_{z_t} \left[ \sqrt{1 - \beta_{t-1}}, \beta_t \right] \quad \forall t \in \{2, \ldots, T\}. \tag{18.2}
+\end{align} 
 
 
 该过程形成了一个马尔可夫链（Markov chain），其中 \(z_t\) 的概率仅依赖于它前一变量 \(z_{t-1}\) 的值。经过足够多的步骤 \(T\)，所有原始数据的痕迹将被消除，最终 \(q(z_T|x)\) 和 \(q(z_T)\) 都会趋向于标准正态分布。
@@ -42,7 +49,7 @@ q(z_1\ldots T|x) = q(z_1|x) \prod_{t=2}^{T} q(z_t|z_{t-1}). \tag{18.3}
 \]
 
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter18/DiffusionForward2.png}
 \caption{Figure18.2}
@@ -50,13 +57,13 @@ q(z_1\ldots T|x) = q(z_1|x) \prod_{t=2}^{T} q(z_t|z_{t-1}). \tag{18.3}
 
 Figure 18.2
 \subsection{Diffusion kernel \(q(z_t|x)\)}
-为了训练解码器逆转此过程，我们对同一数据样本 \(x\) 在不同时间点 \(t\) 生成多个样本。然而，当 \(t\) 较大时，根据方程 (18.1) 顺序生成这些样本会非常耗时。幸运的是，\(q(z_t|x)\) 有一个封闭形式的解，使我们能直接从给定的初始数据点 x 抽取 \(z_t\) 样本，而不需要计算中间的变量 \(z_1 \ldots z_{t-1}\)。这称为_扩散核_（图 18.3）。 为了得出 \(q(z_t|x)\) 的表达式，让我们考虑前向过程的前两步：
+为了训练解码器逆转此过程，我们对同一数据样本 \(x\) 在不同时间点 \(t\) 生成多个样本。然而，当 \(t\) 较大时，根据方程 (18.1) 顺序生成这些样本会非常耗时。幸运的是，\(q(z_t|x)\) 有一个封闭形式的解，使我们能直接从给定的初始数据点 x 抽取 \(z_t\) 样本，而不需要计算中间的变量 \(z_1 \ldots z_{t-1}\)。这称为 扩散核（图 18.3）。 为了得出 \(q(z_t|x)\) 的表达式，让我们考虑前向过程的前两步：
 
 
 \begin{align}
 &z_1 = \sqrt{1 - \beta_1} \cdot x + \sqrt{\beta_1} \cdot \epsilon_1 \\
-&z_2 = \sqrt{1 - \beta_2} \cdot z_1 + \sqrt{\beta_2} \cdot \epsilon_2
-\end{align} \tag{18.4}
+&z_2 = \sqrt{1 - \beta_2} \cdot z_1 + \sqrt{\beta_2} \cdot \epsilon_2 \tag{18.4}
+\end{align} 
 
 
 将第一步的结果代入第二步，我们得到：
@@ -64,8 +71,8 @@ Figure 18.2
 \begin{align}
 z_2 &= \sqrt{1 - \beta_2} \left( \sqrt{1 - \beta_1} \cdot x + \sqrt{\beta_1} \cdot \epsilon_1 \right) + \sqrt{\beta_2} \cdot \epsilon_2 \\
 &= \sqrt{1 - \beta_2} \left( \sqrt{1 - \beta_1} \cdot x + \sqrt{1 - (1 - \beta_1)} \cdot \epsilon_1 \right) + \sqrt{\beta_2} \cdot \epsilon_2 \\
-&= \sqrt{(1 - \beta_2)(1 - \beta_1)} \cdot x + \sqrt{\beta_2 - (1 - \beta_2)(1 - \beta_1)} \cdot \epsilon_1 + \sqrt{\beta_2} \cdot \epsilon_2.
-\end{align} \tag{18.5}
+&= \sqrt{(1 - \beta_2)(1 - \beta_1)} \cdot x + \sqrt{\beta_2 - (1 - \beta_2)(1 - \beta_1)} \cdot \epsilon_1 + \sqrt{\beta_2} \cdot \epsilon_2. \tag{18.5}
+\end{align} 
 
 
 最后两项分别是均值为零的正态分布中独立抽取的样本，其方差为 \(1 - \beta_2 - (1 - \beta_2)(1 - \beta_1)\) 和 \(\beta_2\)。这些项的和的均值为零，其方差为各部分方差之和（参见问题 18.2）。因此：
@@ -92,7 +99,7 @@ q(z_t|x) = \text{Norm}_{z_t} \left[ \sqrt{\alpha_t} \cdot x, 1 - \alpha_t \right
 对于任何初始数据点 x，变量 \(z_t\) 遵循均值和方差已知的正态分布。因此，如果我们不考虑中间变量 \(z_1 \ldots z_{t-1}\) 的演化历史，生成 \(q(z_t|x)\) 的样本就变得简单。
 
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter18/DiffusionKernel.png}
 \caption{Figure18.3}
@@ -106,8 +113,8 @@ q(z_t|x) = \text{Norm}_{z_t} \left[ \sqrt{\alpha_t} \cdot x, 1 - \alpha_t \right
 
 \begin{align}
 q(z_t) &= \int \int \ldots \int q(z_1\ldots t, x) dz_1\ldots dz_{t-1}dx \\
-&= \int \int \ldots \int q(z_1\ldots t|x) Pr(x) dz_1\ldots dz_{t-1}dx,
-\end{align} \tag{18.9}
+&= \int \int \ldots \int q(z_1\ldots t|x) Pr(x) dz_1\ldots dz_{t-1}dx, \tag{18.9}
+\end{align} 
 
 
 其中 \(q(z_1\ldots t|x)\) 的定义见方程 18.3。
@@ -120,7 +127,7 @@ q(z_t) = \int q(z_t|x) Pr(x)dx. \tag{18.10}
 
 所以，如果我们不断从数据分布 \(Pr(x)\) 中取样，并在每个样本上应用扩散核 \(q(z_t|x)\)，就能得到边际分布 \(q(z_t)\)（见图 18.4）。然而，由于不知道原始数据分布 \(Pr(x)\)，边际分布不能用封闭形式表示。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter18/DiffusionDensity.png}
 \caption{Figure18.3}
@@ -139,7 +146,7 @@ q(z_{t-1}|z_t) = \frac{q(z_t|z_{t-1})q(z_{t-1})}{q(z_t)} \tag{18.11}
 
 对于这个简单的一维例子，可以通过数值方法评估 \(q(z_{t-1}|z_t)\)（参见图 18.5）。通常情况下，这类分布形态较为复杂，但它们经常可以用正态分布进行良好的近似。这一点对我们来说极为重要，因为在构建解码器时，我们会用正态分布来近似这一逆过程。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter18/DiffusionReverse.png}
 \caption{Figure18.4}
@@ -159,8 +166,8 @@ q(z_{t-1}|z_t) = \frac{q(z_t|z_{t-1})q(z_{t-1})}{q(z_t)} \tag{18.11}
 q(z_{t-1}|z_t, x) &= \frac{q(z_t|z_{t-1}, x)q(z_{t-1}|x)}{q(z_t|x)} \\
 &\propto q(z_t|z_{t-1})q(z_{t-1}|x) \\
 &= \text{Norm}_{z_t} \left[ \sqrt{1 - \beta_t \cdot z_{t-1}, \beta_t} \right] \text{Norm}_{z_{t-1}} \left[ \sqrt{\alpha_{t-1} \cdot x, (1 - \alpha_{t-1})} \right] \\
-&\propto \text{Norm}_{z_{t-1}} \left[ \frac{1}{\sqrt{1 - \beta_t}} z_t, \frac{\beta_t}{1 - \beta_t} \right] \text{Norm}_{z_{t-1}} \left[ \sqrt{\alpha_{t-1} \cdot x, (1 - \alpha_{t-1})} \right]
-\end{align} \tag{18.12}
+&\propto \text{Norm}_{z_{t-1}} \left[ \frac{1}{\sqrt{1 - \beta_t}} z_t, \frac{\beta_t}{1 - \beta_t} \right] \text{Norm}_{z_{t-1}} \left[ \sqrt{\alpha_{t-1} \cdot x, (1 - \alpha_{t-1})} \right] \tag{18.12}
+\end{align} 
 
 
 在第一行和第二行之间，我们依据扩散过程是马尔可夫的，因此 \(q(z_t|z_{t-1}, x) = q(z_t|z_{t-1})\)，所有关于 \(z_t\) 的信息均由 \(z_{t-1}\) 表达。在第三行和第四行之间，我们应用高斯变量变换公式：
@@ -186,7 +193,7 @@ q(z_{t-1}|z_t, x) = \text{Norm}_{z_{t-1}} \left[
 
 需要注意的是，方程 18.12、18.13 和 18.14 中的比例常数最终必须相互抵消，因为最终结果是一个已正确归一化的概率分布。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter18/DiffusionReverseConditional.png}
 \caption{Figure18.6}
@@ -201,8 +208,8 @@ q(z_{t-1}|z_t, x) = \text{Norm}_{z_{t-1}} \left[
 \begin{align}
 &Pr(z_T) = \text{Norm}_{z_T}[0, I] \\
 &Pr(z_{t-1}|z_t, \phi_t) = \text{Norm}_{z_{t-1}}[f_t[z_t, \phi_t], \sigma_t^2] \\
-&Pr(x|z_1, \phi_1) = \text{Norm}_{x}[f_1[z_1, \phi_1], \sigma_1^2],
-\end{align} \tag{18.16}
+&Pr(x|z_1, \phi_1) = \text{Norm}_{x}[f_1[z_1, \phi_1], \sigma_1^2], \tag{18.16}
+\end{align} 
 
 
 其中 \(f_t[z_t, \phi_t]\) 代表一个神经网络，用于计算从 \(z_t\) 映射到 \(z_{t-1}\) 的正态分布的均值。这里的 \(\{\sigma_t^2\}\) 是预先确定的。如果扩散过程的超参数 \(\beta_t\) 接近于零（且时间步长 \(T\) 足够大），这种正态近似是可行的。
@@ -237,8 +244,8 @@ Pr(x|\phi_1...T) = \int Pr(x, z_1...T|\phi_1...T)dz_1...T. \tag{18.18}
 \begin{align}
 \log \left[ Pr(x|\phi_1...T) \right] &= \log \left[ \int Pr(x, z_1...T|\phi_1...T)dz_1...T \right] \\
 &= \log \left[ \int \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} q(z_1...T|x) dz_1...T \right] \\
-&\geq \int q(z_1...T|x) \log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] dz_1...T.
-\end{align} \tag{18.20}
+&\geq \int q(z_1...T|x) \log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] dz_1...T. \tag{18.20}
+\end{align} 
 
 
 从而得到证据下界（ELBO）：
@@ -256,8 +263,8 @@ Pr(x|\phi_1...T) = \int Pr(x, z_1...T|\phi_1...T)dz_1...T. \tag{18.18}
 
 \begin{align}
 \log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] &= \log \left[ \frac{Pr(x|z_1, \phi_1) \prod_{t=2}^{T} Pr(z_{t-1}|z_t, \phi_t) \cdot Pr(z_T)}{q(z_1|x) \prod_{t=2}^{T} q(z_t|z_{t-1})} \right] \\
-&= \log \left[ \frac{Pr(x|z_1, \phi_1)}{q(z_1|x)} \right] + \log \left[ \prod_{t=2}^{T} \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_t|z_{t-1})} \right] + \log [ Pr(z_T) ].
-\end{align} \tag{18.22}
+&= \log \left[ \frac{Pr(x|z_1, \phi_1)}{q(z_1|x)} \right] + \log \left[ \prod_{t=2}^{T} \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_t|z_{t-1})} \right] + \log [ Pr(z_T) ]. \tag{18.22}
+\end{align} 
 
 
 然后我们展开第二项的分母：
@@ -273,8 +280,8 @@ q(z_t|z_{t-1}) = q(z_t|z_{t-1}, x)q(z_t|x) / q(z_{t-1}|x), \tag{18.23}
 \begin{align}
 \log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] &= \log \left[ \frac{Pr(x|z_1, \phi_1)}{q(z_1|x)} \right] + \log \left[ \frac{\prod_{t=2}^{T} Pr(z_{t-1}|z_t, \phi_t) \cdot q(z_{t-1}|x)}{\prod_{t=2}^{T} q(z_t|z_{t-1}, x) \cdot q(z_t|x)} \right] + \log \left[ \frac{Pr(z_T)}{q(z_T|x)} \right] \\
 &= \log \left[ \frac{Pr(x|z_1, \phi_1)}{q(z_1|x)} \right] + \log \left[ \prod_{t=2}^{T} \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_t|z_{t-1}, x)} \right] + \log \left[ \frac{Pr(z_T)}{q(z_T|x)} \right] \\
-&\approx \log \left[ Pr(x|z_1, \phi_1) \right] + \sum_{t=2}^{T} \log \left[ \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_t|z_{t-1}, x)} \right],
-\end{align} \tag{18.24}
+&\approx \log \left[ Pr(x|z_1, \phi_1) \right] + \sum_{t=2}^{T} \log \left[ \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_t|z_{t-1}, x)} \right], \tag{18.24}
+\end{align} 
 
 
 其中在第二行和第三行之间的乘积比中的项 \(q(z_{t-1}|x)/q(z_t|x)\) 除了 \(q(z_1|x)\) 和 \(q(z_T|x)\) 之外都相互抵消了。第三行中的最后一项大约是 \(\log[1] = 0\)，因为前向过程的结果 \(q(z_T|x)\) 是一个标准正态分布，与先验 \(Pr(z_T)\) 相等。
@@ -305,8 +312,8 @@ ELBO 中的 KL 散度项衡量了 \(Pr(z_{t-1}|z_t, \phi_t)\) 与 \(q(z_{t-1}|z_
 
 \begin{align}
 &Pr(z_{t-1}|z_t, \phi_t) = \text{Norm}_{z_{t-1}} \left[ f_t[z_t, \phi_t], \sigma^2_t \right] \\
-&q(z_{t-1}|z_t, x) = \text{Norm}_{z_{t-1}} \left[ \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} - \frac{\sqrt{\alpha_{t-1}\beta_t}}{1 - \alpha_t} z_t + \frac{\sqrt{\alpha_{t-1}\beta_t}}{1 - \alpha_t} x, \beta_t(1 - \alpha_{t-1}) \right].
-\end{align} \tag{18.27}
+&q(z_{t-1}|z_t, x) = \text{Norm}_{z_{t-1}} \left[ \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} - \frac{\sqrt{\alpha_{t-1}\beta_t}}{1 - \alpha_t} z_t + \frac{\sqrt{\alpha_{t-1}\beta_t}}{1 - \alpha_t} x, \beta_t(1 - \alpha_{t-1}) \right]. \tag{18.27}
+\end{align} 
 
 
 两个正态分布之间的 KL 散度有一个封闭形式的表达式。此外，这个表达式中的许多项不依赖于 \(\phi\)（见问题 18.8），表达式简化为均值之间的平方差加上一个常数 C：
@@ -321,8 +328,8 @@ D_{KL} \left[ q(z_{t-1}|z_t, x)||Pr(z_{t-1}|z_t, \phi_t) \right] = \frac{1}{2\si
 
 \begin{align}
 L(\phi_{1...T}) &= \sum_{i=1}^I \left( -\log \text{Norm}_{x_i} [f_1[z_{i1}, \phi_1], \sigma^2_{1}] \right) \\ 
-+ &\sum_{t=2}^T \frac{1}{2\sigma^2_t} \left| \left| \frac{1 - \alpha_{t-1}}{1 - \alpha_t} - \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} z_{it} + \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} x_i - f_t[z_{it}, \phi_t] \right| \right|^2),
-\end{align} \tag{18.29}
++ &\sum_{t=2}^T \frac{1}{2\sigma^2_t} \left| \left| \frac{1 - \alpha_{t-1}}{1 - \alpha_t} - \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} z_{it} + \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} x_i - f_t[z_{it}, \phi_t] \right| \right|^2), \tag{18.29}
+\end{align} 
 
 
 
@@ -333,15 +340,15 @@ L(\phi_{1...T}) &= \sum_{i=1}^I \left( -\log \text{Norm}_{x_i} [f_1[z_{i1}, \phi
 
 图 18.7 和图 18.8 显示了对简单一维示例的逆过程拟合。这个模型的训练过程包括：(i) 从原始分布中获取大量样本 \(x\)，(ii) 利用扩散核在各个时间点 \(t\) 为潜变量 \(z_t\) 预测多个相应值，然后 (iii) 训练模型 \(f_t[z_t, \phi_t]\) 以最小化方程 18.29 中定义的损失函数。这些模型虽然是非参数的（即一维输入到一维输出的查找表），但更常见的是使用深度神经网络。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter18/DiffusionPredict.png}
 \caption{Figure18.7}
 \end{figure}
 
-`图 18.7 拟合模型。a) 通过首先从标准正态分布 P r(zT ) 采样（底部行），然后根据 Pr(zT−1|zT) = NormzT−1[fT[zT,φT],σT^2I] 逐步采样 zT−1 等，可以生成个体样本，直至获得 x（展示了五条路径）。估计的边缘密度（热图）是这些样本的集合，与图 18.4 中的真实边缘密度相似。b) 估计分布 Pr(zt−1|zt)（棕色曲线）是扩散模型的真实后验 q(zt−1|zt)（图 18.5 中的青色曲线）的合理近似。估计的和真实的边缘分布 Pr(zt) 和 q(zt)（分别是深蓝色和灰色曲线）也相似。`
+图 18.7 拟合模型。a) 通过首先从标准正态分布 \( P_r(z_T) \) 采样（底部行），然后根据 \( P_r(z_{T-1} | z_T) = \text{Norm}_{z_{T-1}}[f_T(z_T, \phi_T), \sigma_T^2 I] \) 逐步采样 \( z_{T-1} \) 等，可以生成个体样本，直至获得 \( x \)（展示了五条路径）。估计的边缘密度（热图）是这些样本的集合，与图 18.4 中的真实边缘密度相似。b) 估计分布 \( P_r(z_{t-1} | z_t) \)（棕色曲线）是扩散模型的真实后验 \( q(z_{t-1} | z_t) \)（图 18.5 中的青色曲线）的合理近似。估计的和真实的边缘分布 \( P_r(z_t) \) 和 \( q(z_t) \)（分别是深蓝色和灰色曲线）也相似。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter18/DiffusionResultsFinal.png}
 \caption{Figure18.8}
@@ -371,8 +378,8 @@ x = \frac{1}{\sqrt{\alpha_t}} \cdot z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{\alph
 \begin{align}
 \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t}z_t &+ \frac{\sqrt{\alpha_{t-1}}\beta_t}{1 - \alpha_t}x  \\
 &= \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t} z_t + \frac{\sqrt{\alpha_{t-1}}\beta_t}{1 - \alpha_t} \left( \frac{1}{\sqrt{\alpha_t}} z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{\alpha_t}} \epsilon \right) \\
-&= \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t} z_t + \frac{\beta_t}{1 - \alpha_t} \left( \frac{1}{\sqrt{1 - \beta_t}} z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{1 - \beta_t}} \epsilon \right),
-\end{align} \tag{18.32}
+&= \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t} z_t + \frac{\beta_t}{1 - \alpha_t} \left( \frac{1}{\sqrt{1 - \beta_t}} z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{1 - \beta_t}} \epsilon \right), \tag{18.32}
+\end{align} 
 
 
 这里我们利用了从第二行到第三行 \(\sqrt{\alpha_t} / \sqrt{\alpha_{t-1}} = \sqrt{1 - \beta_t}\) 的关系。进一步简化，可以得到：
@@ -383,8 +390,8 @@ x = \frac{1}{\sqrt{\alpha_t}} \cdot z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{\alph
 &= \left( \frac{(1 - \alpha_{t-1})(1 - \beta_t) + \beta_t}{(1 - \alpha_t)\sqrt{1 - \beta_t}} \right) z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon \\
 &= \frac{1 - \alpha_{t-1} - \beta_t + \beta_t}{(1 - \alpha_t)\sqrt{1 - \beta_t}} z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon \\
 &= \frac{1 - \alpha_{t-1}}{(1 - \alpha_t)\sqrt{1 - \beta_t}} z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon \\
-&= \frac{1}{\sqrt{1 - \beta_t}} z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon,
-\end{align} \tag{18.33}
+&= \frac{1}{\sqrt{1 - \beta_t}} z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon, \tag{18.33}
+\end{align} 
 
 
 
@@ -432,8 +439,8 @@ L(\phi_1...T) = \sum_{i=1}^{I} \sum_{t=1}^{T} \frac{\beta_t^2}{(1 - \alpha_t)(1 
 
 \begin{align}
 L(\phi_1...T) &= \sum_{i=1}^{I} \sum_{t=1}^{T} \left\| g_t[z_{it}, \phi_t] - \epsilon_{it} \right\|^2 \\
-&= \sum_{i=1}^{I} \sum_{t=1}^{T} \left\| g_t \left[ \sqrt{\alpha_t} \cdot x_i + \sqrt{1 - \alpha_t} \cdot \epsilon_{it}, \phi_t \right] - \epsilon_{it} \right\|^2,
-\end{align} \tag{18.39}
+&= \sum_{i=1}^{I} \sum_{t=1}^{T} \left\| g_t \left[ \sqrt{\alpha_t} \cdot x_i + \sqrt{1 - \alpha_t} \cdot \epsilon_{it}, \phi_t \right] - \epsilon_{it} \right\|^2,  \tag{18.39}
+\end{align} 
 
 其中我们在第二行使用扩散核（方程 18.30）重写了 \(z_t\)。
 
@@ -448,7 +455,7 @@ L(\phi_1...T) &= \sum_{i=1}^{I} \sum_{t=1}^{T} \left\| g_t[z_{it}, \phi_t] - \ep
 
 由于超参数 \(\beta_t\) 接近零时，条件概率 \(q(z_{t-1}|z_t)\) 趋近于正态分布，与解码器分布 \(Pr(z_{t-1}|z_t, \phi_t)\) 的形式相匹配，因此需要很多时间步骤。但这会导致采样过程缓慢。我们可能需要让 U-Net 模型经历高达 1000 个步骤，才能生成高质量的图像。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter18/DiffusionUNet.png}
 \caption{Figure18.9}
@@ -463,7 +470,7 @@ L(\phi_1...T) &= \sum_{i=1}^{I} \sum_{t=1}^{T} \left\| g_t[z_{it}, \phi_t] - \ep
 
 这一系列中包括*去噪扩散隐式模型*，在从 x 到 \(z_1\) 的第一步后不再随机，以及*加速采样模型*，后者的前向过程仅在时间步骤的子序列中定义。这使得逆过程可以跳过某些时间步骤，从而显著提高采样效率；当前向过程非随机时，仅需 50 个时间步骤就能产生优质样本。这比以往快了不少，但与大多数其他生成模型相比，速度仍较慢。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter18/DiffusionImplicit.png}
 \caption{Figure18.10}
@@ -487,7 +494,7 @@ z_{t-1} = \hat{z}_{t-1} + \alpha \frac{\sigma^2_t}{\sigma^2_{\epsilon}} \nabla_{
 
 第三，为生成高分辨率的图像，采用了扩散模型级联。首个模型生成低分辨率图像（可能受类别信息的引导）。随后的模型逐步生成更高分辨率的图像，通过调整低分辨率图像的大小并将其及相关类别信息融入到 U-Net 的各层实现条件化处理（见图 18.11）。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter18/DiffusionCascade.png}
 \caption{Figure18.11}
@@ -497,21 +504,21 @@ z_{t-1} = \hat{z}_{t-1} + \alpha \frac{\sigma^2_t}{\sigma^2_{\epsilon}} \nabla_{
 
 综合这些技术可以生成极高质量的图像。图 18.12 展示了基于 ImageNet 类别条件化的模型生成的图像示例，该模型能生成极其多样化的类别，这一点尤其令人印象深刻。图 18.13 则展示了一个训练以根据文本标题条件化的模型生成的图像，这些标题通过类似 BERT 的语言模型编码，并以类似时间步的方式嵌入模型中（参见图 18.9 和 18.11）。结果是非常逼真的图像，与标题高度匹配。由于扩散模型的随机性，它能够根据同一标题生成多个不同的图像。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter18/DiffusionConditional.png}
 \caption{Figure18.12}
 \end{figure}
 
-`图 18.12 使用分类器引导的条件生成。这里展示了根据不同 ImageNet 类别条件化的图像样本。同一个模型能够生成各种类别的高质量图像样本。改编自 Dhariwal & Nichol（2021）。`
+`图 18.12 使用分类器引导的条件生成。这里展示了根据不同 ImageNet 类别条件化的图像样本。同一个模型能够生成各种类别的高质量图像样本。改编自 Dhariwal \& Nichol（2021）。`
 
 \section{总结}
 扩散模型将数据示例通过一系列潜变量映射，这个过程涉及将当前的数据表示与随机噪声反复混合。在进行足够多的步骤后，数据的表示将变得无法与白噪声区分。因为这些步骤较小，每一步的逆去噪过程都可以近似为正态分布，并且可以通过深度学习模型来预测。损失函数建立在证据下界（ELBO）之上，并最终简化为最小二乘法公式。
 
 在图像生成方面，每一个去噪步骤都采用 U-Net 来实施，因此相较于其他生成模型，其采样速度较慢。为了提升生成速度，可以把扩散模型转换为确定性公式，这样少量的采样步骤就能够取得良好效果。已经提出了几种方法，用以根据类别信息、图像和文本信息来调节生成过程。结合这些方法可以得到令人印象深刻的文本到图像的合成效果。
 
-## Notes
-去噪扩散模型最早由 Sohl-Dickstein 等人于 2015 年提出，随后 Song & Ermon 在 2019 年基于得分匹配进行了早期相关研究。Ho 等人于 2020 年生成的图像样本能够与 GANs 相竞争，引发了对这一领域的广泛兴趣。本章的主要内容，包括最初的公式和参数重新设定，源自他们的工作。Dhariwal & Nichol 在 2021 年进一步提升了结果的质量，并首次证明扩散模型在 Fréchet Inception Distance 方面量化优于 GAN 模型。截至目前，Karras 等人在 2022 年实现了条件图像合成的最新进展。关于去噪扩散模型的综述可见 Croitoru 等人（2022）、Cao 等人（2022）、Luo（2022）和 Yang 等人（2022）的研究。
+\section{Notes}
+去噪扩散模型最早由 Sohl-Dickstein 等人于 2015 年提出，随后 Song \& Ermon 在 2019 年基于得分匹配进行了早期相关研究。Ho 等人于 2020 年生成的图像样本能够与 GANs 相竞争，引发了对这一领域的广泛兴趣。本章的主要内容，包括最初的公式和参数重新设定，源自他们的工作。Dhariwal \& Nichol 在 2021 年进一步提升了结果的质量，并首次证明扩散模型在 Fréchet Inception Distance 方面量化优于 GAN 模型。截至目前，Karras 等人在 2022 年实现了条件图像合成的最新进展。关于去噪扩散模型的综述可见 Croitoru 等人（2022）、Cao 等人（2022）、Luo（2022）和 Yang 等人（2022）的研究。
 
 \textbf{图像应用}：扩散模型在图像领域的应用广泛，包括文本到图像生成、图像到图像的转换任务（如上色、修复、去裁剪和恢复）、超分辨率、图像编辑、去除对抗性扰动、语义分割和医学成像。在这些应用中，扩散模型有时用作生成过程的先验知识。
 
@@ -523,7 +530,7 @@ z_{t-1} = \hat{z}_{t-1} + \alpha \frac{\sigma^2_t}{\sigma^2_{\epsilon}} \nabla_{
 
 \textbf{提高质量}：为了改进图像质量，提出了众多技术。其中包括第 18.5 节所述的网络重新参数化和随后术语的等权重处理（Ho 等人，2020）。Choi 等人（2022）进一步研究了损失函数中不同术语的权重分配。
 
-Kingma 等人（2021）通过学习去噪权重 \(\beta_t\) 提升了模型的测试对数似然度。另一方面，Nichol & Dhariwal（2021）通过除了均值之外还学习每个时间步的去噪估计方差 \(\sigma^2\)，来增强了模型性能。Bao 等人（2022）则展示了在模型训练后如何学习方差。
+Kingma 等人（2021）通过学习去噪权重 \(\beta_t\) 提升了模型的测试对数似然度。另一方面，Nichol \& Dhariwal（2021）通过除了均值之外还学习每个时间步的去噪估计方差 \(\sigma^2\)，来增强了模型性能。Bao 等人（2022）则展示了在模型训练后如何学习方差。
 
 Ho 等人（2022a）开发了产生极高分辨率图像的级联方法（见图 18.11）。为防止低分辨率图像的瑕疵扩散到高分辨率，他们引入了噪声条件增强技术，即在每个训练步骤中通过添加噪声来降低低分辨率条件图像的质量。这降低了对低分辨率图像细节的依赖，并且在推理时也采用了这种方法，通过对不同噪声水平进行评估来确定最优噪声水平。
 
@@ -541,14 +548,14 @@ Salimans 和 Ho（2022）将去噪过程中的连续步骤简化为单一步骤�
 
 在图像上进行条件化的标准做法是将（调整尺寸的）图像附加到 U-Net 的各个层。例如，Ho 等人（2022a）在超分辨率的级联生成过程中采用了此方法。Choi 等人（2021）提出了一种方法，在无条件扩散模型中通过匹配潜变量与条件图像的潜变量来实现基于图像的条件化。对于文本的条件化，标准做法是将文本嵌入线性变换至与 U-Net 层同样大小，然后以引入时间嵌入的方式加入到模型表示中（参见图 18.9）。
 
-现有扩散模型还可以微调，通过一个称为控制网络（control network）的神经网络结构，使其能够基于边缘图、关节位置、分割、深度图等进行条件化（Zhang & Agrawala, 2023）。
+现有扩散模型还可以微调，通过一个称为控制网络（control network）的神经网络结构，使其能够基于边缘图、关节位置、分割、深度图等进行条件化（Zhang \& Agrawala, 2023）。
 
 \textbf{文本到图像}：在扩散模型出现之前，基于 Transformer 的系统是最先进的文本到图像解决方案（例如 Ramesh 等人，2021）。GLIDE（Nichol 等人，2022）和 Dall·E 2（Ramesh 等人，2022）都是基于 CLIP 模型（Radford 等人，2021）的嵌入条件化，该模型为文本和图像数据生成联合嵌入。Imagen（Saharia 等人，2022b）展示了来自大语言模型的文本嵌入能产生更优结果（见图 18.13）。这些作者还提出了一个基准测试 DrawBench，用于评估模型在渲染颜色、对象数量、空间关系等方面的能力。Feng 等人（2022）开发了一种中文文本到图像模型。
 
-\textbf{与其他模型的连接}：本章将扩散模型描述为层次化变分自编码器，这种视角与本书的其他部分紧密相关。然而，扩散模型也与随机微分方程（参考图 18.5 中的路径）和得分匹配（Song & Ermon, 2019, 2020）关系密切。Song 等人（2021c）基于随机微分方程提出了一个框架，涵盖了去噪和得分匹配的理论。扩散模型还与规范化流（Zhang & Chen, 2021）有紧密联系。Yang 等人（2022）总结了扩散模型与其他生成方法之间的关系。
+\textbf{与其他模型的连接}：本章将扩散模型描述为层次化变分自编码器，这种视角与本书的其他部分紧密相关。然而，扩散模型也与随机微分方程（参考图 18.5 中的路径）和得分匹配（Song \& Ermon, 2019, 2020）关系密切。Song 等人（2021c）基于随机微分方程提出了一个框架，涵盖了去噪和得分匹配的理论。扩散模型还与规范化流（Zhang \& Chen, 2021）有紧密联系。Yang 等人（2022）总结了扩散模型与其他生成方法之间的关系。
 
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter18/DiffusionImagen.png}
 \caption{Figure18.13}
@@ -556,7 +563,7 @@ Salimans 和 Ho（2022）将去噪过程中的连续步骤简化为单一步骤�
 
 `图 18.13 使用文本提示的条件生成。这些图像是在一个级联生成框架下合成的，依赖于由大语言模型编码的文本提示进行条件化。该随机模型能生成多种与文本提示相匹配的图像。模型具有对象计数能力，并能将文本内容融入生成的图像中。改编自 Saharia 等人（2022b）。`
 
-/section{习题}
+\section{习题}
 \textbf{问题 18.1} 证明如果 \(Var[x_{t-1}] = 1\) 并且我们使用更新：
 
 \[
@@ -613,7 +620,7 @@ z_3 = \sqrt{(1 - \beta_3)(1 - \beta_2)(1 - \beta_1)} \cdot x + \sqrt{1 - (1 - \b
 D_{KL} [\text{Norm}[w, A] \| \text{Norm}[w, B]] = \frac{1}{2} \left( \text{tr}[B^{-1}A] - d + (a - b)^T B^{-1}(a - b) + \log \frac{|B|}{|A|} \right). \tag{18.47}
 \]
 
-将等式 18.27 的定义代入这个表达式，并显示参数 ϕ 依赖的唯一项是等式 18.28 的第一项。
+将等式 18.27 的定义代入这个表达式，并显示参数\(\phi\)依赖的唯一项是等式 18.28 的第一项。
 
 \textbf{Problem 18.9} 如果 \(\alpha_t = \prod_{s=1}^{t} (1 - \beta_s)\), 则:
 

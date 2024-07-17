@@ -7,10 +7,10 @@
 
 
 \begin{align}
-h_1 = a(\beta_0 + \Omega_0x) \\
-h_2 = a(\beta_1 + \Omega_1h_1) \\
-h_3 = a(\beta_2 + \Omega_2h_2) \\
-f(x, \phi) = \beta_3 + \Omega_3h_3 \tag{7.1}
+h_1 = a(\beta_0 + \Omega_0x) \notag \\
+h_2 = a(\beta_1 + \Omega_1h_1) \notag \\
+h_3 = a(\beta_2 + \Omega_2h_2) \notag \\
+f(x, \phi) = \beta_3 + \Omega_3h_3 
 \end{align} 
 
 
@@ -19,22 +19,22 @@ f(x, \phi) = \beta_3 + \Omega_3h_3 \tag{7.1}
 
 此外，我们定义了单个损失项 \(l_i\) 来返回基于模型预测 \(f(x_i, \phi)\) 对训练输入 \(x_i\) 的真实标签 \(y_i\) 的负对数似然。例如，这可能是指最小平方损失 \(l_i = (f(x_i, \phi) - y_i)^2\)。总损失是所有训练数据上这些损失项的和：
 
-\[
-L(\phi) = \sum_{i=1}^{I} l_i \tag{7.2}
-\]
+\begin{equation}
+L(\phi) = \sum_{i=1}^{I} l_i 
+\end{equation}
 
 对于训练神经网络，最常用的优化方法是随机梯度下降（SGD），通过以下方式更新参数：
 
-\[
-\phi_{t+1} \leftarrow \phi_t - \alpha \sum_{i \in B_t} \frac{\partial \mathcal{L}(i,\phi_t)}{\partial \phi} \tag{7.3}
-\]
+\begin{equation}
+\phi_{t+1} \leftarrow \phi_t - \alpha \sum_{i \in B_t} \frac{\partial \mathcal{L}(i,\phi_t)}{\partial \phi} 
+\end{equation}
 
 
 其中 \(\alpha\) 表示学习率，\(B_t\) 为迭代 \(t\) 时的批次索引。要执行此更新，必须计算每个批次中索引 \(i\) 对应的参数 \(\{\beta_k, \Omega_k\}\) 在每一层 \(k \in \{0, 1, \ldots, K\}\) 的导数：
 
-\[
-\frac{\partial l_i}{\partial \beta_k}, \quad \text{and} \quad \frac{\partial l_i}{\partial \Omega_k} \tag{7.4}
-\]
+\begin{equation}
+\frac{\partial l_i}{\partial \beta_k}, \quad \text{and} \quad \frac{\partial l_i}{\partial \Omega_k} 
+\end{equation}
 
 本章的首部分阐述了反向传播算法，该算法能够高效地计算上述导数。
 
@@ -60,27 +60,27 @@ L(\phi) = \sum_{i=1}^{I} l_i \tag{7.2}
 \section{示例}
 考虑一个含有八个标量参数 \(\phi = [\beta_0, \omega_0, \beta_1, \omega_1, \beta_2, \omega_2, \beta_3, \omega_3]\) 的模型 \(f(x_i, \phi)\)，该模型是通过组合 \(\sin[\cdot]\)、\(\exp[\cdot]\) 和 \(\cos[\cdot]\) 函数而构成的：
 
-\[
-f(x, \phi) = \beta_3 + \omega_3 \cdot \cos[\beta_2 + \omega_2 \cdot \exp[\beta_1 + \omega_1 \cdot \sin[\beta_0 + \omega_0 \cdot x]]] \tag{7.5}
-\]
+\begin{equation}
+f(x, \phi) = \beta_3 + \omega_3 \cdot \cos[\beta_2 + \omega_2 \cdot \exp[\beta_1 + \omega_1 \cdot \sin[\beta_0 + \omega_0 \cdot x]]] 
+\end{equation}
 以及一个最小二乘损失函数 \(L[\phi] = \sum_i \ell_i\)，其中的每一项定义如下：
-\[
-\ell_i = (f(x_i, \phi) - y_i)^2 \tag{7.6}
-\]
+\begin{equation}
+\ell_i = (f(x_i, \phi) - y_i)^2 
+\end{equation}
 
 其中，按照惯例，\(x_i\) 表示第 \(i\) 个训练输入，\(y_i\) 表示第 \(i\) 个训练输出。可以把这看作是一个简单的神经网络，它具有单个输入、单个输出、每层一个隐藏单元，并且每一层之间采用了不同的激活函数 \(\sin[\cdot]\)、\(\exp[\cdot]\) 和 \(\cos[\cdot]\)。我们的目标是计算以下导数：
 
-\[
-\frac{\partial \ell_i}{\partial \omega_0}, \frac{\partial \ell_i}{\partial \beta_1}, \frac{\partial \ell_i}{\partial \omega_1}, \frac{\partial \ell_i}{\partial \beta_2}, \frac{\partial \ell_i}{\partial \omega_2}, \frac{\partial \ell_i}{\partial \beta_3}, \text{ 和 } \frac{\partial \ell_i}{\partial \omega_3}.
-\]
+\begin{equation}
+\frac{\partial \ell_i}{\partial \omega_0}, \frac{\partial \ell_i}{\partial \beta_1}, \frac{\partial \ell_i}{\partial \omega_1}, \frac{\partial \ell_i}{\partial \beta_2}, \frac{\partial \ell_i}{\partial \omega_2}, \frac{\partial \ell_i}{\partial \beta_3}, \text{ 和 } \frac{\partial \ell_i}{\partial \omega_3}. \notag
+\end{equation}
 
 虽然我们理论上可以通过手工求解这些导数的表达式并直接计算它们，但是部分导数表达式的复杂度相当高。举个例子：
 
-\[
-\frac{\partial \ell_i}{\partial \omega_0} = -2 \left[ (\beta_3 + \omega_3 \cdot \cos[\beta_2 + \omega_2 \cdot \exp[\beta_1 + \omega_1 \cdot \sin[\beta_0 + \omega_0 \cdot x_i]]] - y_i) \right. \\
-\cdot \omega_1 \omega_2 \omega_3 \cdot x_i \cdot \cos[\beta_0 + \omega_0 \cdot x_i] \cdot \exp[\beta_1 + \omega_1 \cdot \sin[\beta_0 + \omega_0 \cdot x_i]] \\
-\left. \cdot \sin[\beta_2 + \omega_2 \cdot \exp[\beta_1 + \omega_1 \cdot \sin[\beta_0 + \omega_0 \cdot x_i]]] \right] \tag{7.7}
-\]
+\begin{align}
+\frac{\partial \ell_i}{\partial \omega_0} &= -2 \left[ (\beta_3 + \omega_3 \cdot \cos[\beta_2 + \omega_2 \cdot \exp[\beta_1 + \omega_1 \cdot \sin[\beta_0 + \omega_0 \cdot x_i]]] - y_i) \right. \notag \\
+& \cdot \omega_1 \omega_2 \omega_3 \cdot x_i \cdot \cos[\beta_0 + \omega_0 \cdot x_i] \cdot \exp[\beta_1 + \omega_1 \cdot \sin[\beta_0 + \omega_0 \cdot x_i]] \notag \\
+& \left. \cdot \sin[\beta_2 + \omega_2 \cdot \exp[\beta_1 + \omega_1 \cdot \sin[\beta_0 + \omega_0 \cdot x_i]]] \right] 
+\end{align}
 
 这些表达式的推导和编码不仅容易出错，而且未能充分利用其中的重复性元素；值得注意的是，三个指数函数项实际上是一致的。
 
@@ -90,16 +90,16 @@ f(x, \phi) = \beta_3 + \omega_3 \cdot \cos[\beta_2 + \omega_2 \cdot \exp[\beta_1
 
 
 
-\begin{align*}
-f_0 &= \beta_0 + \omega_0 \cdot x_i \\
-h_1 &= \sin[f_0] \\
-f_1 &= \beta_1 + \omega_1 \cdot h_1 \\
-h_2 &= \exp[f_1] \\
-f_2 &= \beta_2 + \omega_2 \cdot h_2 \\
-h_3 &= \cos[f_2] \\
-f_3 &= \beta_3 + \omega_3 \cdot h_3 \\
-\ell_i &= (f_3 - y_i)^2. \tag{7.8}
-\end{align*} 
+\begin{align}
+f_0 &= \beta_0 + \omega_0 \cdot x_i \notag \\
+h_1 &= \sin[f_0] \notag \\
+f_1 &= \beta_1 + \omega_1 \cdot h_1 \notag \\
+h_2 &= \exp[f_1] \notag \\
+f_2 &= \beta_2 + \omega_2 \cdot h_2 \notag \\
+h_3 &= \cos[f_2] \notag \\
+f_3 &= \beta_3 + \omega_3 \cdot h_3 \notag \\
+\ell_i &= (f_3 - y_i)^2. 
+\end{align} 
 
 
 我们计算并存储了中间变量 \(f_k\) 和 \(h_k\)（图 7.3）的值。
@@ -108,55 +108,55 @@ f_3 &= \beta_3 + \omega_3 \cdot h_3 \\
 \textbf{第一次反向传播：} 接下来，我们计算损失函数 \(\ell_i\) 对这些中间变量的偏导数，计算顺序与它们被计算出来的顺序相反：
 
 
-\[
-\frac{\partial \ell_i}{\partial f_3'}, \frac{\partial \ell_i}{\partial h_3'}, \frac{\partial \ell_i}{\partial f_2'}, \frac{\partial \ell_i}{\partial h_2'}, \frac{\partial \ell_i}{\partial f_1'}, \frac{\partial \ell_i}{\partial h_1'}, \text{ and } \frac{\partial \ell_i}{\partial f_0'} \tag{7.9}
-\]
+\begin{equation}
+\frac{\partial \ell_i}{\partial f_3'}, \frac{\partial \ell_i}{\partial h_3'}, \frac{\partial \ell_i}{\partial f_2'}, \frac{\partial \ell_i}{\partial h_2'}, \frac{\partial \ell_i}{\partial f_1'}, \frac{\partial \ell_i}{\partial h_1'}, \text{ and } \frac{\partial \ell_i}{\partial f_0'} 
+\end{equation}
 
 首先计算的这个导数相对简单直接：
 
-\[
-\frac{\partial \ell_i}{\partial f_3} = 2(f_3 - y_i) \tag{7.10}
-\]
+\begin{equation}
+\frac{\partial \ell_i}{\partial f_3} = 2(f_3 - y_i) 
+\end{equation}
 
 
 接下来的导数可以通过应用链式法则进行计算：
 
-\[
-\frac{\partial \ell_i}{\partial h_3} = \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \tag{7.11}
-\]
+\begin{equation}
+\frac{\partial \ell_i}{\partial h_3} = \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} 
+\end{equation}
 
 这里探讨的是当 \(h_3\) 发生变化时，\(\ell_i\) 会如何变化。我们可以将这个问题分解为两部分：(i) \(h_3\) 发生变化导致 \(f_3\) 如何变化；以及 (ii) \(f_3\) 发生变化导致 \(\ell_i\) 如何变化。根据原始方程，\(h_3\) 的变化引起 \(f_3\) 的变化，进一步影响 \(\ell_i\)，这些导数体现了这一连锁反应的效应。值得注意的是，我们已经计算出了这些导数中的第二个，而另一个导数是 \(\beta_3 + \omega_3 \cdot h_3\) 对 \(h_3\) 的导数，即 \(\omega_3\)。我们继续这样做，计算出输出相对于这些中间量的导数（图 7.4）：
 
-\[
-\frac{\partial \ell_i}{\partial f_2} = \frac{\partial h_3}{\partial f_2} \left( \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \right), \\
-\frac{\partial \ell_i}{\partial h_2} = \frac{\partial f_2}{\partial h_2} \left( \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \right), \\
-\frac{\partial \ell_i}{\partial f_1} = \frac{\partial h_2}{\partial f_1} \left( \frac{\partial f_2}{\partial h_2} \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \right), \\
-\frac{\partial \ell_i}{\partial h_1} = \frac{\partial f_1}{\partial h_1} \left( \frac{\partial h_2}{\partial f_1} \frac{\partial f_2}{\partial h_2} \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \right), \\
-\frac{\partial \ell_i}{\partial f_0} = \frac{\partial h_1}{\partial f_0} \left( \frac{\partial f_1}{\partial h_1} \frac{\partial h_2}{\partial f_1} \frac{\partial f_2}{\partial h_2} \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \right) \tag{7.12}
-\]
+\begin{align}
+&\frac{\partial \ell_i}{\partial f_2} = \frac{\partial h_3}{\partial f_2} \left( \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \right), \notag \\
+&\frac{\partial \ell_i}{\partial h_2} = \frac{\partial f_2}{\partial h_2} \left( \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \right), \notag \\
+&\frac{\partial \ell_i}{\partial f_1} = \frac{\partial h_2}{\partial f_1} \left( \frac{\partial f_2}{\partial h_2} \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \right), \notag \\
+&\frac{\partial \ell_i}{\partial h_1} = \frac{\partial f_1}{\partial h_1} \left( \frac{\partial h_2}{\partial f_1} \frac{\partial f_2}{\partial h_2} \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \right), \notag \\
+&\frac{\partial \ell_i}{\partial f_0} = \frac{\partial h_1}{\partial f_0} \left( \frac{\partial f_1}{\partial h_1} \frac{\partial h_2}{\partial f_1} \frac{\partial f_2}{\partial h_2} \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \right) 
+\end{align}
 
 在每个案例中，我们已经在上一步骤计算出了括号内的值，最后一项则有一个简洁的公式。这些建立在先前章节观察 2（图 7.2）的基础上；通过倒序计算这些导数，我们能够复用先前计算得到的导数。
 
 
 \textbf{第二次反向传播：} 最终，我们分析改变参数 \(\beta\) 和 \(\omega\) 时，损失 \(\ell_i\) 如何相应变化。我们再次应用链式法则（图 7.5）：
 
-\[
-\frac{\partial \ell_i}{\partial \beta_k} = \frac{\partial f_k}{\partial \beta_k} \frac{\partial \ell_i}{\partial f_k}, \\
-\frac{\partial \ell_i}{\partial \omega_k} = \frac{\partial f_k}{\partial \omega_k} \frac{\partial \ell_i}{\partial f_k} \tag{7.13}
-\]
+\begin{align}
+\frac{\partial \ell_i}{\partial \beta_k} = \frac{\partial f_k}{\partial \beta_k} \frac{\partial \ell_i}{\partial f_k}, \notag \\
+\frac{\partial \ell_i}{\partial \omega_k} = \frac{\partial f_k}{\partial \omega_k} \frac{\partial \ell_i}{\partial f_k} 
+\end{align}
 
 对于每个案例，右侧的第二项已在方程式 7.12 中计算得出。当 \(k > 0\)，我们得到 \(f_k = \beta_k + \omega_k \cdot h_k\)，因此：
 
-\[
-\frac{\partial f_k}{\partial \beta_k} = 1 \text{ and } \frac{\partial f_k}{\partial \omega_k} = h_k \tag{7.14}
-\]
+\begin{equation}
+\frac{\partial f_k}{\partial \beta_k} = 1 \text{ and } \frac{\partial f_k}{\partial \omega_k} = h_k 
+\end{equation}
 
 
 这与上一节的第一观察点一致；\(\omega_k\) 的改变对效果与源变量 \(h_k\) 的值呈正比（该值在前向传播中已被记录）。从项 \(f_0 = \beta_0 + \omega \cdot x_i\) 得到的最终导数为：
 
-\[
-\frac{\partial f_0}{\partial \beta_0} = 1 \text{ and } \frac{\partial f_0}{\partial \omega_0} = x_i \tag{7.15}
-\]
+\begin{equation}
+\frac{\partial f_0}{\partial \beta_0} = 1 \text{ and } \frac{\partial f_0}{\partial \omega_0} = x_i 
+\end{equation}
 
 反向传播不仅过程简化，相较于单独计算每个导数（如方程 7.7.1）的方式，效率更高。
 
@@ -166,48 +166,48 @@ f_3 &= \beta_3 + \omega_3 \cdot h_3 \\
 \textbf{前向传播过程：} 我们将网络描述为一系列连续的计算步骤：
 
 
-\begin{align*}
-f_0 &= \beta_0 + \Omega_0x_i \\
-h_1 &= a[f_0] \\
-f_1 &= \beta_1 + \Omega_1h_1 \\
-h_2 &= a[f_1] \\
-f_2 &= \beta_2 + \Omega_2h_2 \\
-h_3 &= a[f_2] \\
-f_3 &= \beta_3 + \Omega_3h_3 \\
-\ell_i &= l[f_3, y_i], \tag{7.16}
-\end{align*} 
+\begin{align}
+f_0 &= \beta_0 + \Omega_0x_i \notag \\
+h_1 &= a[f_0] \notag \\
+f_1 &= \beta_1 + \Omega_1h_1 \notag \\
+h_2 &= a[f_1] \notag \\
+f_2 &= \beta_2 + \Omega_2h_2 \notag \\
+h_3 &= a[f_2] \notag \\
+f_3 &= \beta_3 + \Omega_3h_3 \notag \\
+\ell_i &= l[f_3, y_i], 
+\end{align} 
 
 
 这里 \(f_{k-1}\) 指的是第 \(k^{th}\) 隐藏层的预激活值（即在 ReLU 函数 \(a^{[l]}\) 应用之前的值），\(h_k\) 包含了第 \(k^{th}\) 隐藏层的激活值（即在 ReLU 函数应用之后的值）。项 \(l_{f_3, y}\) 表示损失函数（如最小二乘损失或二元交叉熵损失）。在前向传播阶段，我们按顺序完成这些计算并记录所有中间结果。
 
 \textbf{第一次反向传播过程：} 现在，我们探讨修改预激活 \(f_0, f_1, f_2\) 时，损失如何变化。通过应用链式法则，我们得到了损失 \(\ell_i\) 相对于 \(f_2\) 的偏导数的表达方式：
 
-\[
-\frac{\partial \ell_i}{\partial f_2} = \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \tag{7.17}
-\]
+\begin{equation}
+\frac{\partial \ell_i}{\partial f_2} = \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} 
+\end{equation}
 
 
 右侧的三个项的维度分别是 \(D_3 \times D_3, D_3 \times D_f\) 和 \(D_f \times 1\)，这里 \(D_3\) 表示第三层隐藏单元的数目，\(D_f\) 表示模型输出 \(f_3\) 的维度。
 
 类似地，我们也可以分析当改变 \(f_1\) 和 \(f_0\) 时，损失的变化情况：
 
-\[
-\frac{\partial \ell_i}{\partial f_1} = \frac{\partial h_2}{\partial f_1}  \frac{\partial f_2}{\partial h_2}\left( \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \right) \tag{7.18}
-\]
+\begin{equation}
+\frac{\partial \ell_i}{\partial f_1} = \frac{\partial h_2}{\partial f_1}  \frac{\partial f_2}{\partial h_2}\left( \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \right) 
+\end{equation}
 
 
-\[
-\frac{\partial \ell_i}{\partial f_0} = \frac{\partial h_1}{\partial f_0} \frac{\partial f_1}{\partial h_1} \left( \frac{\partial h_2}{\partial f_1} \frac{\partial f_2}{\partial h_2} \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \right) \tag{7.19}
-\]
+\begin{equation}
+\frac{\partial \ell_i}{\partial f_0} = \frac{\partial h_1}{\partial f_0} \frac{\partial f_1}{\partial h_1} \left( \frac{\partial h_2}{\partial f_1} \frac{\partial f_2}{\partial h_2} \frac{\partial h_3}{\partial f_2} \frac{\partial f_3}{\partial h_3} \frac{\partial \ell_i}{\partial f_3} \right) 
+\end{equation}
 
 请注意，每种情况下，括号中的内容都已在前一步计算完成。通过反向遍历网络，我们可以复用先前的计算结果。此外，这些计算项本身都相对简单。从方程 7.17 的右侧向前回溯时，我们得到：
 - 损失 \(\ell_i\) 对网络输出 \(f_3\) 的偏导数 \(\partial \ell_i/\partial f_3\) 取决于损失函数，但它通常有一个简单的公式形式。
 - 网络输出 \(f_3\) 相对于隐藏层 \(h_3\) 的偏导数 \(\partial f_3/\partial h_3\) 为：
 
 
-\[
-\frac{\partial f_3}{\partial h_3} = \frac{\partial}{\partial h_3} (\beta_3 + \Omega_3 h_3) = \Omega_3^T  \tag{7.20}
-\]
+\begin{equation}
+\frac{\partial f_3}{\partial h_3} = \frac{\partial}{\partial h_3} (\beta_3 + \Omega_3 h_3) = \Omega_3^T  
+\end{equation}
 
 如果你对矩阵微积分不够熟悉，这个结果可能不是很直观。这一问题在问题 7.6 中有所探讨。
 
@@ -220,9 +220,9 @@ f_3 &= \beta_3 + \Omega_3h_3 \\
 
 
 \begin{align}
-\frac{\partial \ell_i}{\partial \beta_k} &= \frac{\partial f_k}{\partial \beta_k} \frac{\partial \ell_i}{\partial f_k} \\
-&= \frac{\partial}{\partial \beta_k} (\beta_k + \Omega_k h_k) \frac{\partial \ell_i}{\partial f_k} \\
-&= \frac{\partial \ell_i}{\partial f_k} \tag{7.21}
+\frac{\partial \ell_i}{\partial \beta_k} &= \frac{\partial f_k}{\partial \beta_k} \frac{\partial \ell_i}{\partial f_k} \notag \\
+&= \frac{\partial}{\partial \beta_k} (\beta_k + \Omega_k h_k) \frac{\partial \ell_i}{\partial f_k} \notag \\
+&= \frac{\partial \ell_i}{\partial f_k} 
 \end{align}
 
 
@@ -232,9 +232,9 @@ f_3 &= \beta_3 + \Omega_3h_3 \\
 
 
 \begin{align}
-\frac{\partial \ell_i}{\partial \Omega_k} &= \frac{\partial f_k}{\partial \Omega_k} \frac{\partial \ell_i}{\partial f_k} \\
-&= \frac{\partial}{\partial \Omega_k} (\beta_k + \Omega_k h_k) \frac{\partial \ell_i}{\partial f_k} \\
-&= \frac{\partial \ell_i}{\partial f_k} h_k^T \tag{7.22}
+\frac{\partial \ell_i}{\partial \Omega_k} &= \frac{\partial f_k}{\partial \Omega_k} \frac{\partial \ell_i}{\partial f_k} \notag \\
+&= \frac{\partial}{\partial \Omega_k} (\beta_k + \Omega_k h_k) \frac{\partial \ell_i}{\partial f_k} \notag \\
+&= \frac{\partial \ell_i}{\partial f_k} h_k^T 
 \end{align}
 
 
@@ -244,26 +244,26 @@ f_3 &= \beta_3 + \Omega_3h_3 \\
 
 
 \begin{align}
-&f_0 = \beta_0 + \Omega_0 x_i \\
-&h_k = a[f_{k-1}] \quad k \in \{1,2,...,K\} \\
-&f_k = \beta_k + \Omega_k h_k. \quad k \in \{1,2,...,K\} \tag{7.23}
+&f_0 = \beta_0 + \Omega_0 x_i \notag \\
+&h_k = a[f_{k-1}] \quad k \in \{1,2,...,K\} \notag \\
+&f_k = \beta_k + \Omega_k h_k. \quad k \in \{1,2,...,K\} 
 \end{align} 
 
 \textbf{反向传播过程：} 我们从损失函数 \(\ell_i\) 相对于网络输出 \(f_K\) 的偏导数 \(\partial \ell_i/\partial f_K\) 开始，逆向遍历网络：
 
 
 \begin{align}
-&\frac{\partial \ell_i}{\partial \beta_k} = \frac{\partial \ell_i}{\partial f_k} \\
-&\frac{\partial \ell_i}{\partial \Omega_k} = \frac{\partial \ell_i}{\partial f_k} h_k^T \\
-&\frac{\partial \ell_i}{\partial f_{k-1}} = \mathbf{1}[f_{k-1} > 0] \odot \left( \Omega_k^T \frac{\partial \ell_i}{\partial f_k} \right)  \tag{7.24}
+&\frac{\partial \ell_i}{\partial \beta_k} = \frac{\partial \ell_i}{\partial f_k} \notag \\
+&\frac{\partial \ell_i}{\partial \Omega_k} = \frac{\partial \ell_i}{\partial f_k} h_k^T \notag \\
+&\frac{\partial \ell_i}{\partial f_{k-1}} = \mathbf{1}[f_{k-1} > 0] \odot \left( \Omega_k^T \frac{\partial \ell_i}{\partial f_k} \right)  
 \end{align} 
 
 这里，\(\odot\) 代表逐元素乘法，\(\mathbf{1}[f_{k-1} > 0]\) 是一个向量，其在 \(f_{k-1}\) 大于零的位置为 1，其余为 0。最终，我们求出第一组偏置和权重的偏导数：
 
 
 \begin{align}
-&\frac{\partial \ell_i}{\partial \beta_0} = \frac{\partial \ell_i}{\partial f_0} \\
-&\frac{\partial \ell_i}{\partial \Omega_0} = \frac{\partial \ell_i}{\partial f_0} x_i^T \tag{7.25}
+&\frac{\partial \ell_i}{\partial \beta_0} = \frac{\partial \ell_i}{\partial f_0} \notag \\
+&\frac{\partial \ell_i}{\partial \Omega_0} = \frac{\partial \ell_i}{\partial f_0} x_i^T 
 \end{align} 
 
 
@@ -287,8 +287,8 @@ f_3 &= \beta_3 + \Omega_3h_3 \\
 
 
 \begin{align}
-f_k &= \beta_k + \Omega_k h_k \\
-&= \beta_k + \Omega_k a[h_{k-1}] \tag{7.26}
+f_k &= \beta_k + \Omega_k h_k \notag \\
+&= \beta_k + \Omega_k a[h_{k-1}] 
 \end{align}
 
 
@@ -307,8 +307,8 @@ f_k &= \beta_k + \Omega_k h_k \\
 
 
 \begin{align}
-&h = a[f], \\
-&f' = \beta + \Omega h \tag{7.27}
+&h = a[f], \notag \\
+&f' = \beta + \Omega h 
 \end{align} 
 
 
@@ -321,10 +321,10 @@ f_k &= \beta_k + \Omega_k h_k \\
 
 
 \begin{align}
-E[f_i^\prime] &= E\left[\beta_i + \sum_{j=1}^{D_h} \Omega_{ij}h_j \right] \\
-&= E[\beta_i] + \sum_{j=1}^{D_h} E[\Omega_{ij}h_j] \\
-&= E[\beta_i] + \sum_{j=1}^{D_h} E[\Omega_{ij}] E[h_j] \\
-&= 0 + \sum_{j=1}^{D_h} 0 \cdot E[h_j] = 0 , \tag{7.28}
+E[f_i^\prime] &= E\left[\beta_i + \sum_{j=1}^{D_h} \Omega_{ij}h_j \right] \notag  \\
+&= E[\beta_i] + \sum_{j=1}^{D_h} E[\Omega_{ij}h_j] \notag \\
+&= E[\beta_i] + \sum_{j=1}^{D_h} E[\Omega_{ij}] E[h_j] \notag \\
+&= 0 + \sum_{j=1}^{D_h} 0 \cdot E[h_j] = 0 , 
 \end{align}
 
 
@@ -335,11 +335,11 @@ E[f_i^\prime] &= E\left[\beta_i + \sum_{j=1}^{D_h} \Omega_{ij}h_j \right] \\
 
 
 \begin{align}
-\sigma_{f'}^2 &= E[f_i'^2] - E[f_i']^2 \\
-&= E\left[\left(\beta_i + \sum_{j=1}^{D_h} \Omega_{ij}h_j \right)^2\right] - 0 \\
-&= E\left[\left( \sum_{j=1}^{D_h} \Omega_{ij}h_j \right)^2\right] \\
-&= \sum_{j=1}^{D_h} E[\Omega_{ij}^2] E[h_j^2] \\
-&= \sum_{j=1}^{D_h} \sigma^2 E[h_j^2] = \sigma^2 \sum_{j=1}^{D_h} E[h_j^2], \tag{7.29}
+\sigma_{f'}^2 &= E[f_i'^2] - E[f_i']^2 \notag \\
+&= E\left[\left(\beta_i + \sum_{j=1}^{D_h} \Omega_{ij}h_j \right)^2\right] - 0 \notag \\
+&= E\left[\left( \sum_{j=1}^{D_h} \Omega_{ij}h_j \right)^2\right] \notag \\
+&= \sum_{j=1}^{D_h} E[\Omega_{ij}^2] E[h_j^2] \notag \\
+&= \sum_{j=1}^{D_h} \sigma^2 E[h_j^2] = \sigma^2 \sum_{j=1}^{D_h} E[h_j^2], 
 \end{align} 
 
 
@@ -348,32 +348,32 @@ E[f_i^\prime] &= E\left[\beta_i + \sum_{j=1}^{D_h} \Omega_{ij}h_j \right] \\
 在假设预激活 \(f_j\) 的输入分布在零点对称的前提下，一半的预激活值会被 ReLU 函数设置为零，这意味着隐藏单元的第二矩 \(E[h_j^2]\) 将是 \(f_j\) 的方差 \(\sigma^2\) 的一半（参考问题 7.14）：
 
 
-\[
-\sigma_{f'}^2 = \sigma_\Omega^2 \sum_{j=1}^{D_h} \frac{\sigma_f^2}{2} = \frac{1}{2} D_h\sigma_\Omega^2\sigma_f^2. \tag{7.30}
-\]
+\begin{equation}
+\sigma_{f'}^2 = \sigma_\Omega^2 \sum_{j=1}^{D_h} \frac{\sigma_f^2}{2} = \frac{1}{2} D_h\sigma_\Omega^2\sigma_f^2. 
+\end{equation}
 
 这也就意味着，若我们想让后续预激活值 \(f'\) 的方差 \(\sigma_{f'}^2\) 在前向传播过程中保持与原始预激活值 \(f\) 的方差 \(\sigma_f^2\) 相等，那么我们需要设定：
 
 
-\[
-\sigma_{f'}^2 = \frac{2}{D_h} \tag{7.31}
-\]
+\begin{equation}
+\sigma_{f'}^2 = \frac{2}{D_h} 
+\end{equation}
 
 其中 \(D_h\) 是应用权重的原始层的维度。这种初始化方法被称为 He 初始化。
 
 \subsection{反向传播的初始化}
 一个相似的论证说明了反向传播期间梯度 \(\frac{\partial l}{\partial f_k}\) 的方差的变化情况。在反向传播过程中，我们将其与权重矩阵的转置 \(\Omega^T\) 相乘（见方程 7.24），因此相应的表达式变为：
-\[
-\sigma^2_n = \frac{2}{D_{h'}}, \tag{7.32}
-\]
+\begin{equation}
+\sigma^2_n = \frac{2}{D_{h'}}, 
+\end{equation}
 
 其中 \(D_{h'}\) 表示权重作用的那一层的维度。
 \subsection{正向传播和反向传播的初始化}
 如果权重矩阵 \( \Omega \) 不是方阵（即，两个相邻层的隐藏单元数量不同，从而 \( D_h \) 和 \( D_{h'} \) 存在差异），则无法选择一个方差同时满足方程 7.31 和 7.32。一种可行的折衷方法是采用平均数 \( (D_h + D_{h'})/2 \) 作为项数，据此得到：
 
-\[
-\sigma^2_n = \frac{4}{D_h + D_{h'}} \tag{7.33}
-\]
+\begin{equation}
+\sigma^2_n = \frac{4}{D_h + D_{h'}} 
+\end{equation}
 
 
 图 7.7 通过实验数据表明，当参数进行适当的初始化后，正向传播过程中隐藏单元的方差以及反向传播过程中梯度的方差均能保持稳定。
@@ -405,12 +405,13 @@ E[f_i^\prime] &= E\left[\beta_i + \sum_{j=1}^{D_h} \Omega_{ij}h_j \right] \\
 分布式训练：对于大型模型，内存需求或所需总时间可能对于单个处理器来说过多。在这种情况下，我们必须采用分布式训练，训练过程在多个处理器上并行进行。并行方法有几种。在数据并行中，每个处理器或节点包含模型的完整副本，但只运行批次的一部分（参见 Xing 等人，2015；Li 等人，2020b）。每个节点的梯度在中央聚合，然后重新分配回每个节点，以确保模型保持一致。这称为同步训练。聚合和重新分配梯度所需的同步可能成为性能瓶颈，这引出了异步训练的概念。例如，在 Hogwild! 算法（Recht 等人，2011）中，节点的梯度被用来更新中心模型，一旦准备好即可。更新后的模型随后重新分配给该节点。这意味着每个节点可能在任何给定时间都有略微不同版本的模型，因此梯度更新可能是陈旧的；然而，实践证明这种方法效果良好。也开发了其他去中心化方案。例如，在 Zhang 等人 (2016a) 的研究中，个别节点以环形结构互相更新。
 
 数据并行方法仍然假设整个模型可以存储在单个节点的内存中。管道模型并行不需要这样的前提，它将网络的不同层存储在不同节点上。在一种简单的实现中，第一个节点对批次的前几层进行前向传播，并将结果传递给下一个节点，该节点继续对接下来的几层进行前向传播，以此类推。在反向传递中，以相反的顺序更新梯度。这种方法的明显缺点是，每台机器在大多数时间里处于闲置状态。已经提出了各种方案来减少这种低效率，例如，让每个节点依次处理微批次（例如，Huang 等人，2019；Narayanan 等人，2021a）。最后，在张量模型并行中，单个网络层的计算在节点之间分布（例如，Shoeybi 等人，2019）。Narayanan 等人 (2021b) 提供了分布式训练方法的综述，他们结合张量、管道和数据并行训练了一个具有一万亿参数的语言模型，在 3072 个 GPU 上运行。
-/section{Problems}  
+
+\section{Problems}  
 \textbf{问题 7.1} 一个包含两个隐藏层，每层有两个隐藏单元的双层网络可以被定义为：
 
 \begin{align}
-y = \phi_0 &+ \phi_1a[\psi_{01} + \psi_{11}a[\theta_{01} + \theta_{11}x] + \psi_{21}a[\theta_{02} + \theta_{12}x]] \\
-&+ \phi_2a[\psi_{02} + \psi_{12}a[\theta_{01} + \theta_{11}x] + \psi_{22}a[\theta_{02} + \theta_{12}x]] \tag{7.34}
+y = \phi_0 &+ \phi_1a[\psi_{01} + \psi_{11}a[\theta_{01} + \theta_{11}x] + \psi_{21}a[\theta_{02} + \theta_{12}x]] \notag \\
+&+ \phi_2a[\psi_{02} + \psi_{12}a[\theta_{01} + \theta_{11}x] + \psi_{22}a[\theta_{02} + \theta_{12}x]] 
 \end{align} 
 
 
@@ -422,62 +423,62 @@ y = \phi_0 &+ \phi_1a[\psi_{01} + \psi_{11}a[\theta_{01} + \theta_{11}x] + \psi_
 
 \textbf{问题 7.4} 对于最小平方损失函数，计算导数 \(\partial\ell_i/\partial f(x_i, \phi)\)：
 
-\[
-\ell_i = (y_i - f(x_i, \phi))^2. \tag{7.35}
-\]
+\begin{equation}
+\ell_i = (y_i - f(x_i, \phi))^2. 
+\end{equation}
 
 \textbf{问题 7.5} 对于二分类损失函数，计算导数 \(\partial\ell_i/\partial f(x_i, \phi)\)：
 
-\[
-\ell_i = -(1 - y_i)\log [ 1 - sig[f(x_i, \phi)] ] - y_i \log [sig[f(x_i, \phi)] ] \tag{7.36}
-\]
+\begin{equation}
+\ell_i = -(1 - y_i)\log [ 1 - sig[f(x_i, \phi)] ] - y_i \log [sig[f(x_i, \phi)] ] 
+\end{equation}
 
 其中函数 \(sig[]\) 是逻辑 Sigmoid 函数，并被定义为：
 
-\[
-sig[z] = \frac{1}{1 + \exp[-z]}. \tag{7.37}
-\]
+\begin{equation}
+sig[z] = \frac{1}{1 + \exp[-z]}. 
+\end{equation}
 
 
 \textbf{问题 7.6} 对于 \(z = \beta + \Omega h\) 证明：
-\[
+\begin{equation*}
 \frac{\partial z}{\partial h} = \Omega^T,
-\]
+\end{equation*}
 其中 \(\frac{\partial z}{\partial h}\) 是一个矩阵，包含项 \(\frac{\partial z_i}{\partial h_j}\) 在其第 \(i\) 列和第 \(j\) 行。首先找出构成元素 \(\frac{\partial z_i}{\partial h_j}\) 的表达式，然后确定矩阵 \(\frac{\partial z}{\partial h}\) 的形式。
 
 \textbf{问题 7.7} 当使用逻辑 Sigmoid 函数（参见等式 7.37）作为激活函数时，即 \(h = sig[f]\)，计算此激活函数对 \(f\) 的导数 \(\frac{\partial h}{\partial f}\)。当输入值是 (i) 一个很大的正数和 (ii) 一个很大的负数时，这个导数会怎样变化？
 
 \textbf{问题 7.8} 考虑使用 (i) Heaviside 函数和 (ii) 矩形函数作为激活函数：
-\[
+\begin{equation}
 Heaviside[z] = \begin{cases}
 0 & z < 0 \\
 1 & z \geq 0
-\end{cases} \tag{7.38}
-\]
+\end{cases} 
+\end{equation}
 
 和
-\[
+\begin{equation}
 rect[z] = \begin{cases}
 0 & z < 0 \\
 1 & 0 \leq z \leq 1 \\
 0 & z > 1
-\end{cases} \tag{7.39}
-\]
+\end{cases} 
+\end{equation}
 
 讨论这些函数为何在使用基于梯度的优化方法训练神经网络时会产生问题。
 
 \textbf{问题 7.9} 考虑损失函数 \(\ell[f]\)，其中 \(f = \beta + \Omega h\)。我们想要找出当改变 \(\Omega\) 时，损失 \(\ell\) 如何变化，用一个包含导数 \(\partial\ell/\partial\Omega_{ij}\) 在第 \(i\) 行和第 \(j\) 列的矩阵来表示。找出 \(\partial\ell/\partial\Omega_{ij}\) 的表达式，并使用链式法则证明：
-\[
-\frac{\partial \ell}{\partial \Omega} = \frac{\partial \ell}{\partial h^T}. \tag{7.40}
-\]
+\begin{equation}
+\frac{\partial \ell}{\partial \Omega} = \frac{\partial \ell}{\partial h^T}. 
+\end{equation}
 
 \textbf{问题 7.10} 导出对于使用泄漏 ReLU 激活函数的网络反向传播算法的反向传递方程，定义为：
-\[
+\begin{equation}
 a[z] = ReLU[z] = \begin{cases}
 \alpha \cdot z & z < 0 \\
 z & z \geq 0
-\end{cases} \tag{7.41}
-\]
+\end{cases} 
+\end{equation}
 
 其中 \(\alpha\) 是一个小的正值（通常为 0.1）。
 
@@ -485,31 +486,31 @@ z & z \geq 0
 
 \textbf{问题 7.12} 本题探索在一般的有向无环图计算图上计算导数。考虑下列函数：
 
-\[
-y = \exp [\exp[x] + \exp[x^2]] + \sin[\exp[x] + \exp[x^2]]. \tag{7.42}
-\]
+\begin{equation}
+y = \exp [\exp[x] + \exp[x^2]] + \sin[\exp[x] + \exp[x^2]]. 
+\end{equation}
 
 我们可以将这个过程分解为以下几步中间计算：
 
 \begin{align}
-f_1 &= \exp[x] \\
-f_2 &= f_1^2 \\
-f_3 &= f_1 + f_2 \\
-f_4 &= \exp[f_3] \\
-f_5 &= \sin[f_3] \\
-y &= f_4 + f_5. \tag{7.43}
+f_1 &= \exp[x] \notag \\
+f_2 &= f_1^2 \notag \\
+f_3 &= f_1 + f_2 \notag \\
+f_4 &= \exp[f_3] \notag \\
+f_5 &= \sin[f_3] \notag \\
+y &= f_4 + f_5.
 \end{align} 
 
 
 相应的计算图展示在图 7.9 中。通过反向传播法计算 \(\frac{\partial y}{\partial x}\) 的导数。也就是依次计算：
 
-\[
-\frac{\partial y}{\partial f_5}, \frac{\partial y}{\partial f_4}, \frac{\partial y}{\partial f_3}, \frac{\partial y}{\partial f_2}, \frac{\partial y}{\partial f_1}, \frac{\partial y}{\partial x} \tag{7.44}
-\]
+\begin{equation}
+\frac{\partial y}{\partial f_5}, \frac{\partial y}{\partial f_4}, \frac{\partial y}{\partial f_3}, \frac{\partial y}{\partial f_2}, \frac{\partial y}{\partial f_1}, \frac{\partial y}{\partial x} 
+\end{equation}
 
 每一步均应用链式法则，以利用之前已计算出的导数。
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter7/Train2CompGraph.png}
 \caption{Figure7.9}
@@ -519,20 +520,20 @@ y &= f_4 + f_5. \tag{7.43}
 
 \textbf{问题 7.13} 对于问题 7.42 中相同的函数，通过正向传播法计算 \(\frac{\partial y}{\partial x}\) 的导数。即依次计算：
 
-\[
-\frac{\partial f_1}{\partial x}, \frac{\partial f_2}{\partial x}, \frac{\partial f_3}{\partial x}, \frac{\partial f_4}{\partial x}, \frac{\partial f_5}{\partial x}, \frac{\partial y}{\partial x} \tag{7.45}
-\]
+\begin{equation}
+\frac{\partial f_1}{\partial x}, \frac{\partial f_2}{\partial x}, \frac{\partial f_3}{\partial x}, \frac{\partial f_4}{\partial x}, \frac{\partial f_5}{\partial x}, \frac{\partial y}{\partial x} 
+\end{equation}
 
 每一步均应用链式法则，以利用之前已计算出的导数。为什么在计算深度网络的参数梯度时，我们不采用正向传播法呢？
 
 \textbf{问题 7.14} 假设有一个随机变量 \(a\)，其方差 \(\text{Var}[a] = \sigma^2\)，且其分布在均值 \(\mathbb{E}[a] = 0\) 周围对称。证明如果我们将这个变量通过 ReLU 函数处理：
 
-\[
+\begin{equation}
 b = \text{ReLU}[a] = \begin{cases}
 0 & a < 0 \\
 a & a \geq 0
-\end{cases}, \tag{7.46}
-\]
+\end{cases}, ]
+\end{equation}
 
 那么，变换后变量的二阶矩（二次方期望）为 \(\mathbb{E}[b^2] = \sigma^2/2\)。
 
@@ -544,46 +545,46 @@ a & a \geq 0
 
 \section{附图}
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter7/Train2BPIntuitions.png}
 \caption{图 7.1 反向传播过程中的正向传播阶段。目的是计算损失 l 对于每个权重（用箭头表示）和偏置（图中未展示）的导数。也就是说，我们希望了解每个参数的微小变化将如何影响损失。每个权重将其源头的隐藏单元的激活值乘以权重值，并将结果传递给目标隐藏单元。因此，任何权重的微小变化所产生的效果，都会根据源隐藏单元的激活水平而放大。比如，蓝色权重作用于第一层的第二个隐藏单元；如果该单元的激活值增加一倍，那么对蓝色权重的微小变化产生的影响也会相应增加一倍。因此，为了计算权重的导数，我们需要计算并记录下隐藏层的激活值。这一过程称为正向传播，因为它包括了按顺序执行网络方程的过程。}
 \end{figure}
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter7/Train2BPIntuitions2.png}
 \caption{图 7.2 反向传播过程中的反向传播阶段。a) 为了计算对第三层 h3（蓝色箭头指向的层）输入权重的改变如何影响损失，我们需要知道 h3 中的隐藏单元如何影响模型输出 f，以及 f 如何影响损失（橙色箭头指示的影响）。b) 为了计算对第二层 h2（蓝色箭头指向的层）输入权重的微小改变如何影响损失，我们需要了解 (i) h2 中的隐藏单元如何影响 h3，(ii) h3 如何影响 f，以及 (iii) f 如何影响损失（橙色箭头指示的影响）。c) 类似地，为了计算对第一层 h1（蓝色箭头指向的层）输入权重的微小改变如何影响损失，我们需要知道 h1 如何影响 h2，以及这些变化如何通过网络传递影响到损失（橙色箭头指示的影响）。反向传播首先在网络末端计算导数，然后逆向进行，以此利用这些计算过程中的固有重复性。}
 \end{figure}
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter7/Train2BP1.png}
 \caption{图 7.3 反向传播过程中的正向传播阶段。我们依次计算并记录每一个中间变量，直至最终计算出损失。}
 \end{figure}
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter7/Train2BP2.png}
-\caption{图 7.4 反向传播过程中的反向传播第一阶段。我们从函数的最末端开始逆向进行，计算损失 l 对于各个中间变量的导数 ∂ li /∂ f• 和 ∂ li /∂ h•。每个导数的计算都是基于前一个导数，并乘以形如 ∂fk/∂hk 或 ∂hk/∂fk−1 的项进行的。}
+\caption{图 7.4 反向传播过程中的反向传播第一阶段。我们从函数的最末端开始逆向进行，计算损失 l 对于各个中间变量的导数 \(\partial li /\partial f•\) 和 \(\partial li /\partial h•\)。每个导数的计算都是基于前一个导数，并乘以形如 \(\partial fk/\partial hk\) 或 \(\partial hk/\partial fk−1\) 的项进行的。}
 \end{figure}
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter7/Train2BP3.png}
-\caption{图 7.5 反向传播过程中的第二阶段。我们最终计算了导数 ∂ li /∂ β• 和 ∂ li /∂ ω•。每个导数的计算都是通过将 ∂li/∂fk 项乘以适当的 ∂fk/∂βk 或 ∂fk/∂ωk 来实现的。}
+\caption{图 7.5 反向传播过程中的第二阶段。我们最终计算了导数 \(\partial li /\partial \beta•\) 和 \(\partial li /\partial \omega•\)。每个导数的计算都是通过将 \(\partial li/\partial fk\) 项乘以适当的 \(\partial fk/\partial \partial \beta k\) 或 \(\partial fk/\partial \omega k\) 来实现的。}
 \end{figure}
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter7/Train2ReLUDeriv.png}
 \caption{图 7.6 整流线性单元的导数。当输入小于零时，整流线性单元（橙色曲线）输出为零；当输入大于零时，输出为输入值。其导数（青色曲线）在输入小于零时为零（因为此处斜率为零），在输入大于零时为一（因为此处斜率为一）。}
 \end{figure}
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter7/Train2Exploding.png}
 \caption{图 7.8 在随机数据上训练双层网络的示例代码。}
 \end{figure}
-图 7.7 权重初始化。设想一个具有 50 个隐藏层，每层有 Dh = 100 个隐藏单元的深度网络。该网络的 100 维输入 x 从标准正态分布中初始化，设定单一固定目标 y = 0，并使用最小二乘损失函数。偏置向量 βk 初始化为零，权重矩阵 Ωk 则采用均值为零的正态分布初始化，并设置五种不同的方差 σΩ2 ∈ {0.001, 0.01, 0.02, 0.1, 1.0}。a) 正向传播计算出的隐藏单元激活方差随网络层变化的函数图。对于 He 初始化（σΩ2 = 2/Dh = 0.02），激活方差保持稳定。但是，对于较大的值，方差迅速增加；对于较小的值，方差迅速减少（注意此处使用了对数刻度）。b) 反向传播中梯度的方差（用实线表示）延续了这一趋势；如果初始化值大于 0.02，梯度大小会随着网络反向传播而迅速增大。如果初始化值小于这个值，则梯度大小会减小。这两种情况分别被称为梯度爆炸和梯度消失问题。
+图 7.7 权重初始化。设想一个具有 50 个隐藏层，每层有 Dh = 100 个隐藏单元的深度网络。该网络的 100 维输入 x 从标准正态分布中初始化，设定单一固定目标 y = 0，并使用最小二乘损失函数。偏置向量 \(\beta k\) 初始化为零，权重矩阵 \(\Omega k\) 则采用均值为零的正态分布初始化，并设置五种不同的方差 \(\sigma \Omega^2 \in \{0.001, 0.01, 0.02, 0.1, 1.0\}\)。a) 正向传播计算出的隐藏单元激活方差随网络层变化的函数图。对于 He 初始化\((\sigma \Omega_2 = 2/Dh = 0.02)\)，激活方差保持稳定。但是，对于较大的值，方差迅速增加；对于较小的值，方差迅速减少（注意此处使用了对数刻度）。b) 反向传播中梯度的方差（用实线表示）延续了这一趋势；如果初始化值大于 0.02，梯度大小会随着网络反向传播而迅速增大。如果初始化值小于这个值，则梯度大小会减小。这两种情况分别被称为梯度爆炸和梯度消失问题。
 ![Figure7.8](figures/chapter7/code.png)
