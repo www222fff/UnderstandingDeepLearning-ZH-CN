@@ -9,25 +9,26 @@
 \begin{align}
 h_1 = a[\theta_{10}+\theta_{11}x] \notag \\
 h_2 = a[\theta_{20}+\theta_{21}x] \notag \\
-h_3 = a[\theta_{30}+\theta_{31}x] \tag{4.1}
+h_3 = a[\theta_{30}+\theta_{31}x] 
 \end{align} 
 
 以及
-\[
-y = \phi_0 + \phi_1h_1 + \phi_2h_2 + \phi_3h_3 \tag{4.2}
-\]
+\begin{equation}
+y = \phi_0 + \phi_1h_1 + \phi_2h_2 + \phi_3h_3 
+\end{equation}
 第二个网络以 y 作为输入，产生输出 \(y \prime\)，定义如下：
 
 \begin{align}
 h^\prime_1 = a[\theta^\prime_{10}+\theta^\prime_{11}y] \notag \\
 h^\prime_2 = a[\theta^\prime_{20}+\theta^\prime_{21}y] \notag \\
-h^\prime_3 = a[\theta^\prime_{30}+\theta^\prime_{31}y] \tag{4.3}
+h^\prime_3 = a[\theta^\prime_{30}+\theta^\prime_{31}y] 
 \end{align} 
 
+
 以及
-\[
-y^\prime = \phi^\prime_0 + \phi^\prime_1h^\prime_1 + \phi^\prime_2h^\prime_2 + \phi^\prime_3h^\prime_3 \tag{4.4}
-\]
+\begin{equation}
+y^\prime = \phi^\prime_0 + \phi^\prime_1h^\prime_1 + \phi^\prime_2h^\prime_2 + \phi^\prime_3h^\prime_3 
+\end{equation}
 在使用 ReLU（线性整流单元）激活函数的情况下，该模型描述了一系列分段线性函数。然而，与拥有六个隐藏单元的浅层网络相比，这种组合网络的线性区域数量潜在地更多。例如，若第一个网络产生三个正负斜率交替的区域（见图 4.1b），这意味着三个不同范围的 x 值被映射到同一输出范围 \(y \in [−1, 1]\)。接下来，从该 y 范围到 \(y \prime\) 的映射被重复应用三次。最终的效果是，第二个网络定义的函数被复制三次，从而形成九个线性区域。这一原理在更高维度同样适用（见图 4.2）。
 
 
@@ -60,7 +61,7 @@ y^\prime = \phi^\prime_0 + \phi^\prime_1h^\prime_1 + \phi^\prime_2h^\prime_2 + \
 \begin{align}
 	h'_1 = a[\psi_0 + \theta_{11} \psi_1] = a[\psi_0 + \theta_{11} \phi_0 + \theta_{11} \phi_1 h_1 + \theta_{11} \phi_2 h_2 + \theta_{11} \phi_3 h_3] \notag \\
 	h'_2 = a[\psi_0 + \theta_{21} \psi_1] = a[\psi_0 + \theta_{21} \phi_0 + \theta_{21} \phi_1 h_1 + \theta_{21} \phi_2 h_2 + \theta_{21} \phi_3 h_3] \notag \\
-	h'_3 = a[\psi_0 + \theta_{31} \psi_1] = a[\psi_0 + \theta_{31} \phi_0 + \theta_{31} \phi_1 h_1 + \theta_{31} \phi_2 h_2 + \theta_{31} \phi_3 h_3] \tag{4.5}
+	h'_3 = a[\psi_0 + \theta_{31} \psi_1] = a[\psi_0 + \theta_{31} \phi_0 + \theta_{31} \phi_1 h_1 + \theta_{31} \phi_2 h_2 + \theta_{31} \phi_3 h_3] 
 \end{align} 
 
 
@@ -70,7 +71,7 @@ y^\prime = \phi^\prime_0 + \phi^\prime_1h^\prime_1 + \phi^\prime_2h^\prime_2 + \
 \begin{align}
 	h'_1 = a[\psi_0 + \psi_{11} h_1 + \psi_{12} h_2 + \psi_{13} h_3] \notag \\
 	h'_2 = a[\psi_0 + \psi_{21} h_1 + \psi_{22} h_2 + \psi_{23} h_3] \notag \\
-	h'_3 = a[\psi_0 + \psi_{31} h_1 + \psi_{32} h_2 + \psi_{33} h_3], \tag{4.6}
+	h'_3 = a[\psi_0 + \psi_{31} h_1 + \psi_{32} h_2 + \psi_{33} h_3], 
 \end{align} 
 
 
@@ -102,7 +103,7 @@ y^\prime = \phi^\prime_0 + \phi^\prime_1h^\prime_1 + \phi^\prime_2h^\prime_2 + \
 \begin{align}
 	h_1 = a[\theta_{10} + \theta_{11}x] \notag \\
 	h_2 = a[\theta_{20} + \theta_{21}x] \notag \\
-	h_3 = a[\theta_{30} + \theta_{31}x] \tag{4.7}
+	h_3 = a[\theta_{30} + \theta_{31}x] 
 \end{align} 
 
 
@@ -112,15 +113,15 @@ y^\prime = \phi^\prime_0 + \phi^\prime_1h^\prime_1 + \phi^\prime_2h^\prime_2 + \
 \begin{align}
 	h'_1 = a[\psi_{10} + \psi_{11}h_1 + \psi_{12}h_2 + \psi_{13}h_3] \notag \\
 	h'_2 = a[\psi_{20} + \psi_{21}h_1 + \psi_{22}h_2 + \psi_{23}h_3] \notag \\
-	h'_3 = a[\psi_{30} + \psi_{31}h_1 + \psi_{32}h_2 + \psi_{33}h_3] \tag{4.8}
+	h'_3 = a[\psi_{30} + \psi_{31}h_1 + \psi_{32}h_2 + \psi_{33}h_3] 
 \end{align} 
 
 
 以及输出层：
 
-\[
-y' = \phi_0 + \phi_1h'_1 + \phi_2h'_2 + \phi_3h'_3 \tag{4.9}
-\]
+\begin{equation}
+y' = \phi_0 + \phi_1h'_1 + \phi_2h'_2 + \phi_3h'_3 
+\end{equation}
 
 基于这些方程，我们可以用另一种方式思考网络是如何构建出越来越复杂的函数（见图 4.5）：
 
@@ -137,7 +138,7 @@ y' = \phi_0 + \phi_1h'_1 + \phi_2h'_2 + \phi_3h'_3 \tag{4.9}
 \begin{align}
 	y' = \phi'_0 &+ \phi'_1 a[\psi_{10} + \psi_{11} a[\theta_{10} + \theta_{11} x]] + \psi_{12} a[\psi_{20} + \psi_{21} a[\theta_{20} + \theta_{21} x]] + \psi_{13} a[\psi_{30} + \psi_{31} a[\theta_{30} + \theta_{31} x]] \notag \\
 	&+ \psi'_{2} a[\psi_{20} + \psi_{21} a[\theta_{10} + \theta_{11} x]] + \psi_{22} a[\psi_{20} + \psi_{21} a[\theta_{20} + \theta_{21} x]] + \psi_{23} a[\psi_{30} + \psi_{31} a[\theta_{30} + \theta_{31} x]] \notag \\
-	&+ \psi'_{3} a[\psi_{30} + \psi_{31} a[\theta_{10} + \theta_{11} x]] + \psi_{32} a[\psi_{20} + \psi_{21} a[\theta_{20} + \theta_{21} x]] + \psi_{33} a[\psi_{30} + \psi_{31} a[\theta_{30} + \theta_{31} x]] \tag{4.10}
+	&+ \psi'_{3} a[\psi_{30} + \psi_{31} a[\theta_{10} + \theta_{11} x]] + \psi_{32} a[\psi_{20} + \psi_{21} a[\theta_{20} + \theta_{21} x]] + \psi_{33} a[\psi_{30} + \psi_{31} a[\theta_{30} + \theta_{31} x]] 
 \end{align} 
 
 
@@ -152,7 +153,7 @@ y' = \phi_0 + \phi_1h'_1 + \phi_2h'_2 + \phi_3h'_3 \tag{4.9}
 \section{矩阵表示法}
 我们已经了解到深度神经网络是由线性变换和激活函数交替构成的。我们也可以用矩阵表示法来等效地描述方程式 4.7 到 4.9：
 
-\[
+\begin{equation}
 \begin{bmatrix}
 	h_1' \\
 	h_2' \\
@@ -176,10 +177,9 @@ y' = \phi_0 + \phi_1h'_1 + \phi_2h'_2 + \phi_3h'_3 \tag{4.9}
 	x_2
 \end{bmatrix}
 \right),
-\tag{4.11}
-\]
+\end{equation}
 
-\[
+\begin{equation}
 \begin{bmatrix}
 	h_1' \\
 	h_2' \\
@@ -204,12 +204,11 @@ y' = \phi_0 + \phi_1h'_1 + \phi_2h'_2 + \phi_3h'_3 \tag{4.9}
 	h_3
 \end{bmatrix}
 \right),
-\tag{4.12}
-\]
+\end{equation}
 
 以及
 
-\[
+\begin{equation}
 y' = \phi_0' + 
 \begin{bmatrix}
 	\phi_1' & \phi_2' & \phi_3'
@@ -217,9 +216,9 @@ y' = \phi_0' +
 \begin{bmatrix}
 	h_1' \\
 	h_2' \\
-	h_3' \tag{4.13}
+	h_3' 
 \end{bmatrix},
-\]
+\end{equation}
 
 或者更简洁地用矩阵表示法表示为：
 
@@ -227,7 +226,7 @@ y' = \phi_0' +
 \begin{align}
 	h = a[\theta_0 + \Theta x] \notag \\
 	h' = a[\psi_0 + \Psi h] \notag \\
-	y' = \phi_0' + \phi'^T h' \tag{4.14}
+	y' = \phi_0' + \phi'^T h' 
 \end{align} 
 
 
@@ -243,7 +242,7 @@ y' = \phi_0' +
 	h_3 &= a[\beta_2 + \Omega_2 h_2] \notag \\
 	& \vdots \notag \\
 	h_K &= a[\beta_{K-1} + \Omega_{K-1}h_{K-1}] \notag \\
-	y &= \beta_K + \Omega_K h_K. \tag{4.15}
+	y &= \beta_K + \Omega_K h_K. 
 \end{align}
 
 这个模型的参数 \(\phi\) 包括了所有的权重矩阵和偏置向量，表示为 \(\phi = \{ \beta_k, \Omega_k \}^{K}_{k=0}\)。
@@ -259,9 +258,9 @@ y' = \phi_0' +
 我们也可以将整个网络等效地表示为一个单一函数：
 
 
-\[
-y = \beta_K + \Omega_K [\beta_{K-1} + \Omega_{K-1} [ \ldots a[\beta_2 + \Omega_2 [a[\beta_1 + \Omega_1 [a[\beta_0 + \Omega_0 x]] \ldots ]]. \tag{4.16}
-\]
+\begin{equation}
+y = \beta_K + \Omega_K [\beta_{K-1} + \Omega_{K-1} [ \ldots a[\beta_2 + \Omega_2 [a[\beta_1 + \Omega_1 [a[\beta_0 + \Omega_0 x]] \ldots ]]. 
+\end{equation}
 
 \section{浅层网络与深层网络的比较}
 第 3 章讨论了单隐藏层的浅层网络，而本章我们讨论了多隐藏层的深层网络。现在，我们来比较这两种模型。
@@ -311,9 +310,9 @@ y = \beta_K + \Omega_K [\beta_{K-1} + \Omega_{K-1} [ \ldots a[\beta_2 + \Omega_2
 
 如果 \(K\) 层中的每层隐藏单元数量 \(D\) 相同，并且 \(D\) 是输入维度 \(D_i\) 的整数倍，则最大线性区域数量 \(N_r\) 可以精确计算，为：
 
-\[
-N_r = \left( \frac{D}{D_i} + 1 \right)^{D_i(K-1)} \cdot \sum_{j=0}^{D_i} \binom{D}{j} \tag{4.17}
-\]
+\begin{equation}
+N_r = \left( \frac{D}{D_i} + 1 \right)^{D_i(K-1)} \cdot \sum_{j=0}^{D_i} \binom{D}{j} 
+\end{equation}
 
 这个表达式中的第一项对应于网络的前 \(K - 1\) 层，可以被认为是反复折叠输入空间。然而，我们现在需要将 \(\frac{D}{D_i}\) 个
 
@@ -340,9 +339,9 @@ Telgarsky (2016) 指出，对于任意整数 \(k\)，可以构建一个具有单
 \textbf{问题 4.2} 请确定图 4.6 中的四个超参数。
 
 \textbf{问题 4.3} 利用 ReLU（修正线性单元）函数的非负同质性质（见问题 3.5），证明以下等式：
-\[
-ReLU[\beta_1 + \lambda_1 \cdot \Omega_1 ReLU[\beta_0 + \lambda_0 \cdot \Omega_0 x]] = \lambda_0\lambda_1 · ReLU[\frac{1}{\lambda_0\lambda_1} \beta_1 + \Omega_1 ReLU[\frac{1}{\lambda_0} \beta_0 + \Omega_0 x]]  \tag{4.18}
-\]
+\begin{equation}
+ReLU[\beta_1 + \lambda_1 \cdot \Omega_1 ReLU[\beta_0 + \lambda_0 \cdot \Omega_0 x]] = \lambda_0\lambda_1 · ReLU[\frac{1}{\lambda_0\lambda_1} \beta_1 + \Omega_1 ReLU[\frac{1}{\lambda_0} \beta_0 + \Omega_0 x]]  
+\end{equation}
 
 其中 \(\lambda_0\) 和 \(\lambda_1\) 是非负数值标量。由此可见，只要同时调整偏置，并在网络末端重新应用这些缩放因子，就可以任意缩放权重矩阵。
 

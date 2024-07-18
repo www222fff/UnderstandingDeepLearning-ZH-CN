@@ -18,9 +18,9 @@
 衡量数据点 x 的概率更为复杂。设想应用函数 \(f[z, \phi]\) 到具有已知密度 Pr(z) 的随机变量 z。当函数拉伸其输入的区域时，概率密度会减少；当函数压缩其输入的区域时，概率密度则会增加，以保证新分布下的面积总和为一。函数 \(f[z,\phi]\) 拉伸或压缩输入的程度，依赖于其梯度的大小。若输入的微小变化导致输出变化较大，则函数发生拉伸；若导致输出变化较小，则发生压缩（见图 16.2）。
 
 更具体地说，数据 x 在变换后的分布下的概率为：
-\[
-Pr(x|\phi) = \left| \frac{\partial f(z, \phi)}{\partial z} \right|^{-1} \cdot Pr(z), \tag{16.1}
-\]
+\begin{equation}
+Pr(x|\phi) = \left| \frac{\partial f(z, \phi)}{\partial z} \right|^{-1} \cdot Pr(z), 
+\end{equation}
 
 其中 \(z = f^{-1}[x, \phi]\) 是产生 \(x\) 的潜在变量。项 \(Pr(z)\) 是这个潜在变量在基础密度下的原始概率，根据函数的导数大小进行调整。如果这个导数值大于一，则概率减小；如果小于一，则概率增加。
 
@@ -67,38 +67,38 @@ Pr(x|\phi) = \left| \frac{\partial f(z, \phi)}{\partial z} \right|^{-1} \cdot Pr
 
 根据方程 16.1 的类比，这个分布下的样本似然度为：
 
-\[
-Pr(x|\phi) = \left| \frac{\partial f(z, \phi)}{\partial z} \right|^{-1} \cdot Pr(z), \tag{16.3}
-\]
+\begin{equation}
+Pr(x|\phi) = \left| \frac{\partial f(z, \phi)}{\partial z} \right|^{-1} \cdot Pr(z), 
+\end{equation}
 
 这里 \(z = f^{-1}[x, \phi]\) 是生成 \(x\) 的潜变量 \(z\)。第一项是关于 \(z\) 的 \(f[z, \phi]\) 的 \(D \times D\) 雅可比矩阵的行列式的逆，该矩阵在 \((i, j)\) 位置的元素是 \(\frac{\partial f(z, \phi)}{\partial z_i}\)。就像绝对导数衡量一维函数应用时点的面积变化，绝对行列式衡量多变量函数中点的体积变化。第二项是基础密度下潜变量的概率。
 
 \subsection{深度神经网络的正向映射}
 在实际应用中，正向映射 \(f[z, \phi]\) 通常由一个包含多个层次 \([f_k^{\circ}, \phi_k]\) 的神经网络定义，其中每层都有其参数 \(\phi_k\)，这些层次按照以下方式组合：
 
-\[
-x = f[z, \phi] = f_k \left[ f_{k-1} \left[ ... \left[ f_1[z, \phi_1], \phi_2 \right], ... \phi_{k-1} \right], \phi_k \right]. \tag{16.4}
-\]
+\begin{equation}
+x = f[z, \phi] = f_k \left[ f_{k-1} \left[ ... \left[ f_1[z, \phi_1], \phi_2 \right], ... \phi_{k-1} \right], \phi_k \right]. 
+\end{equation}
 
 反向映射（即规范化方向）则是通过按相反顺序应用每个层的逆 \([f_k^{\circ}, \phi_k]\) 来定义的：
 
-\[
-z = f^{-1}[x, \phi] = f_1^{-1} \left[ ... \left[ f_{k-1}^{-1} \left[ f_k^{-1}[x, \phi_k], \phi_{k-1} \right], ... \phi_2 \right], \phi_1 \right]. \tag{16.5}
-\]
+\begin{equation}
+z = f^{-1}[x, \phi] = f_1^{-1} \left[ ... \left[ f_{k-1}^{-1} \left[ f_k^{-1}[x, \phi_k], \phi_{k-1} \right], ... \phi_2 \right], \phi_1 \right]. 
+\end{equation}
 
 基础密度 \(Pr(z)\) 通常定义为多元标准正态分布（即均值为零，协方差为单位矩阵）。因此，每个后续逆层的作用是逐步将数据密度向这个正态分布“流动”（图 16.4），从而引出了“标准化流”这一术语。
 
 正向映射的雅可比可以表达为：
 
-\[
-\frac{\partial f[z, \phi]}{\partial z} = \frac{\partial f_k[f_{k-1}, \phi_k]}{\partial f_{k-1}} \cdot \frac{\partial f_{k-1}[f_{k-2}, \phi_{k-1}]}{\partial f_{k-2}} \cdot ... \cdot \frac{\partial f_1[z, \phi_1]}{\partial z}, \tag{16.6}
-\]
+\begin{equation}
+\frac{\partial f[z, \phi]}{\partial z} = \frac{\partial f_k[f_{k-1}, \phi_k]}{\partial f_{k-1}} \cdot \frac{\partial f_{k-1}[f_{k-2}, \phi_{k-1}]}{\partial f_{k-2}} \cdot ... \cdot \frac{\partial f_1[z, \phi_1]}{\partial z}, 
+\end{equation}
 
 其中 \(f_k\) 表示函数 \(f_{\ell}[\cdot, \phi_{\ell}]\) 的输出。这个雅可比的绝对行列式可以通过计算各个绝对行列式的乘积来得到：
 
-\[
-\left| \frac{\partial f[z, \phi]}{\partial z} \right| = \left| \frac{\partial f_k[f_{k-1}, \phi_k]}{\partial f_{k-1}} \right| \cdot \left| \frac{\partial f_{k-1}[f_{k-2}, \phi_{k-1}]}{\partial f_{k-2}} \right| \cdot ... \cdot \left| \frac{\partial f_1[z, \phi_1]}{\partial z} \right|. \tag{16.7}
-\]
+\begin{equation}
+\left| \frac{\partial f[z, \phi]}{\partial z} \right| = \left| \frac{\partial f_k[f_{k-1}, \phi_k]}{\partial f_{k-1}} \right| \cdot \left| \frac{\partial f_{k-1}[f_{k-2}, \phi_{k-1}]}{\partial f_{k-2}} \right| \cdot ... \cdot \left| \frac{\partial f_1[z, \phi_1]}{\partial z} \right|. 
+\end{equation}
 
 通过对方程 16.5 应用同样的规则，可以找到反向映射的雅可比的绝对行列式，它是正向映射中绝对行列式的倒数。
 
@@ -107,7 +107,7 @@ z = f^{-1}[x, \phi] = f_1^{-1} \left[ ... \left[ f_{k-1}^{-1} \left[ f_k^{-1}[x,
 
 \begin{align}
 \hat{\phi} &= \underset{\phi}{\arg\max} \left[ \prod_{i=1}^I Pr(z_i) \cdot \left| \frac{\partial f[z_i, \phi]}{\partial z_i} \right|^{-1} \right] \\
-&= \underset{\phi}{\arg\min} \left[ \sum_{i=1}^I \log \left| \frac{\partial f[z_i, \phi]}{\partial z_i} \right| - \log[Pr(z_i)] \right], \tag{16.8}
+&= \underset{\phi}{\arg\min} \left[ \sum_{i=1}^I \log \left| \frac{\partial f[z_i, \phi]}{\partial z_i} \right| - \log[Pr(z_i)] \right], 
 \end{align} 
 
 
@@ -141,9 +141,9 @@ z = f^{-1}[x, \phi] = f_1^{-1} \left[ ... \left[ f_{k-1}^{-1} \left[ f_k^{-1}[x,
 
 一种既通用又易于逆运算、能高效计算雅可比行列式的线性流可以通过直接基于 LU 分解来参数化，即：
 
-\[
-\Omega = PL(U + D), \tag{16.9}
-\]
+\begin{equation}
+\Omega = PL(U + D), 
+\end{equation}
 
 其中 \(P\) 是预定的置换矩阵，\(L\) 是下三角矩阵，\(U\) 是对角线元素为零的上三角矩阵，\(D\) 是补充对角线元素的对角矩阵。该形式的逆运算复杂度为 \(\mathcal{O}(D^2)\)，且其对数行列式为 \(D\) 对角线上绝对值的对数和。
 
@@ -152,21 +152,21 @@ z = f^{-1}[x, \phi] = f_1^{-1} \left[ ... \left[ f_{k-1}^{-1} \left[ f_k^{-1}[x,
 \subsection{逐元素流}
 鉴于线性流表达能力的限制，我们转向非线性流，其中最基本的是逐元素流。逐元素流通过对输入的每个元素应用带参数 \(\phi\) 的逐点非线性函数 \(f[\cdot, \phi]\) 来工作，表达式为：
 
-\[
-f[ht!] = [f[h_1, \phi], f[h_2, \phi], ..., f[h_D, \phi]]^T. \tag{16.10}
-\]
+\begin{equation}
+f[ht!] = [f[h_1, \phi], f[h_2, \phi], ..., f[h_D, \phi]]^T. 
+\end{equation}
 
 逐元素流的雅可比 \(\frac{\partial f[ht!]}{\partial h}\) 是对角矩阵，这意味着 \(f[ht!]\) 的每个输入元素只影响相应的输出元素。因此，雅可比的行列式是对角线元素乘积：
 
-\[
-\left| \frac{\partial f[ht!]}{\partial h} \right| = \prod_{d=1}^D \left| \frac{\partial f[h_d]}{\partial h_d} \right|. \tag{16.11}
-\]
+\begin{equation}
+\left| \frac{\partial f[ht!]}{\partial h} \right| = \prod_{d=1}^D \left| \frac{\partial f[h_d]}{\partial h_d} \right|. 
+\end{equation}
 
 这里的 \(f[\cdot, \phi]\) 函数可以是固定的可逆非线性函数，比如泄露的 ReLU，或者任何参数化的一对一可逆映射。例如，一个分段线性函数划分为 \(K\) 个区域，它将区间 \([0, 1]\) 映射到自身：
 
-\[
-f[h_d, \phi] = \left( \sum_{k=1}^{b-1} \phi_k \right) + (hK - b)\phi_b, \tag{16.12}
-\]
+\begin{equation}
+f[h_d, \phi] = \left( \sum_{k=1}^{b-1} \phi_k \right) + (hK - b)\phi_b, 
+\end{equation}
 
 这里的参数 \(\phi_1, \phi_2, ..., \phi_K\) 是正值且总和为 \(K\)，\(b = \lfloor Kh \rfloor\) 是包含 \(h\) 的区间的索引。第一项是所有先前区间的参数和，第二项反映了 \(h\) 在当前区间的位置比例。这样的函数不仅易于逆运算，而且其梯度几乎在所有位置都可计算。类似地，使用样条函数等方案可以创建光滑且因为单调性保证可逆的函数。
 
@@ -185,7 +185,7 @@ f[h_d, \phi] = \left( \sum_{k=1}^{b-1} \phi_k \right) + (hK - b)\phi_b, \tag{16.
 
 \begin{align}
 &h_1' = h_1 \\
-&h_2' = g[h_2, \phi[h_1]]. \tag{16.13}
+&h_2' = g[h_2, \phi[h_1]]. 
 \end{align} 
 
 
@@ -194,7 +194,7 @@ f[h_d, \phi] = \left( \sum_{k=1}^{b-1} \phi_k \right) + (hK - b)\phi_b, \tag{16.
 
 \begin{align}
 &h_1 = h_1' \\
-&h_2 = g^{-1}[h_2', \phi[h_1]]. \tag{16.14}
+&h_2 = g^{-1}[h_2', \phi[h_1]]. 
 \end{align} 
 
 
@@ -213,9 +213,9 @@ f[h_d, \phi] = \left( \sum_{k=1}^{b-1} \phi_k \right) + (hK - b)\phi_b, \tag{16.
 \subsection{自回归流}
 自回归流是对耦合流的泛化，它把每个输入维度处理为独立的“块”（图 16.7）。这种方法根据输入 \(h\) 的前 \(d-1\) 维度来计算输出 \(h'\) 的第 \(d\) 维度：
 
-\[
-h_d' = g[h_d, \phi[h_{1:d-1}]]. \tag{16.15}
-\]
+\begin{equation}
+h_d' = g[h_d, \phi[h_{1:d-1}]]. 
+\end{equation}
 
 这里的函数 \(g[\cdot, \phi]\) 称为转换器（transformer），参数 \(\phi\)、\(\phi[h_1]\)、\(\phi[h_2]\) 等称为条件器（conditioners）。与耦合流相同，转换器 \(g[\cdot, \phi]\) 需要是可逆的，但条件器 \(\phi[\cdot]\) 可以是任意形式，通常是神经网络。如果转换器和条件器足够灵活，自回归流可以作为通用逼近器（universal approximators），表示任意的概率分布。
 
@@ -228,7 +228,7 @@ h_d' = g[h_d, \phi[h_{1:d-1}]]. \tag{16.15}
 &h'^1 = g(h_1, \phi) \\
 &h'^2 = g(h_2, \phi|h_1) \\
 &h'^3 = g(h_3, \phi|h_{1:2}) \\
-&h'^4 = g(h_4, \phi|h_{1:3}) .  \tag{16.16}
+&h'^4 = g(h_4, \phi|h_{1:3}) .  
 \end{align}
 
 
@@ -239,7 +239,7 @@ h_d' = g[h_d, \phi[h_{1:d-1}]]. \tag{16.15}
 &h_1 = g^{-1}(h'^1, \phi) \\
 &h_2 = g^{-1}(h'^2, \phi|h_1) \\
 &h_3 = g^{-1}(h'^3, \phi|h_{1:2}) \\
-&h_4 = g^{-1}(h'^4, \phi|h_{1:3}) . \tag{16.17}
+&h_4 = g^{-1}(h'^4, \phi|h_{1:3}) . 
 \end{align} 
 
 
@@ -263,7 +263,7 @@ h_d' = g[h_d, \phi[h_{1:d-1}]]. \tag{16.15}
 
 \begin{align}
 &h'^1 = h_1 + f_1[h_2, \phi_1] \\
-&h'^2 = h_2 + f_2[h'^1, \phi_2], \tag{16.18}
+&h'^2 = h_2 + f_2[h'^1, \phi_2], 
 \end{align} 
 
 
@@ -272,7 +272,7 @@ h_d' = g[h_d, \phi[h_{1:d-1}]]. \tag{16.15}
 
 \begin{align}
 &h_2 = h'^2 - f_2[h'^1, \phi_2] \\
-&h_1 = h'^1 - f_1[h_2, \phi_1]. \tag{16.19}
+&h_1 = h'^1 - f_1[h_2, \phi_1]. 
 \end{align} 
 
 
@@ -291,17 +291,17 @@ h_d' = g[h_d, \phi[h_{1:d-1}]]. \tag{16.15}
 \subsection{残差流与收缩映射：iResNet}
 利用残差网络的另一种方法是采用 *Banach 不动点定理*（Banach fixed point theorem）或 *收缩映射定理*（contraction mapping theorem），这些定理指出每个收缩映射都有一个不动点。收缩映射 \(f[\cdot]\) 具有以下特性：
 
-\[
-\text{dist} [f(z'), f(z)] < \beta \cdot \text{dist} [z', z] \quad \forall z, z', \tag{16.20}
-\]
+\begin{equation}
+\text{dist} [f(z'), f(z)] < \beta \cdot \text{dist} [z', z] \quad \forall z, z', 
+\end{equation}
 
 其中 \(\text{dist}[\cdot,\cdot]\) 是距离函数，\(0 < \beta < 1\)。当这种具有特定性质的函数反复迭代（即输出被反复作为输入传回）时，结果会收敛至固定点，满足 \(f[z] = z\)（见图 16.9）。理解这个过程可以通过将函数同时作用于固定点和当前位置来实现；固定点保持不变，但两者之间的距离会减小，导致当前位置逐渐接近固定点。
 
 我们可以利用这一定理来求逆形如
 
-\[
-y = z + f[z] \tag{16.21}
-\]
+\begin{equation}
+y = z + f[z] 
+\end{equation}
 
 的方程，前提是 \(f[z]\) 为收缩映射。换言之，可以用它来寻找映射到给定值 \(y^*\) 的 \(z^*\)。这个过程可以从任意点 \(z_0\) 开始，通过迭代 \(z_{k+1} = y^* - f[z_k]\) 来实现，并最终在 \(z + f[z] = y^*\) 处收敛到固定点（见图 16.9b）。
 
@@ -311,7 +311,7 @@ y = z + f[z] \tag{16.21}
 
 \begin{align}
 \log \left[ I + \frac{\partial f(h, \phi)}{\partial h} \right] &= \text{trace} \left[ \log \left( I + \frac{\partial f(h, \phi)}{\partial h} \right) \right] \\
-&= \sum_{k=1}^{\infty} (-1)^{k-1} \text{trace} \left[ \left( \frac{\partial f(h, \phi)}{\partial h} \right)^k \right], \tag{16.22}
+&= \sum_{k=1}^{\infty} (-1)^{k-1} \text{trace} \left[ \left( \frac{\partial f(h, \phi)}{\partial h} \right)^k \right], 
 \end{align} 
 
 
@@ -320,21 +320,21 @@ y = z + f[z] \tag{16.21}
 
 即便是截断该级数，计算各项的迹值仍然计算量大。因此，我们采用 *Hutchinson 迹估计器*（Hutchinson's trace estimator）来进行近似。考虑均值为 0 且方差为 I 的正态随机变量 \(\epsilon\)，矩阵 A 的迹可以估计为：
 
-\[
+\begin{equation}
 \begin{aligned}
 \text{trace}[A] &= \text{trace} [\mathbb{E} [\epsilon \epsilon^T]] \\
 &= \text{trace} [\mathbb{E} [A \epsilon \epsilon^T]] \\
 &= \mathbb{E} [\text{trace} [A \epsilon \epsilon^T]] \\
 &= \mathbb{E} [\text{trace} [\epsilon^T A \epsilon]] \\
 &= \mathbb{E} [\epsilon^T A \epsilon], \\
-\end{aligned} \tag{16.23}
-\]
+\end{aligned} 
+\end{equation}
 
 其中第一行成立因为 \(\mathbb{E}[\epsilon \epsilon^T] = I\)。后续各行基于期望算子的性质、迹算子的线性及迹的循环置换不变性。最后，我们通过从 \(Pr(\epsilon)\) 中抽取样本 \(\epsilon_i\) 来估计迹值：
 
-\[
-\text{trace}[A] = \mathbb{E} [\epsilon^T A \epsilon] \approx \frac{1}{I} \sum_{i=1}^I \epsilon_i^T A \epsilon_i. \tag{16.24}
-\]
+\begin{equation}
+\text{trace}[A] = \mathbb{E} [\epsilon^T A \epsilon] \approx \frac{1}{I} \sum_{i=1}^I \epsilon_i^T A \epsilon_i. 
+\end{equation}
 
 通过这种方法，我们可以近似地计算泰勒级数幂次的迹，并估算对数概率（方程 16.22）。
 
@@ -404,16 +404,16 @@ y = z + f[z] \tag{16.21}
 
 为了进展，我们从“学生”模型生成样本 \(x_i = f(z_i, \phi)\)。因为这些样本是由我们自己生成的，我们知道它们的对应潜变量 \(z_i\)，可以直接计算学生模型中的似然度，而不需要进行逆运算。因此，我们可以采用掩码自回归流（masked-autoregressive flow）这样的模型，在这种模型中逆运算较慢。我们定义了一个基于反向 KL 散度的损失函数，该函数促使学生模型和教师模型的似然度一致，并用它来训练学生模型（见图 16.14）：
 
-\[
-\hat{\phi} = \underset{\phi}{\text{argmin}} \, KL \left[ \sum_{i=1}^{I} \delta [x - f(z_i, \phi)] \, || \, q(x) \right]. \tag{16.25}
-\]
+\begin{equation}
+\hat{\phi} = \underset{\phi}{\text{argmin}} \, KL \left[ \sum_{i=1}^{I} \delta [x - f(z_i, \phi)] \, || \, q(x) \right]. 
+\end{equation}
 
 
 这种方法与通常使用正规化流构建概率模型 \(Pr(x_i, \phi)\) 形成对比，后者是基于未知分布的样本 \(x_i\) 采用最大似然估计，依赖于前向 KL 散度中的交叉熵项（参见第 5.7 节）：
 
-\[
-\hat{\phi} = \underset{\phi}{\text{argmin}} \, KL \left[ \left\| \frac{1}{I} \sum_{i=1}^{I} \delta (x - x_i) \, || \, Pr(x_i; \phi) \right\| \right]. \tag{16.26}
-\]
+\begin{equation}
+\hat{\phi} = \underset{\phi}{\text{argmin}} \, KL \left[ \left\| \frac{1}{I} \sum_{i=1}^{I} \delta (x - x_i) \, || \, Pr(x_i; \phi) \right\| \right]. 
+\end{equation}
 
 
 正规化流可以利用这种技巧在变分自编码器（VAE）中建模后验（参见第 17 章）。
@@ -469,15 +469,15 @@ Rezende \& Mohamed (2015) 利用归一化流对 VAEs 中的后验进行建模。
 
 \textbf{问题 16.2} 考虑将标准正态分布：
 
-\[
-Pr(z) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{z^2}{2}\right), \tag{16.27}
-\]
+\begin{equation}
+Pr(z) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{z^2}{2}\right), 
+\end{equation}
 
 通过函数变换：
 
-\[
-x = f(z) = \frac{1}{1 + \exp(-z)}. \tag{16.28}
-\]
+\begin{equation}
+x = f(z) = \frac{1}{1 + \exp(-z)}. 
+\end{equation}
 
 求变换后的分布 \(Pr(x)\) 的表达式。
 
@@ -485,7 +485,7 @@ x = f(z) = \frac{1}{1 + \exp(-z)}. \tag{16.28}
 
 \textbf{问题 16.4} 手动求解以下矩阵的逆和行列式：
 
-\[
+\begin{equation}
 \Omega_1 = \begin{bmatrix}
 2 & 0 & 0 \\
 0 & -5 & 0 \\
@@ -497,31 +497,31 @@ x = f(z) = \frac{1}{1 + \exp(-z)}. \tag{16.28}
 2 & 4 & 0 & 0\\
 1 & -1 & 2 & 0\\
 4 & -2 & -2 & 1
-\end{bmatrix}. \tag{16.29}
-\]
+\end{bmatrix}. 
+\end{equation}
 
 \textbf{问题 16.5} 假设随机变量 \(z\) 的均值为 \(\mu\)，协方差为 \(\Sigma\)，经变换 \(x = Az + b\)。证明 \(x\) 的期望值为 \(A\mu + b\)，\(x\) 的协方差为 \(A\Sigma A^T\)。
 
 \textbf{问题 16.6} 若 \(x = f(z) = Az + b\) 且 \(Pr(z) = \text{Norm}_z[\mu, \Sigma]\)，证明 \(Pr(x) = \text{Norm}_x[A\mu + b, A\Sigma A^T]\)，利用关系式：
 
-\[
-Pr(x) = Pr(z) \cdot \left| \frac{\partial f}{\partial z} \right|^{-1}. \tag{16.30}
-\]
+\begin{equation}
+Pr(x) = Pr(z) \cdot \left| \frac{\partial f}{\partial z} \right|^{-1}. 
+\end{equation}
 
 \textbf{问题 16.7} Leaky ReLU 定义为：
 
-\[
+\begin{equation}
 LReLU[z] = \begin{cases}
 0.1z & \text{if } z < 0, \\
 z & \text{if } z \geq 0.
-\end{cases} \tag{16.31}
-\]
+\end{cases} 
+\end{equation}
 
 求 leaky ReLU 的逆函数表达式。对于多元变量 \(z\) 的逐元素变换 \(x = f[z]\)，其中：
 
-\[
-f[z] = [LReLU[z_1], LReLU[z_2], ..., LReLU[z_p]]^T, \tag{16.32}
-\]
+\begin{equation}
+f[z] = [LReLU[z_1], LReLU[z_2], ..., LReLU[z_p]]^T, 
+\end{equation}
 
 求雅可比的逆绝对行列式 \(\left| \frac{\partial f}{\partial z} \right|^{-1}\) 的表达式。
 
@@ -529,9 +529,9 @@ f[z] = [LReLU[z_1], LReLU[z_2], ..., LReLU[z_p]]^T, \tag{16.32}
 
 \textbf{问题 16.9} 考虑基于等间隔区间中平方根函数的锥形组合构建逐元素流：
 
-\[
-h' = f[h, \phi] = \sqrt{K h - b} \phi_b + \sum_{k} \sqrt{\phi_k}, \tag{16.33}
-\]
+\begin{equation}
+h' = f[h, \phi] = \sqrt{K h - b} \phi_b + \sum_{k} \sqrt{\phi_k}, 
+\end{equation}
 
 其中 \(b = [Kh]\) 是 \(h\) 所属的区间，且参数 \(\phi_k\) 均为正且和为一。当 \(K = 5\) 且 \(\phi_1 = 0.1, \phi_2 = 0.2, \phi_3 = 0.5, \phi_4 = 0.1, \phi_5 = 0.1\) 时，画出函数 \(f[h, \phi]\) 和其逆函数 \(f^{-1}[h', \phi]\)。
 

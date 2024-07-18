@@ -14,39 +14,38 @@
 
 \begin{align}
 	\hat{\phi} &= \underset{\phi}{\text{argmin}} [L[\phi]] \\
-	&= \underset{\phi}{\text{argmin}} \left[ \sum_{i=1}^I l_i(x_i, y_i) \right], \tag{9.1}
+	&= \underset{\phi}{\text{argmin}} \left[ \sum_{i=1}^I l_i(x_i, y_i) \right], 
 \end{align} 
 
 
 这里，每个项 \(l(x_i, y_i)\) 衡量了对每对训练数据，网络预测 \(f(x_i, \phi)\) 与实际输出 \(y_i\) 之间的误差。为了让这一最小化过程倾向于特定的解决方案，我们加入了一个附加项：
 
-\[
-\hat{\phi} = \underset{\phi}{\text{argmin}} \left[ \sum_{i=1}^I l_i(x_i, y_i) + \lambda \cdot g(\phi) \right], \tag{9.2}
-\]
+\begin{equation}
+\hat{\phi} = \underset{\phi}{\text{argmin}} \left[ \sum_{i=1}^I l_i(x_i, y_i) + \lambda \cdot g(\phi) \right], 
+\end{equation}
 
 其中 \(g(\phi)\) 是一个函数，用于返回一个标量值，该值在参数较不理想时会较大。系数 \(\lambda\) 是一个正数，用于平衡原始损失函数和正则化项的贡献。采用正则化后的损失函数通常会导致与原始损失函数不同的最小值，因此训练过程会收敛至不同的参数值（见图 9.1）。
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter9/RegExplicitTheory.png}
-	\caption{Figure9.1}
+	\caption{显式正则化。a) Gabor 模型的损失函数（见 6.1.2 节）。青色圆圈代表局部最小值。灰色圆圈代表全局最小值。b) 正则化项通过增加远离该点处的惩罚，倾向于选择接近图中心的参数。c) 最终损失函数是原始损失函数与正则化项之和。这个曲面的局部最小值更少，全局最小值移至不同位置（箭头指示变化方向）。}
 \end{figure}
 
-`图 9.1 显式正则化。a) Gabor 模型的损失函数（见 6.1.2 节）。青色圆圈代表局部最小值。灰色圆圈代表全局最小值。b) 正则化项通过增加远离该点处的惩罚，倾向于选择接近图中心的参数。c) 最终损失函数是原始损失函数与正则化项之和。这个曲面的局部最小值更少，全局最小值移至不同位置（箭头指示变化方向）。`
 
 \section{概率解释}
 
 正则化也可以从概率学的视角进行理解。如第 5.1 节所示，损失函数是基于最大似然准则构建的：
 
-\[
-\hat{\phi} = \underset{\phi}{\mathrm{argmax}} \left[ \prod_{i=1}^I Pr(y_i | x_i, \phi) \right]. \tag{9.3}
-\]
+\begin{equation}
+\hat{\phi} = \underset{\phi}{\mathrm{argmax}} \left[ \prod_{i=1}^I Pr(y_i | x_i, \phi) \right]. 
+\end{equation}
 
 这里，正则化项可以视为一个先验知识 \(Pr(\phi)\)，它代表在我们观测到数据之前对参数的了解。于是，我们采用了最大后验（MAP）准则：
 
-\[
-\hat{\phi} = \underset{\phi}{\mathrm{argmax}} \left[ \prod_{i=1}^I Pr(y_i | x_i, \phi) \cdot Pr(\phi) \right]. \tag{9.4}
-\]
+\begin{equation}
+\hat{\phi} = \underset{\phi}{\mathrm{argmax}} \left[ \prod_{i=1}^I Pr(y_i | x_i, \phi) \cdot Pr(\phi) \right]. 
+\end{equation}
 
 通过对上式取对数并乘以负一转换为负对数似然损失函数，我们得到 \(\lambda \cdot g(\phi) = -\log(Pr(\phi))\)，这表明正则化项 \(\lambda \cdot g(\phi)\) 实际上等同于先验概率的负对数。
 
@@ -54,9 +53,9 @@
 
 本讨论未触及正则化项应当惩罚哪些解决方案（或等价地，先验应当支持哪些解决方案）的问题。考虑到神经网络被广泛应用于各种领域，这些偏好只能是非常通用的。最常用的正则化形式是 L2 范数，它通过惩罚参数值的平方和来实施：
 
-\[
-\hat{\phi} = \underset{\phi}{\mathrm{argmax}} \left[ \sum_{i=1}^I l_i(x_i, y_i) + \lambda \sum_j \phi_j^2 \right], \tag{9.5}
-\]
+\begin{equation}
+\hat{\phi} = \underset{\phi}{\mathrm{argmax}} \left[ \sum_{i=1}^I l_i(x_i, y_i) + \lambda \sum_j \phi_j^2 \right], 
+\end{equation}
 其中 j 代表参数的索引。这种正则化也被称为 Tikhonov 正则化、岭回归，或者在应用于矩阵时，被称为 Frobenius 范数正则化。
 
 对于神经网络而言，L2 正则化通常只应用于权重，而不是偏置，因此这被称作权重衰减项。其效果是促使权重更小，从而使模型的输出函数变化更加平缓。为了理解这一点，可以考虑输出预测是最后一个隐藏层激活值的加权和。如果权重较小，输出变化会更少。这一逻辑也适用于最后一个隐藏层之前的预激活计算，如此逐层向后直至网络的输入层。在极端情况下，如果所有权重被强制设置为零，则网络将输出一个由最终偏置参数决定的常数值。
@@ -70,10 +69,9 @@
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter9/RegExplicitPractice.png}
-	\caption{Figure9.2}
+	\caption{在简化网络中的 L2 正则化（参见图 8.4）。a-f) 随着正则化系数\(\lambda\)增大，所得到的拟合函数变化。黑色曲线代表真实函数，橙色圆点代表含噪声的训练数据，青色曲线是拟合出的模型。当\(\lambda\)较小（图 a-b）时，拟合函数精确穿过所有数据点。中等\(\lambda\)值（图 c-d）时，函数变得更平滑，与真实函数更为接近。\(\lambda\) 值较大（图 e-f）时，拟合函数过于平滑，导致拟合效果不佳。}
 \end{figure}
 
-`图 9.2 在简化网络中的 L2 正则化（参见图 8.4）。a-f) 随着正则化系数\(\lambda\)增大，所得到的拟合函数变化。黑色曲线代表真实函数，橙色圆点代表含噪声的训练数据，青色曲线是拟合出的模型。当\(\lambda\)较小（图 a-b）时，拟合函数精确穿过所有数据点。中等\(\lambda\)值（图 c-d）时，函数变得更平滑，与真实函数更为接近。\(\lambda\) 值较大（图 e-f）时，拟合函数过于平滑，导致拟合效果不佳。`
 \section{隐式正则化}
 
 最近的一项引人注目的发现是，无论是梯度下降还是随机梯度下降，它们在向损失函数的最小值移动时都不是中立的；它们都倾向于某些解决方案而不是其他。这种现象被称为隐式正则化。
@@ -81,30 +79,29 @@
 
 考虑梯度下降的一个连续版本，其步长无限接近于零。在这种情况下，参数 \(\phi\) 的变化遵循以下微分方程：
 
-\[
-\frac{\partial \phi}{\partial t} = -\frac{\partial L}{\partial \phi}. \tag{9.6}
-\]
+\begin{equation}
+\frac{\partial \phi}{\partial t} = -\frac{\partial L}{\partial \phi}. 
+\end{equation}
 
 梯度下降使用一系列固定大小 \(\alpha\) 的离散步骤来逼近这一过程：
-\[
-\phi_{t+1} = \phi_t - \alpha \frac{\partial L[\phi_t]}{\partial \phi} , \tag{9.7}
-\]
+\begin{equation}
+\phi_{t+1} = \phi_t - \alpha \frac{\partial L[\phi_t]}{\partial \phi} , 
+\end{equation}
 
 这种离散步骤导致了与理想连续路径的偏移（参见图 9.3）。
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter9/RegImplicit1.png}
-	\caption{Figure9.3}
+	\caption{梯度下降中的隐式正则化。a) 在 \(\phi_1 = 0.61\) 的水平线上具有全局最小值族的损失函数。虚线蓝色显示从左下方开始的连续梯度下降路径。青色轨迹展示了步长为 0.1 的离散梯度下降过程（前几步以箭头明确标出）。有限步长使得路径发散，最终达到不同的位置。b) 通过在连续梯度下降的损失函数中添加一个正则化项，该项对梯度的平方幅度进行惩罚，可以近似模拟这种路径差异。c) 添加这一项后，连续梯度下降的路径能够收敛到离散梯度下降在原始函数上达到的同一位置。}
 \end{figure}
 
-`图 9.3 梯度下降中的隐式正则化。a) 在 \(\phi_1 = 0.61\) 的水平线上具有全局最小值族的损失函数。虚线蓝色显示从左下方开始的连续梯度下降路径。青色轨迹展示了步长为 0.1 的离散梯度下降过程（前几步以箭头明确标出）。有限步长使得路径发散，最终达到不同的位置。b) 通过在连续梯度下降的损失函数中添加一个正则化项，该项对梯度的平方幅度进行惩罚，可以近似模拟这种路径差异。c) 添加这一项后，连续梯度下降的路径能够收敛到离散梯度下降在原始函数上达到的同一位置。`
 
 可以通过为连续情况推导出一个修改后的损失项 \(\tilde{L}\) 来理解这种偏移，该损失项使离散化版本能够与原始损失 \(L\) 达到相同的结果。据证明（详见章节末尾），这种修改后的损失表达式为：
 
-\[
-\tilde{L}_{GD}[\phi] = L[\phi] + \frac{\alpha}{4} \left\| \frac{\partial L}{\partial \phi} \right\|^2 . \tag{9.8}
-\]
+\begin{equation}
+\tilde{L}_{GD}[\phi] = L[\phi] + \frac{\alpha}{4} \left\| \frac{\partial L}{\partial \phi} \right\|^2 . 
+\end{equation}
 
 也就是说，离散化的路径会避开那些梯度范数较大（即表面较陡峭）的区域。这并不会改变梯度为零处的极小值位置，但它会在其他位置改变有效损失函数，并因此改变优化的路径，这可能导致收敛到不同的最小值。梯度下降引起的隐式正则化可能解释了为何在使用较大步长时，全批量梯度下降的泛化能力会更好的观察结果（参见图 9.5a）。
 
@@ -114,35 +111,33 @@
 
 \begin{align}
 	\tilde{L}_{SGD}[\phi] &= \tilde{L}_{GD}[\phi] + \frac{\alpha}{4B} \sum_{b=1}^{B} \left\| \frac{\partial L_b}{\partial \phi} - \frac{\partial L}{\partial \phi} \right\|^2 \\
-	&= L[\phi] + \frac{\alpha}{4} \left\| \frac{\partial L}{\partial \phi} \right\|^2 + \frac{\alpha}{4B} \sum_{b=1}^{B} \left\| \frac{\partial L_b}{\partial \phi} - \frac{\partial L}{\partial \phi} \right\|^2 . \tag{9.9}
+	&= L[\phi] + \frac{\alpha}{4} \left\| \frac{\partial L}{\partial \phi} \right\|^2 + \frac{\alpha}{4B} \sum_{b=1}^{B} \left\| \frac{\partial L_b}{\partial \phi} - \frac{\partial L}{\partial \phi} \right\|^2 . 
 \end{align} 
 
 
 此处，\(L_b\)表示某个批次中第 b 个批次的损失，而 L 和 \(L_b\) 分别代表了整个数据集内 I 个单独损失值的平均和某个批次内 \(\beta\) 个单独损失值的平均：
 
-\[
-L = \frac{1}{I} \sum_{i=1}^{I} \ell_i[x_i, y_i] \quad \text{and} \quad L_b = \frac{1}{|\beta|} \sum_{i \in \beta_b} \ell_i[x_i, y_i]. \tag{9.10}
-\]
+\begin{equation}
+L = \frac{1}{I} \sum_{i=1}^{I} \ell_i[x_i, y_i] \quad \text{and} \quad L_b = \frac{1}{|\beta|} \sum_{i \in \beta_b} \ell_i[x_i, y_i]. 
+\end{equation}
 
 方程 9.9 揭示了一个额外的正则化项，对应于批次损失\(L_b\) 梯度的方差。换言之，SGD 隐式地倾向于梯度稳定的位置（即所有批次对斜率的一致性）。这一次，虽然调整了优化路径（见图 9.4），但并不必然改变全局最小值的位置；若模型参数过多，可能会完美拟合所有训练数据，在全局最小值处所有梯度项均为零。
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter9/RegImplicit2.png}
-	\caption{Figure9.4}
+	\caption{随机梯度下降的隐式正则化。a) Gabor 模型的原始损失函数（参见 6.1.2 节）。b) 梯度下降引入的隐式正则化项对梯度的平方幅度进行惩罚。c) 随机梯度下降的附加隐式正则化通过惩罚批量梯度的方差来实施。d) 修改后的损失函数包括原始损失和两个隐式正则化部分的总和。}
 \end{figure}
 
-`图 9.4 随机梯度下降的隐式正则化。a) Gabor 模型的原始损失函数（参见 6.1.2 节）。b) 梯度下降引入的隐式正则化项对梯度的平方幅度进行惩罚。c) 随机梯度下降的附加隐式正则化通过惩罚批量梯度的方差来实施。d) 修改后的损失函数包括原始损失和两个隐式正则化部分的总和。`
 
 相较于梯度下降，SGD 表现出更好的泛化能力，且一般来说，小批次尺寸比大批次尺寸有更好的表现（见图 9.5b）。一种可能的解释是，固有的随机性让算法能够探索损失函数的不同区域。然而，这种性能提升部分或全部可能源于隐式的正则化效应；它倾向于促成所有数据都很好拟合的解决方案（因此批次方差小），而不是一些数据拟合得非常好而其他数据拟合较差的解决方案（可能总体损失相同，但批次方差更大）。前者的解决方案往往能更好地泛化。
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter9/RegLR.png}
-	\caption{Figure9.5}
+	\caption{对于两个隐藏层的神经网络，在 MNIST-1D 数据集（参见图 8.1）中的 4000 个训练样本和 4000 个测试样本上，学习率和批量大小的影响。a) 较大的学习率相较于中等或小的学习率表现更佳。在各种情况下，为了确保不同学习率的解决方案有相同的优化空间，设置的迭代次数与学习率的乘积保持不变。b) 较小的批量大小表现更优。在每种情况下，选择的迭代次数确保了模型在相似的容量下能够充分拟合训练数据。}
 \end{figure}
 
-`图 9.5 对于两个隐藏层的神经网络，在 MNIST-1D 数据集（参见图 8.1）中的 4000 个训练样本和 4000 个测试样本上，学习率和批量大小的影响。a) 较大的学习率相较于中等或小的学习率表现更佳。在各种情况下，为了确保不同学习率的解决方案有相同的优化空间，设置的迭代次数与学习率的乘积保持不变。b) 较小的批量大小表现更优。在每种情况下，选择的迭代次数确保了模型在相似的容量下能够充分拟合训练数据。`
 
 \section{提升性能的启发式方法}
 我们已经观察到，通过在损失函数中加入额外的正则化项，可以促使训练算法寻找到更优的解。这种现象也会作为随机梯度下降的一个非预期（但似乎有益的）副作用而隐式发生。本节将介绍一些用于提高泛化能力的其他启发式方法。
@@ -152,10 +147,9 @@ L = \frac{1}{I} \sum_{i=1}^{I} \ell_i[x_i, y_i] \quad \text{and} \quad L_b = \fr
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter9/RegEarly.png}
-	\caption{Figure9.6}
+	\caption{早停。a) 随机初始化的简化浅层网络模型（含有 14 个线性区域，见图 8.4），采用批量为五、学习率为 0.05 的 SGD 进行训练。b-d) 训练过程中，模型首先抓住真实函数（黑色曲线）的大致结构，随后 e-f) 对噪声训练数据（橙色点）过拟合。尽管训练损失在此过程中持续下降，但 (c) 和 (d) 面板中的模型与真实底层函数最为接近，平均而言，这些模型在测试数据上的泛化能力更强，而不是 (e) 或 (f) 面板中的模型。}
 \end{figure}
 
-`图 9.6 早停。a) 随机初始化的简化浅层网络模型（含有 14 个线性区域，见图 8.4），采用批量为五、学习率为 0.05 的 SGD 进行训练。b-d) 训练过程中，模型首先抓住真实函数（黑色曲线）的大致结构，随后 e-f) 对噪声训练数据（橙色点）过拟合。尽管训练损失在此过程中持续下降，但 (c) 和 (d) 面板中的模型与真实底层函数最为接近，平均而言，这些模型在测试数据上的泛化能力更强，而不是 (e) 或 (f) 面板中的模型。`
 
 早停的设置只涉及一个超参数——学习停止后的步骤数。这个参数通常通过验证集（见 8.5 节）来经验性选择。但是，对于早停而言，可以在不训练多个模型的情况下选择这个超参数。模型只训练一次，每隔 T 次迭代便监控一次在验证集上的表现，并保存相应的模型。最终选取在验证集上表现最佳的模型。
 \subsection{集成学习}
@@ -170,20 +164,18 @@ L = \frac{1}{I} \sum_{i=1}^{I} \ell_i[x_i, y_i] \quad \text{and} \quad L_b = \fr
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter9/RegEnsemble.png}
-	\caption{Figure9.7}
+	\caption{集成方法。a) 对整个数据集（橙色点）拟合单一模型（灰色曲线）。b-e) 通过有放回地重采样数据四次（bagging），创建了四个模型（橙色点的大小表示该数据点被重采样的次数）。f) 当我们对这个集成的预测结果取平均时，得到的结果（青色曲线）比针对完整数据集的单一模型（灰色曲线）的结果更平滑，可能会有更好的泛化能力。}
 \end{figure}
 
-`图 9.7 集成方法。a) 对整个数据集（橙色点）拟合单一模型（灰色曲线）。b-e) 通过有放回地重采样数据四次（bagging），创建了四个模型（橙色点的大小表示该数据点被重采样的次数）。f) 当我们对这个集成的预测结果取平均时，得到的结果（青色曲线）比针对完整数据集的单一模型（灰色曲线）的结果更平滑，可能会有更好的泛化能力。`
 \subsection{Dropout}
-Dropout 通过在每次 SGD（随机梯度下降）迭代时随机将一定比例（通常是 50%）的隐藏单元的输出置为零（见图 9.8），降低了模型对任一特定隐藏单元的依赖。这一策略促进了权重的减小，从而减少了隐藏单元存在与否对函数变化的影响。
+Dropout 通过在每次 SGD（随机梯度下降）迭代时随机将一定比例（通常是 50\%）的隐藏单元的输出置为零（见图 9.8），降低了模型对任一特定隐藏单元的依赖。这一策略促进了权重的减小，从而减少了隐藏单元存在与否对函数变化的影响。
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter9/RegDropoutNetwork.png}
-	\caption{Figure9.8}
+	\caption{Dropout 技术。a) 原始网络。b-d) 在每次训练迭代期间，随机选择一部分隐藏单元设置为零（灰色节点）。这样，这些单元的输入和输出权重不产生任何效果，我们实际上在每次迭代时训练的是略有不同的网络。}
 \end{figure}
 
-`图 9.8 Dropout 技术。a) 原始网络。b-d) 在每次训练迭代期间，随机选择一部分隐藏单元设置为零（灰色节点）。这样，这些单元的输入和输出权重不产生任何效果，我们实际上在每次迭代时训练的是略有不同的网络。`
 
 这种方法有效地去除了函数在训练数据远处可能形成的、对损失函数无影响的不良变动。举个例子，设想三个隐藏单元随着输入沿某一曲线移动而依次激活（如图 9.9a 所示）。首先，一个隐藏单元引起斜率的大幅上升；随后，第二个单元使斜率下降，函数因此下降；最终，第三个单元抵消了这一下降，使曲线恢复原状。这三个单元一起引起了函数的局部不良变化，虽然这不会改变训练损失，但可能导致泛化能力不佳。
 
@@ -192,10 +184,9 @@ Dropout 通过在每次 SGD（随机梯度下降）迭代时随机将一定比�
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter9/RegDropout.png}
-	\caption{Figure9.9}
+	\caption{Dropout 机制。a) 由于斜率的连续增加、减少（在圆圈交点处），然后再次增加，导致曲线出现不希望的折点。此时使用的是全批量梯度下降，模型已经尽可能拟合了数据，因此进一步训练不会消除这个折点。b) 如果我们移除了导致圆圈交点的隐藏单元，如使用 Dropout 时可能发生的情况，由于没有了斜率的减少，函数的右侧呈现向上的轨迹，随后的梯度下降步骤将尝试补偿这一变化。c) 经过 2000 次迭代（i）随机移除一个导致折点的三个隐藏单元，并（ii）执行梯度下降步骤后的曲线。这个折点虽然不影响损失，但通过模拟 Dropout 机制被有效移除。}
 \end{figure}
 
-`图 9.9 Dropout 机制。a) 由于斜率的连续增加、减少（在圆圈交点处），然后再次增加，导致曲线出现不希望的折点。此时使用的是全批量梯度下降，模型已经尽可能拟合了数据，因此进一步训练不会消除这个折点。b) 如果我们移除了导致圆圈交点的隐藏单元，如使用 Dropout 时可能发生的情况，由于没有了斜率的减少，函数的右侧呈现向上的轨迹，随后的梯度下降步骤将尝试补偿这一变化。c) 经过 2000 次迭代（i）随机移除一个导致折点的三个隐藏单元，并（ii）执行梯度下降步骤后的曲线。这个折点虽然不影响损失，但通过模拟 Dropout 机制被有效移除。`
 
 在测试阶段，可以照常全量激活隐藏单元运行网络。但由于实际运行时的隐藏单元比训练中的任何迭代时都多，因此我们通过乘以 1 减去 dropout 概率的方式进行权重调整，这是所谓的权重缩放推理规则。另一种推理方法是采用蒙特卡罗 dropout，即多次以训练时相同方式随机选取一部分隐藏单元输出置零，运行网络并汇总结果。这种做法与集成方法类似，因为每个随机版本的网络都相当于一个独立模型，但此处无需训练或保存多个网络。
 \subsection{应用噪声}
@@ -206,10 +197,9 @@ Dropout 的作用可以被看作是在网络的激活输出上施加乘性的 Be
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter9/RegNoise.png}
-	\caption{Figure9.10}
+	\caption{向输入添加噪声。在 SGD 的每个步骤中，向批数据添加具有方差 \(\sigma x^2\) 的随机噪声。a-c) 在不同噪声水平下的拟合模型（小点代表十个样本）。增加更多噪声使得拟合函数（青色线）更加平滑。}
 \end{figure}
 
-`图 9.10 向输入添加噪声。在 SGD 的每个步骤中，向批数据添加具有方差 \(\sigma x^2\) 的随机噪声。a-c) 在不同噪声水平下的拟合模型（小点代表十个样本）。增加更多噪声使得拟合函数（青色线）更加平滑。`
 
 另一种方法是在权重中引入噪声，这样即使权重发生微小变化，网络也能给出合理的预测。这导致模型在训练过程中趋向于收敛于宽阔且平坦的局部最小值区域，此时个别权重的变化对模型影响不大。
 
@@ -220,17 +210,17 @@ Dropout 的作用可以被看作是在网络的激活输出上施加乘性的 Be
 \subsection{贝叶斯推理}
 最大似然估计在训练过程中往往过分自信，它倾向于选取似乎最合适的参数来做预测。但实际上，可能还有很多其他的参数值同样与数据相符，只是概率稍低。贝叶斯方法以一种不同的视角处理这个问题：它将参数视为未知的变量，并通过贝叶斯定理来计算考虑到训练数据 \({x_i, y_i}\) 后参数 \(\phi\) 的概率分布  \(Pr(\phi | {x_i, y_i})\)：
 
-\[
-Pr(\phi | \{x_i, y_i\}) = \frac{\prod_{i=1}^{I} Pr(y_i|x_i, \phi)Pr(\phi)}{\int \prod_{i=1}^{I} Pr(y_i|x_i, \phi)Pr(\phi)d\phi}, \tag{9.11}
-\]
+\begin{equation}
+Pr(\phi | \{x_i, y_i\}) = \frac{\prod_{i=1}^{I} Pr(y_i|x_i, \phi)Pr(\phi)}{\int \prod_{i=1}^{I} Pr(y_i|x_i, \phi)Pr(\phi)d\phi}, 
+\end{equation}
 
 这里，\(Pr(\phi)\) 代表参数的先验概率，分母是用于归一化的项。这意味着，每种参数的选择都对应一个概率值（参见图 9.11）。
 
 对新输入 x 的预测 y 被表达为所有参数集合预测的加权无限和（实际上是一个积分），其中的权重是各自的概率值：
 
-\[
-Pr(y|x, \{x_i, y_i\}) = \int Pr(y|x, \phi)Pr(\phi | \{x_i, y_i\})d\phi. \tag{9.12}
-\]
+\begin{equation}
+Pr(y|x, \{x_i, y_i\}) = \int Pr(y|x, \phi)Pr(\phi | \{x_i, y_i\})d\phi. 
+\end{equation}
 
 本质上，这是一个基于权重的无限集成模型，权重由参数的先验概率和它们与数据的一致性决定。
 
@@ -239,10 +229,9 @@ Pr(y|x, \{x_i, y_i\}) = \int Pr(y|x, \phi)Pr(\phi | \{x_i, y_i\})d\phi. \tag{9.1
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter9/RegBayesian.png}
-	\caption{Figure9.11}
+	\caption{对于简化的网络模型（参见图 8.4），采用贝叶斯方法处理参数的不确定性。一组参数的后验概率 \(Pr(\phi|{xi,yi})\) 取决于它们与数据 {xi,yi} 的匹配程度和先验分布 \(Pr(\phi)\)。a-c) 基于具有零均值和三个不同方差的正态分布先验，采样得到两组参数（青色和灰色曲线）。当先验方差较小时，参数倾向于较小，得到的函数更加平滑。d-f) 通过对所有可能参数值进行加权平均，其中权重为后验概率，进行推断。这样不仅产生了均值预测（青色曲线），还估计了与之相关的不确定性（灰色区域代表两个标准差范围）。}
 \end{figure}
 
-`图 9.11 对于简化的网络模型（参见图 8.4），采用贝叶斯方法处理参数的不确定性。一组参数的后验概率 \(Pr(\phi|{xi,yi})\) 取决于它们与数据 {xi,yi} 的匹配程度和先验分布 \(Pr(\phi)\)。a-c) 基于具有零均值和三个不同方差的正态分布先验，采样得到两组参数（青色和灰色曲线）。当先验方差较小时，参数倾向于较小，得到的函数更加平滑。d-f) 通过对所有可能参数值进行加权平均，其中权重为后验概率，进行推断。这样不仅产生了均值预测（青色曲线），还估计了与之相关的不确定性（灰色区域代表两个标准差范围）。`
 \subsection{迁移学习与多任务学习}
 面对训练数据的限制，可以借助其他更为丰富的数据集来增强模型性能。在迁移学习中（见图 9.12a），先对网络进行预训练，让它在一个与目标任务相关但数据更为充足的辅助任务上学习。预训练完成后，这个模型会被调整应用于原始的目标任务。具体做法包括移除网络的最后一层，然后增加一层或多层，以便产生适合目标任务的输出。可以选择保持预训练模型不变，仅训练新增的层，或者对整个模型进行细微调整。
 
@@ -253,10 +242,9 @@ Pr(y|x, \{x_i, y_i\}) = \int Pr(y|x, \phi)Pr(\phi | \{x_i, y_i\})d\phi. \tag{9.1
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter9/RegTransferMulti.png}
-	\caption{Figure9.12}
+	\caption{转移学习、多任务学习和自监督学习。a) 当主要任务（本例为深度估计）的标签数据有限，而辅助任务（本例为分割）的数据充足时，采用转移学习。我们先针对辅助任务训练模型，然后移除最后的层并用适合主要任务的新层替换，接着仅训练新层或微调整个网络以适应主要任务。这样，网络借助辅助任务学到的优秀内部表示，提升了主要任务的性能。b) 多任务学习中，我们训练模型同时处理多个任务，希望通过这种方式提高各任务的表现。c) 在生成式自监督学习中，我们去除数据的一部分，训练网络预测缺失的信息，如填补图像的遮蔽部分。这种方法允许在缺少标签的情况下进行转移学习。图片来源于 Cordts et al. (2016)。}
 \end{figure}
 
-`图 9.12 转移学习、多任务学习和自监督学习。a) 当主要任务（本例为深度估计）的标签数据有限，而辅助任务（本例为分割）的数据充足时，采用转移学习。我们先针对辅助任务训练模型，然后移除最后的层并用适合主要任务的新层替换，接着仅训练新层或微调整个网络以适应主要任务。这样，网络借助辅助任务学到的优秀内部表示，提升了主要任务的性能。b) 多任务学习中，我们训练模型同时处理多个任务，希望通过这种方式提高各任务的表现。c) 在生成式自监督学习中，我们去除数据的一部分，训练网络预测缺失的信息，如填补图像的遮蔽部分。这种方法允许在缺少标签的情况下进行转移学习。图片来源于 Cordts et al. (2016)。`
 \subsection{自监督学习}
 当我们手头的训练数据不足时，可以通过自监督学习生成大量无需手动标注的数据，进而利用这些数据进行迁移学习。自监督学习分为两大策略：生成式与对比式。
 
@@ -269,10 +257,9 @@ Pr(y|x, \{x_i, y_i\}) = \int Pr(y|x, \phi)Pr(\phi | \{x_i, y_i\})d\phi. \tag{9.1
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter9/RegAugment.png}
-	\caption{Figure9.13}
+	\caption{数据增强。对某些问题，可以通过变换每个数据示例来扩充数据集。a) 原始图像。b-h) 此图像经过多种几何和光度变换。对图像分类而言，这些图像尽管经过变换，但标签“鸟”保持不变。根据 Wu et al. (2015a) 改编。}
 \end{figure}
 
-`图 9.13 数据增强。对某些问题，可以通过变换每个数据示例来扩充数据集。a) 原始图像。b-h) 此图像经过多种几何和光度变换。对图像分类而言，这些图像尽管经过变换，但标签“鸟”保持不变。根据 Wu et al. (2015a) 改编。`
 
 这种方法称为数据增强，目的在于使模型对于这些与任务本质无关的变化保持不敏感，从而提高模型对实际应用场景的适应性和鲁棒性。
 
@@ -286,17 +273,17 @@ Pr(y|x, \{x_i, y_i\}) = \int Pr(y|x, \phi)Pr(\phi | \{x_i, y_i\})d\phi. \tag{9.1
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter9/RegMethods.png}
-	\caption{Figure9.14}
+	\caption{正则化方法。本章讨论的正则化方法通过以下四种机制之一来提高模型的泛化能力：一些方法通过平滑模型函数来实现；其他方法通过增加有效的数据量来达到；第三种方法是结合多个模型，以此来减少拟合过程中的不确定性；最后一种方法则鼓励训练过程趋向于一个广阔的最小值区域，使得参数估计的微小误差影响降低（也参见图 20.11）。}
 \end{figure}
-`图 9.14 正则化方法。本章讨论的正则化方法通过以下四种机制之一来提高模型的泛化能力：一些方法通过平滑模型函数来实现；其他方法通过增加有效的数据量来达到；第三种方法是结合多个模型，以此来减少拟合过程中的不确定性；最后一种方法则鼓励训练过程趋向于一个广阔的最小值区域，使得参数估计的微小误差影响降低（也参见图 20.11）。`
+
 \section{Notes}
 在 Kukačka 等人（2017）的研究中，提供了深度学习中正则化技术的综述和分类体系。本章讨论中遗漏了 BatchNorm（Szegedy 等人，2016）及其变种，这些内容将在第 11 章详细介绍。
 
 正则化方面，L2 正则化通过惩罚网络权重的平方和来促使输出函数变化更加平滑，是应用最广泛的正则化方法。它有时也被称作 Frobenius 范数正则化，因为它惩罚了权重矩阵的 Frobenius 范数。此外，它经常被误称为“权重衰减”，虽然权重衰减实际上是 Hanson \& Pratt（1988）提出的一种不同技术，通过以下方式更新参数 \(\phi\)：
 
-\[
-\phi \leftarrow (1 - \lambda)\phi - \alpha \frac{\partial L}{\partial \phi}, \tag{9.13}
-\]
+\begin{equation}
+\phi \leftarrow (1 - \lambda)\phi - \alpha \frac{\partial L}{\partial \phi}, 
+\end{equation}
 
 其中，\(\alpha\) 代表学习率，L 为损失函数。这与梯度下降的过程相同，不同之处在于在梯度更新前，权重会先乘以一个因子\((1−\lambda \prime)\)。对于标准的 SGD，权重衰减与 L2 正则化（方程 9.5）相当，系数\(\lambda\)等于 \(\lambda\prime/{2\alpha}\)。然而，在 Adam 优化器中，由于每个参数的学习率 \(\alpha\) 各不相同，L2 正则化与权重衰减并不等价。Loshchilov \& Hutter（2019）提出的 AdamW 对 Adam 进行了改进，以正确实施权重衰减，并证明这一改进提升了性能。
 
@@ -310,21 +297,21 @@ Pr(y|x, \{x_i, y_i\}) = \int Pr(y|x, \phi)Pr(\phi | \{x_i, y_i\})d\phi. \tag{9.1
 
 \textbf{梯度下降中的隐式正则化:} 梯度下降的步骤定义为：
 
-\[
-\phi_1 = \phi_0 + \alpha \cdot g[\phi_0], \tag{9.14}
-\]
+\begin{equation}
+\phi_1 = \phi_0 + \alpha \cdot g[\phi_0], 
+\end{equation}
 
 这里 \(g[\phi_0]\) 表示损失函数梯度的负值，\(\alpha\) 是步长。当 \(\alpha \rightarrow 0\) 时，梯度下降过程可以通过下述微分方程描述：
 
-\[
-\frac{\partial \phi}{\partial t} = g[\phi]. \tag{9.15}
-\]
+\begin{equation}
+\frac{\partial \phi}{\partial t} = g[\phi]. 
+\end{equation}
 
 对于典型步长\(\alpha\)，离散与连续的梯度下降会收敛至不同解。我们可以利用 *后向误差分析* 对连续版本进行修正，找到修正项 \(g_1[\phi]\)：
 
-\[
-\frac{\partial \phi}{\partial t} \approx g[\phi] + \alpha g_1[\phi] + \ldots, \tag{9.16}
-\]
+\begin{equation}
+\frac{\partial \phi}{\partial t} \approx g[\phi] + \alpha g_1[\phi] + \ldots, 
+\end{equation}
 
 使其与离散版本产生相同的结果。
 
@@ -335,30 +322,30 @@ Pr(y|x, \{x_i, y_i\}) = \int Pr(y|x, \phi)Pr(\phi | \{x_i, y_i\})d\phi. \tag{9.1
 	\phi[\alpha] &\approx \phi + \alpha \frac{\partial \phi}{\partial t} + \frac{\alpha^2}{2} \frac{\partial^2 \phi}{\partial t^2} \\
 	&\approx \phi + \alpha (g[\phi] + \alpha g_1[\phi]) + \frac{\alpha^2}{2} \left( \frac{\partial g[\phi]}{\partial \phi} g[\phi] + \alpha \frac{\partial g_1[\phi]}{\partial \phi} g[\phi] \right)_{\phi=\phi_0} \\
 	&= \phi + \alpha (g[\phi] + \alpha g_1[\phi]) + \frac{\alpha^2}{2} \left( \frac{\partial g[\phi]}{\partial \phi} g[\phi] + \alpha \frac{\partial g_1[\phi]}{\partial \phi} g[\phi] \right)_{\phi=\phi_0} \\
-	&\approx \phi + \alpha g[\phi] + \alpha^2 \left( g_1[\phi] + \frac{1}{2} \frac{\partial g[\phi]}{\partial \phi} g[\phi] \right)_{\phi=\phi_0} , \tag{9.17}
+	&\approx \phi + \alpha g[\phi] + \alpha^2 \left( g_1[\phi] + \frac{1}{2} \frac{\partial g[\phi]}{\partial \phi} g[\phi] \right)_{\phi=\phi_0} , 
 \end{align} 
 
 在这里，第二行引入了修正项（方程 9.16），并在最终行去除了高于 \(\alpha^2\) 阶的项。
 
 注意，右侧的前两项 \(\phi + \alpha g[\phi_0]\) 与离散更新（方程 9.14）相一致。因此，为了让连续与离散版本达成一致，右侧的第三项必须为零，从而解得\(g_1[\phi]\)：
-\[
-g_1[\phi] = - \frac{1}{2} \frac{\partial g[\phi]}{\partial \phi} g[\phi]. \tag{9.18}
-\]
+\begin{equation}
+g_1[\phi] = - \frac{1}{2} \frac{\partial g[\phi]}{\partial \phi} g[\phi]. 
+\end{equation}
 
 训练过程中，演化函数 \(g[\phi]\) 是损失梯度的负值：
 
 
 \begin{align}
 	\frac{\partial \phi}{\partial t} &\approx g[\phi] + \alpha g_1[\phi] \\
-	&= -\frac{\partial L}{\partial \phi} - \frac{\alpha}{2} \left( \frac{\partial^2 L}{\partial \phi^2} \right) \frac{\partial L}{\partial \phi}. \tag{9.19}
+	&= -\frac{\partial L}{\partial \phi} - \frac{\alpha}{2} \left( \frac{\partial^2 L}{\partial \phi^2} \right) \frac{\partial L}{\partial \phi}. 
 \end{align} 
 
 
 这等同于对损失函数执行连续梯度下降：
 
-\[
-L_{GD}[\phi] = L[\phi] + \frac{\alpha}{4} \left| \frac{\partial L}{\partial \phi} \right|^2 , \tag{9.20}
-\]
+\begin{equation}
+L_{GD}[\phi] = L[\phi] + \frac{\alpha}{4} \left| \frac{\partial L}{\partial \phi} \right|^2 , 
+\end{equation}
 
 因为方程 9.19 的右侧是方程 9.20 中该式的导数。
 
@@ -403,9 +390,9 @@ NLP的自监督学习可以基于预测遮蔽词（Devlin等人，2019）、预�
 \section{Problems}
 \textbf{问题 9.1} 考虑一个模型，其参数的先验分布是均值为零、方差为 \(\sigma_{\phi}^2\) 的正态分布，表达式为：
 
-\[
-Pr(\phi) = \prod_{j=1}^{J} \text{Norm}_{\phi_j} [0, \sigma_{\phi}^2], \tag{9.21}
-\]
+\begin{equation}
+Pr(\phi) = \prod_{j=1}^{J} \text{Norm}_{\phi_j} [0, \sigma_{\phi}^2], 
+\end{equation}
 
 其中 \( j \) 表示模型参数的索引。现在，我们需要最大化 \(\prod_{i=1}^{I} Pr(y_i|x_i, \phi)Pr(\phi)\)。证明该模型的相关损失函数等价于 L2 正则化。
 
@@ -417,15 +404,15 @@ Pr(\phi) = \prod_{j=1}^{J} \text{Norm}_{\phi_j} [0, \sigma_{\phi}^2], \tag{9.21}
 
 \textbf{问题 9.5} 展示权重衰减参数更新，衰减率为 \(\lambda\)：
 
-\[
-\phi \leftarrow (1 - \lambda) \phi - \alpha \frac{\partial L}{\partial \phi}, \tag{9.22}
-\]
+\begin{equation}
+\phi \leftarrow (1 - \lambda) \phi - \alpha \frac{\partial L}{\partial \phi}, 
+\end{equation}
 
 对于原始损失函数 \(L[\phi]\)，这等价于采用 L2 正则化的标准梯度更新，从而得到修改后的损失函数 \(\tilde{L}[\phi]\)：
 
-\[
-\tilde{L}[\phi] = L[\phi] + \frac{\lambda}{2\alpha} \sum_{k} \phi_k^2, \tag{9.23}
-\]
+\begin{equation}
+\tilde{L}[\phi] = L[\phi] + \frac{\lambda}{2\alpha} \sum_{k} \phi_k^2, 
+\end{equation}
 
 其中 \(\phi\) 是模型参数，\(\alpha\) 是学习率。
 

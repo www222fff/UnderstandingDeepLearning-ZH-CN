@@ -5,8 +5,17 @@
 要定义“最优映射”，首先需要一组训练数据集 \(\{x_i, y_i\}\)，即输入和输出的配对。损失函数（Loss Function）\(L[\phi]\) 能够返回一个数值，这个数值描述了模型预测 \(f(x_i, \phi)\) 与其对应的真实输出 \(y_i\) 之间的不匹配程度。在训练过程中，我们追求的是能最小化损失的参数值 \(\phi\)，以使训练输入尽可能准确地映射到输出。例如，在第2章中，我们见到了一种损失函数——最小平方损失函数，适用于目标是实数 \(y \in \mathbb{R}\) 的单变量回归问题。该函数通过计算模型预测 \(f(x_i, \phi)\) 与真实值 \(y_i\) 之间差异的平方和来进行计算。
 
 本章还提出了一个框架，不仅证明了在实值输出场景下选择最小平方准则的适用性，还指导我们为其他类型的预测问题构建损失函数。我们将讨论包括二元分类（其中预测结果 \(y \in \{0, 1\}\) 属于两个类别中的一个）和多类别分类（预测结果 \(y \in \{1, 2, \ldots, K\}\) 属于 \(K\) 个类别中的一个）在内的多种情形。在接下来的两章中，我们将探讨模型训练的过程，目标是找到能最小化这些损失函数的参数值。
+
 \section{最大似然}
 在本节中，我们将介绍构建损失函数的具体方法。设想一个计算输入 \(x\) 到输出的模型 \(f(x, \phi)\)，其中 \(\phi\) 是模型的参数。之前，我们认为模型直接输出预测结果 \(y\)。现在，我们改变思路，将模型视为计算给定输入 \(x\) 时，可能的输出 \(y\) 的条件概率分布 \(Pr(y|x)\)。这种损失函数的设计目的是使得每个训练输出 \(y_i\) 在由对应输入 \(x_i\) 计算得到的分布 \(Pr(y_i|x_i)\) 中具有较高的概率（见图 5.1）。
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter5/LossDataTypes.png}
+	\caption{a) 回归任务中，目标是基于训练数据 {xi,yi}（橙色点）从输入 x 预测出一个实数输出 y。对于每个输入值 x，机器学习模型预测输出 \(y \in R\) 的分布 P(y|x)（青色曲线展示了 x = 2.0 和 x = 7.0 时的分布）。损失函数的目的是使根据相应输入 xi 预测出的分布最大化观测到的训练输出 yi 的概率。b) 在分类任务中，为预测离散类别 \(y \in {1, 2, 3, 4}\)，我们采用离散概率分布，模型因此针对 xi 的每个值预测 yi 的四个可能值的概率分布直方图。c) 在预测计数 \(y \in {0, 1, 2, ...}\) 和 d) 预测方向 \(y \in (−\pi, \pi]\) 的任务中，我们分别采用定义在正整数集和圆周域上的分布。}
+\end{figure}
+
+
 \subsection{计算输出的分布}
 这引出了一个问题：模型 \(f(x, \phi)\) 如何转化为计算概率分布的形式。答案很简单。首先，我们需要选定一个定义在输出域 \(Y\) 上的参数化概率分布 \(Pr(y|\theta)\)。接着，我们利用神经网络来计算该分布的一个或多个参数 \(\theta\)。
 
@@ -30,6 +39,12 @@ Pr(y_1, y_2, \ldots , y_I|x_1, x_2, \ldots , x_I) = \prod_{i=1}^{I} Pr(y_i|x_i)
 \end{equation}
 
 换言之，我们假定数据是独立同分布（i.i.d.）的。
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter5/LossLog.png}
+	\caption{对数变换。a) 对数函数是单调递增的，即若 \(z > z \prime \)，则 \(log z > log z \prime\)。因此，任何函数 g(z) 的最大值位置与 log g(z) 的最大值位置相同。b) 函数 g(z)。c) 该函数的对数 log g(z)。g(z) 上所有正斜率的位置在经过对数变换后依然保持正斜率，负斜率的位置同样保持负斜率。最大值位置不变。}
+\end{figure}
 
 \subsection{最大化对数似然}
 尽管最大似然准则（方程 5.1）理论上有效，但在实际应用中并不方便。每个项 \(Pr(y_i|f(x_i, \phi))\) 的值可能很小，导致这些项的乘积极小，难以用有限精度算法精确表示。幸运的是，我们可以通过最大化似然的对数来解决这个问题：
@@ -83,6 +98,13 @@ Pr(y_1, y_2, \ldots , y_I|x_1, x_2, \ldots , x_I) = \prod_{i=1}^{I} Pr(y_i|x_i)
 4. 对于新的测试样例 \(x\)，返回完整分布 \(Pr(y|f(x, \phi))\) 或此分布的最大值。
 
 本章其余部分主要讨论如何使用这种方法为常见的预测类型构建损失函数。
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter5/LossNorm.png}
+	\caption{单变量正态分布（也被称为高斯分布）是在实数轴 \(z \in R\) 上定义的，其主要由两个参数 \(\mu\) 和 \(\sigma_2\) 决定。其中，均值 \(\mu\) 决定了分布的峰值位置，而方差 \(\sigma_2\) 的标准差（即方差的正平方根）则决定了分布的宽度。因为整个概率密度的总和为一，所以当方差减小，分布变得更加集中时，其峰值也相应地变得更高。}
+\end{figure}
+
 \section{示例 1：单变量回归}
 
 首先考虑单变量回归模型。这里的目标是用带有参数 \(\phi\) 的模型 \(f(x, \phi)\)，从输入 \(x\) 预测单一实数输出 \(y \in \mathbb{R}\)。遵循上述步骤，我们为输出域 \(y\) 选择一个概率分布。我们选用单变量正态分布（见图 5.3），它定义在 \(y \in \mathbb{R}\) 上。该分布有两个参数（均值 \(\mu\) 和方差 \(\sigma^2\)），并具有概率密度函数：
@@ -148,6 +170,13 @@ L[\phi] = \sum_{i=1}^{I} (y_i - f(x_i, \phi))^2
 
 在推断阶段，模型从输入中预测均值 \(\mu = f[x, \hat{\phi}]\)，同时我们在训练过程中得到了方差 \(\hat{\sigma}^2\) 的估计。均值是最优预测，而方差反映了预测的不确定性。
 
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter5/LossNormalRegression.png}
+	\caption{最小二乘法与正态分布最大似然损失的等效性。a) 参照图 2.2 中的线性模型。最小二乘法通过最小化模型预测值 \(f[xi,\phi]\)（绿线）与真实输出值 yi（橙色点）之间差异（虚线表示）的平方和来进行优化。在此例中，模型拟合非常准确，因此这些差异非常小（比如，对于被特别标出的两个点）。b) 当参数设置不当时，模型拟合效果较差，导致平方差异显著增加。c) 最小二乘法的原理是假设模型预测的是输出值的正态分布的平均值，并且我们通过最大化概率来优化它。在第一种情况下，由于模型拟合得很好，所以数据的概率 Pr(yi|xi)（水平橙色虚线）较高（相应的负对数概率较小）。d) 在第二种情况下，由于模型拟合效果差，因此概率较低，负对数概率较高。}
+\end{figure}
+
+
 \subsection{异方差回归}
 
 先前的模型假定数据方差是固定的，但这可能不太现实。当模型的不确定性随输入数据变化时，我们称之为异方差（与同方差相对，后者不确定性是固定的）。
@@ -173,6 +202,26 @@ L[\phi] = \sum_{i=1}^{I} (y_i - f(x_i, \phi))^2
 \section{示例 2：二元分类}
 
 在二元分类任务中，我们的目标是根据数据 \(x\) 将其划分为两个离散类别之一 \(y \in \{0, 1\}\)。这里的 \(y\) 被称为标签。二元分类的例子包括：（i）根据文本数据 \(x\) 判断餐厅评论是正面（\(y = 1\)）还是负面（\(y = 0\)）；（ii）根据 MRI 扫描 \(x\) 判断肿瘤是否存在（\(y = 1\)）或不存在（\(y = 0\)）。
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter5/LossHeteroscedastic.png}
+	\caption{同方差回归与异方差回归比较。a) 在同方差回归中，一个简单的神经网络模型根据输入 x 预测输出分布的平均值 μ。b) 这种情况下，尽管输出的均值（用蓝线表示）随输入 x 呈分段线性变化，方差却始终保持不变（通过箭头和灰色区域表示的 ±2 标准差来展示）。c) 异方差回归的浅层神经网络除了预测均值外，还会预测输出的方差 \(\sigma_2\)（更精确地说，是计算方差的平方根，然后再平方）。d) 如此一来，标准差也随输入 x 呈分段线性变化。}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter5/LossBern.png}
+	\caption{伯努利分布。伯努利分布是定义在仅包含 {0,1} 的域上的分布，它由单一参数\(\lambda\)定义，\(\lambda\) 表示观测到结果为 1 的概率。相应地，结果为 0 的概率则为 \(1 − \lambda\)。}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter5/LossLogisticSigmoid.png}
+	\caption{逻辑 Sigmoid 函数。该函数把实数 z 映射到 0 到 1 之间的值，因此 sig[z] 的范围是 [0, 1]。当输入为 0 时，输出值为 0.5。负数输入对应于小于 0.5 的输出值，而正数输入对应于大于 0.5 的输出值。}
+\end{figure}
+
+
 
 我们再次按照第5.2节的步骤构建损失函数。首先，我们为输出空间 \(y \in \{0, 1\}\) 选择了伯努利分布，这个分布定义在 \(\{0, 1\}\) 上。它有一个参数 \(\lambda \in [0, 1]\)，表示 \(y\) 取值为 1 的概率（见图 5.6）：
 
@@ -208,6 +257,21 @@ L[\phi] = \sum_{i=1}^{I} -\left[(1 - y_i) \log [1 - sig[f(x_i, \phi)]] + y_i \lo
 
 变换后的模型输出 \(sig[f(x, \phi)]\) 预测了伯努利分布的参数 \(\lambda\)。这代表 \(y = 1\) 的概率，所以 \(1 - \lambda\) 代表 \(y = 0\) 的概率。在进行推断时，如果我们需要 \(y\) 的具体估计，那么当 \(\lambda > 0.5\) 时我们设定 \(y = 1\)，否则设定 \(y = 0\)。
 
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter5/LossBinaryClassification.png}
+	\caption{二元分类模型。a) 网络的输出是一个分段线性函数，能够接受任意实数值。b) 这些值通过逻辑 Sigmoid 函数转换，被压缩到 [0,1] 的区间内。c) 转换后的输出用来预测概率 \(\lambda\)，即 y = 1 的可能性（用实线表示）。因此，y = 0 的可能性就是 \(1 − \lambda\)（用虚线表示）。对任一固定的 x（通过垂直切片展示），我们能得到一个与图 5.6 类似的伯努利分布的两种概率值。损失函数倾向于优化模型参数，使得在与正例 yi = 1 关联的 xi 位置上\(\lambda\)的值较大，而在与负例 yi = 0 关联的位置上\(\lambda\)的值较小。}
+\end{figure}
+
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter5/LossCategorical.png}
+	\caption{分类分布。分类分布为超过两个的 K 类别分配概率值，相应的概率为 \(\lambda_1,\lambda_2,...,\lambda_K\)。这里有五个类别，因此 K = 5。为保证其为一个有效的概率分布，每个参数 \(\lambda_k\) 都应处于 [0, 1] 的范围内，并且所有 K 个参数的总和必须等于 1。}
+\end{figure}
+
+
 \section{示例 3：多类别分类}
 
 多类别分类的目标是将输入数据 \(x\) 分配给 \(K > 2\) 个类别中的一个，即 \(y \in \{1, 2, \ldots, K\}\)。现实中的例子包括：（i）预测手写数字图像 \(x\) 中的哪一个数字 \(y\)（\(K = 10\)）；（ii）预测不完整句子 \(x\) 后面跟随的哪一个词汇 \(y\)（\(K\) 个可能词汇）。
@@ -217,6 +281,13 @@ L[\phi] = \sum_{i=1}^{I} -\left[(1 - y_i) \log [1 - sig[f(x_i, \phi)]] + y_i \lo
 Pr(y = k) = \lambda_k 
 \end{equation}
 参数被限制在零和一之间，并且总和必须为一，以形成有效的概率分布。
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter5/LossMultiClassClassification.png}
+	\caption{针对 K = 3 类别的多类别分类。a) 该网络输出三个可以任意取值的分段线性函数。b) 通过 softmax 函数处理后，这些输出值被限制为非负数，且它们的总和必须为一。因此，对于任何给定的输入 x，我们都能得到有效的分类分布参数：图中任意垂直切片所产生的三个值的总和为一，这些值代表在类似图 5.9 的分类分布条形图中各条的高度。}
+\end{figure}
+
 
 然后，我们利用具有 \(K\) 个输出的网络 \(f(x, \phi)\) 来从输入 \(x\) 计算这 \(K\) 个参数。为了确保网络输出符合约束，我们通过一个函数处理这 \(K\) 个输出，这个函数是*softmax*函数（见图 5.10）。softmax 函数接受长度为 \(K\) 的任意向量，并返回一个同样长度的向量，其元素位于 [0, 1] 范围内且总和为一。softmax 函数的第 \(k\) 个输出是：
 
@@ -266,6 +337,21 @@ L[\phi] = -\sum_{i=1}^{I} \log [Pr(y_i|f(x_i, \phi))] = -\sum_{i=1}^{I} \sum_{d}
 
 为了同时进行两种或更多类型的预测，我们同样假设每种错误是独立的。比如，为了同时预测风向和风力，我们可能分别选择定义在圆形域的 von Mises 分布预测风向，以及定义在正实数上的指数分布预测风力。独立性假设意味着这两个预测的联合似然是单独似然的乘积。在计算负对数似然时，这些项会转化为加和形式。
 
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter5/511.png}
+	\caption{不同预测类型下损失函数的分布。}
+\end{figure}
+
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{png/chapter5/LossCrossEntropy.png}
+	\caption{交叉熵方法。a) 训练样本的实证分布（箭头标示了 Dirac delta 函数）。b) 模型分布（参数为 \(\theta = \mu, \sigma2\) 的正态分布）。通过交叉熵方法，我们尝试最小化这两个分布之间的距离（即 KL 散度），这个距离是模型参数 \(\theta\) 的函数。}
+\end{figure}
+
+
+
 \section{交叉熵损失 (Cross-entropy loss)}
 
 在本章中，我们开发了旨在最小化负对数似然 (negative log-likelihood) 的损失函数。然而，术语“交叉熵损失 (cross-entropy loss)”也广为流传。在本节中，我们将解释交叉熵损失，并证明它与使用负对数似然是等价的。
@@ -303,9 +389,9 @@ q(y) = \frac{1}{I} \sum_{i=1}^{I} \delta[y - y_i]
 
 在机器学习领域，分布参数 \(\theta\) 由模型 \(f[x_i, \phi]\) 计算得出。因此，我们有：
 
-\[
+\begin{equation}
 \hat{\phi} = argmin_{\phi} \left[ -\sum_{i=1}^{I} \log [Pr(y_i|f[x_i, \phi])] \right] 
-\]
+\end{equation}
 这正是第 5.2 节提到的负对数似然准则。由此可见，负对数似然准则（即最大化数据似然）与交叉熵准则（即最小化模型与经验数据分布间的距离）是等价的。
 
 \section{总结}
@@ -355,14 +441,15 @@ q(y) = \frac{1}{I} \sum_{i=1}^{I} \delta[y - y_i]
 \begin{equation}
 L = -(1 - y) \log [1 - \text{sig}[f[x, \phi]]] - y \log [\text{sig}[f[x, \phi]]] 
 \end{equation}
-其中 \(\text{sig}[\cdot]\) 在方程 5.32 中定义。当训练标签 \(y = 0\) 时（1）以及当 \(y = 1\) 时（2），将这种损失作为变换后的网络输出 \(\text{sig}[f[x, \phi]] \in [0, 1]\) 的函数绘制出来。
+其中 \(\text{sig}[\cdot]\) 在方程 5.32 中定义。当训练标签 \(y = 0\) 时（1）以及当 \(y = 1\) 时（2），将这种损失作为变换后的网络输出 \(\text{sig}[f[x, \phi]] \in [0, 1]\) 的函数绘制出来。 \\
+
 
 \textbf{问题 5.3}* 假设我们想构建一个模型，基于本地气压 \(x\) 的测量来预测占主导地位的风向 \(y\)（以弧度表示）。适用于圆形域的分布是 von Mises distribution（见图 5.13）：
 
 \begin{equation}
 Pr(y|\mu, \kappa) = \frac{\exp[\kappa \cos(y - \mu)]}{2\pi \cdot \text{Bessel}_0[\kappa]} 
 \end{equation}
-其中 \(\mu\) 是平均方向的度量，\(\kappa\) 是集中度的度量（即方差的倒数）。项 \(\text{Bessel}_0[\kappa]\) 是阶数为 0 的修改过的贝塞尔函数。使用第 5.2 节的配方来开发用于学习模型 \(f[x, \phi]\) 参数 \(\mu\) 的损失函数，以预测最有可能的风向。你的解决方案应将集中度 \(\kappa\) 视为常数。你会如何进行推理？
+其中 \(\mu\) 是平均方向的度量，\(\kappa\) 是集中度的度量（即方差的倒数）。项 \(\text{Bessel}_0[\kappa]\) 是阶数为 0 的修改过的贝塞尔函数。使用第 5.2 节的配方来开发用于学习模型 \(f[x, \phi]\) 参数 \(\mu\) 的损失函数，以预测最有可能的风向。你的解决方案应将集中度 \(\kappa\) 视为常数。你会如何进行推理？ \\
 
 \textbf{问题 5.4}* 有时，对于输入 \(x\) 的输出 \(y\) 是多模态的（见图 5.14a）；对于给定输入，有多个有效的预测。在这里，我们可能使用正态分量的加权和作为输出的分布。这被称为高斯混合 (Gaussian Mixture) 模型。例如，两个高斯的混合具有参数 \(\Theta = \{\lambda, \mu_1, \sigma_1^2, \mu_2, \sigma_2^2\}\)：
 
@@ -374,10 +461,8 @@ Pr(y|\mu_1, \mu_2, \sigma_1^2, \sigma_2^2) = \frac{\lambda}{\sqrt{2\pi\sigma_1^2
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter5/LossMoG.png}
-	\caption{Figure5.14}
+	\caption{多模态数据及其高斯混合密度。 a) 在示例训练数据中，当输入 x 的值处于中间范围时，相应的输出 y 会沿着两种可能的路径之一变化。例如，在 x = 0 的情况下，输出 y 的值可能接近 −2 或 +3，但不太可能是介于这两个值之间。b) 高斯混合模型非常适合描述这种数据，它通过将两个或更多具有不同均值和方差的正态分布（此处为两个分布，分别用虚线蓝色和橙色曲线表示）进行加权求和（用实线青色曲线表示）来构建。当各个正态分布的均值相差较远时，便形成了多模态分布。c) 当这些均值较为接近时，这种混合模型能够描述单峰但非正态的密度分布。}
 \end{figure}
-
-`图 5.14 多模态数据及其高斯混合密度。a) 在示例训练数据中，当输入 x 的值处于中间范围时，相应的输出 y 会沿着两种可能的路径之一变化。例如，在 x = 0 的情况下，输出 y 的值可能接近 −2 或 +3，但不太可能是介于这两个值之间。b) 高斯混合模型非常适合描述这种数据，它通过将两个或更多具有不同均值和方差的正态分布（此处为两个分布，分别用虚线蓝色和橙色曲线表示）进行加权求和（用实线青色曲线表示）来构建。当各个正态分布的均值相差较远时，便形成了多模态分布。c) 当这些均值较为接近时，这种混合模型能够描述单峰但非正态的密度分布。`
 
 
 \textbf{问题 5.5} 考虑扩展问题 5.3 中的模型，使用两个 von Mises distribution 的混合来预测风向。为这个模型写出似然 \(Pr(y|\theta)\) 的表达式。网络需要产生多少个输出？
@@ -392,10 +477,9 @@ Pr(y = k) = \frac{\lambda^k e^{-\lambda}}{k!}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter5/LossPoisson.png}
-	\caption{Figure5.15}
+	\caption{泊松分布是定义在非负整数上的离散分布，具有一个参数 \(\lambda\)（正实数），称为分布的率，它代表了分布的平均值。a–c) 分别展示了当率为 1.4、2.8 和 6.0 时的泊松分布，展示了不同率值下分布形态的变化。}
 \end{figure}
 
-`图 5.15 泊松分布是定义在非负整数上的离散分布，具有一个参数 \(\lambda\)（正实数），称为分布的率，它代表了分布的平均值。a–c) 分别展示了当率为 1.4、2.8 和 6.0 时的泊松分布，展示了不同率值下分布形态的变化。`
 
 \textbf{问题 5.7} 考虑一个多变量回归问题，我们预测十个输出，因此 \(y \in \mathbb{R}^{10}\)，并且用独立的正态分布对每个进行建模，其中均值 \(\mu_d\) 由网络预测，方差 \(\sigma^2\) 是常数。写出似然 \(Pr(y|f[x, \phi])\) 的表达式。展示如果我们不估计方差 \(\sigma^2\)，最小化这个模型的负对数似然仍然等价于最小化一系列平方项。
 
@@ -404,127 +488,3 @@ Pr(y = k) = \frac{\lambda^k e^{-\lambda}}{k!}
 \textbf{问题 5.9}* 考虑一个多变量回归问题，我们从数据 \(x\) 预测一个人的身高（以米为单位）和体重（以千克为单位）。这里，单位的范围差异较大。你认为这会导致什么问题？提出两个解决这些问题的方案。
 
 \textbf{问题 5.10} 扩展问题 5.3 中的模型，预测风向和风速，并定义相关的损失函数。
-
-\section{附图}
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter5/LossDataTypes.png}
-	\caption{Figure5.1}
-\end{figure}
-
-
-图 5.1 输出分布预测。a) 回归任务中，目标是基于训练数据 {xi,yi}（橙色点）从输入 x 预测出一个实数输出 y。对于每个输入值 x，机器学习模型预测输出 \(y \in R\) 的分布 P(y|x)（青色曲线展示了 x = 2.0 和 x = 7.0 时的分布）。损失函数的目的是使根据相应输入 xi 预测出的分布最大化观测到的训练输出 yi 的概率。b) 在分类任务中，为预测离散类别 \(y \in {1, 2, 3, 4}\)，我们采用离散概率分布，模型因此针对 xi 的每个值预测 yi 的四个可能值的概率分布直方图。c) 在预测计数 \(y \in {0, 1, 2, ...}\) 和 d) 预测方向 \(y \in (−\pi, \pi]\) 的任务中，我们分别采用定义在正整数集和圆周域上的分布。
-
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter5/LossLog.png}
-	\caption{Figure5.2}
-\end{figure}
-
-图 5.2 对数变换。a) 对数函数是单调递增的，即若 \(z > z \prime \)，则 \(log z > log z \prime\)。因此，任何函数 g(z) 的最大值位置与 log g(z) 的最大值位置相同。b) 函数 g(z)。c) 该函数的对数 log g(z)。g(z) 上所有正斜率的位置在经过对数变换后依然保持正斜率，负斜率的位置同样保持负斜率。最大值位置不变。
-
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter5/LossNorm.png}
-	\caption{图5.3}
-\end{figure}
-
-图 5.3 单变量正态分布（也被称为高斯分布）是在实数轴 \(z \in R\) 上定义的，其主要由两个参数 \(\mu\) 和 \(\sigma_2\) 决定。其中，均值 \(\mu\) 决定了分布的峰值位置，而方差 \(\sigma_2\) 的标准差（即方差的正平方根）则决定了分布的宽度。因为整个概率密度的总和为一，所以当方差减小，分布变得更加集中时，其峰值也相应地变得更高。
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter5/LossNormalRegression.png}
-	\caption{Figure5.4}
-\end{figure}
-
-图 5.4 最小二乘法与正态分布最大似然损失的等效性。a) 参照图 2.2 中的线性模型。最小二乘法通过最小化模型预测值 \(f[xi,\phi]\)（绿线）与真实输出值 yi（橙色点）之间差异（虚线表示）的平方和来进行优化。在此例中，模型拟合非常准确，因此这些差异非常小（比如，对于被特别标出的两个点）。b) 当参数设置不当时，模型拟合效果较差，导致平方差异显著增加。c) 最小二乘法的原理是假设模型预测的是输出值的正态分布的平均值，并且我们通过最大化概率来优化它。在第一种情况下，由于模型拟合得很好，所以数据的概率 Pr(yi|xi)（水平橙色虚线）较高（相应的负对数概率较小）。d) 在第二种情况下，由于模型拟合效果差，因此概率较低，负对数概率较高。
-
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter5/LossHeteroscedastic.png}
-	\caption{Figure5.5}
-\end{figure}
-
-图 5.5 同方差回归与异方差回归比较。a) 在同方差回归中，一个简单的神经网络模型根据输入 x 预测输出分布的平均值 μ。b) 这种情况下，尽管输出的均值（用蓝线表示）随输入 x 呈分段线性变化，方差却始终保持不变（通过箭头和灰色区域表示的 ±2 标准差来展示）。c) 异方差回归的浅层神经网络除了预测均值外，还会预测输出的方差 \(\sigma_2\)（更精确地说，是计算方差的平方根，然后再平方）。d) 如此一来，标准差也随输入 x 呈分段线性变化。
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter5/LossBern.png}
-	\caption{Figure5.6}
-\end{figure}
-
-图 5.6 伯努利分布。伯努利分布是定义在仅包含 {0,1} 的域上的分布，它由单一参数\(\lambda\)定义，\(\lambda\) 表示观测到结果为 1 的概率。相应地，结果为 0 的概率则为 \(1 − \lambda\)。
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter5/LossLogisticSigmoid.png}
-	\caption{Figure5.7}
-\end{figure}
-
-图 5.7 逻辑 Sigmoid 函数。该函数把实数 z 映射到 0 到 1 之间的值，因此 sig[z] 的范围是 [0, 1]。当输入为 0 时，输出值为 0.5。负数输入对应于小于 0.5 的输出值，而正数输入对应于大于 0.5 的输出值。
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter5/LossBinaryClassification.png}
-	\caption{Figure5.8}
-\end{figure}
-
-图 5.8 二元分类模型。a) 网络的输出是一个分段线性函数，能够接受任意实数值。b) 这些值通过逻辑 Sigmoid 函数转换，被压缩到 [0,1] 的区间内。c) 转换后的输出用来预测概率 \(\lambda\)，即 y = 1 的可能性（用实线表示）。因此，y = 0 的可能性就是 \(1 − \lambda\)（用虚线表示）。对任一固定的 x（通过垂直切片展示），我们能得到一个与图 5.6 类似的伯努利分布的两种概率值。损失函数倾向于优化模型参数，使得在与正例 yi = 1 关联的 xi 位置上\(\lambda\)的值较大，而在与负例 yi = 0 关联的位置上\(\lambda\)的值较小。
-
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter5/LossCategorical.png}
-	\caption{Figure5.9}
-\end{figure}
-
-图 5.9 分类分布。分类分布为超过两个的 K 类别分配概率值，相应的概率为 \(\lambda_1,\lambda_2,...,\lambda_K\)。这里有五个类别，因此 K = 5。为保证其为一个有效的概率分布，每个参数 \(\lambda_k\) 都应处于 [0, 1] 的范围内，并且所有 K 个参数的总和必须等于 1。
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter5/LossMultiClassClassification.png}
-	\caption{Figure5.10}
-\end{figure}
-图 5.10 针对 K = 3 类别的多类别分类。a) 该网络输出三个可以任意取值的分段线性函数。b) 通过 softmax 函数处理后，这些输出值被限制为非负数，且它们的总和必须为一。因此，对于任何给定的输入 x，我们都能得到有效的分类分布参数：图中任意垂直切片所产生的三个值的总和为一，这些值代表在类似图 5.9 的分类分布条形图中各条的高度。
-
-\begin{tabular}{| m{5cm} | m{2cm} | m{3cm} | m{3cm} |}
-	\hline
-	\textbf{Data Type} & \textbf{Domain} & \textbf{Distribution} & \textbf{Use} \\
-	\hline
-	univariate, continuous, unbounded & \(y \in \mathbb{R}\) & normal & regression \\
-	\hline
-	univariate, continuous, unbounded & \(y \in \mathbb{R}\) & Laplace & robust regression \\
-	\hline
-	univariate, continuous, unbounded & \(y \in \mathbb{R}\) & or t-distribution & multimodal regression \\
-	\hline
-	univariate, continuous, bounded below & \(y \in \mathbb{R}^+\) & exponential or gamma & predicting magnitude \\
-	\hline
-	univariate, continuous, bounded & \(y \in [0, 1]\) & beta & predicting proportions \\
-	\hline
-	multivariate, continuous, unbounded & \(y \in \mathbb{R}^K\) & multivariate normal & multivariate regression \\
-	\hline
-	univariate, continuous, circular & \(y \in (-\pi, \pi]\) & von Mises & predicting direction \\
-	\hline
-	univariate, discrete, binary & \(y \in \{0, 1\}\) & Bernoulli & binary classification \\
-	\hline
-	univariate, discrete, bounded & \(y \in \{1, 2, \ldots, K\}\) & categorical & multiclass classification \\
-	\hline
-	univariate, discrete, bounded below & \(y \in [0, 1, 2, 3, \ldots]\) & Poisson & predicting event counts \\
-	\hline
-	multivariate, discrete, permutation & \(y \in \text{Perm}[1, 2, \ldots, K]\) & Plackett-Luce & ranking \\
-	\hline
-\end{tabular}
-
-图 5.11 不同预测类型下损失函数的分布。
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{png/chapter5/LossCrossEntropy.png}
-	\caption{Figure5.12}
-\end{figure}
-
-图 5.12 交叉熵方法。a) 训练样本的实证分布（箭头标示了 Dirac delta 函数）。b) 模型分布（参数为 \(\theta = \mu, \sigma2\) 的正态分布）。通过交叉熵方法，我们尝试最小化这两个分布之间的距离（即 KL 散度），这个距离是模型参数 \(\theta\) 的函数。

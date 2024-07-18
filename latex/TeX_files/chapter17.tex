@@ -9,15 +9,15 @@
 
 潜在变量模型 (Latent variable models) 采取了一种间接的方法来描述多维变量 \(x\) 上的概率分布 \(Pr(x)\)。它们不直接给出 \(Pr(x)\) 的表达式，而是构建数据 \(x\) 与未观测的*隐变量*（*latent variable*）\(z\) 的联合分布 \(Pr(x, z)\)。接着，通过将这个联合概率边缘化来描述 \(Pr(x)\) 的概率，形式为：
 
-\[
-Pr(x) = \int Pr(x, z)dz. \tag{17.1}
-\]
+\begin{equation}
+Pr(x) = \int Pr(x, z)dz. 
+\end{equation}
 
 一般情况下，联合概率 \(Pr(x, z)\) 通过条件概率规则被分解为关于潜变量的*似然*（likelihood）\(Pr(x|z)\) 和*先验*（prior）\(Pr(z)\)：
 
-\[
-Pr(x) = \int Pr(x|z)Pr(z)dz. \tag{17.2}
-\]
+\begin{equation}
+Pr(x) = \int Pr(x|z)Pr(z)dz. 
+\end{equation}
 
 虽然这是描述 \(Pr(x)\) 的一种较间接的方法，但由于 \(Pr(x|z)\) 和 \(Pr(z)\) 的表达式相对简单，它可以用来定义 \(Pr(x)\) 的复杂分布。
 
@@ -28,7 +28,7 @@ Pr(x) = \int Pr(x|z)Pr(z)dz. \tag{17.2}
 
 \begin{align}
 &Pr(z = n) = \lambda_n \\
-&Pr(x|z = n) = \mathcal{N}_{x}(\mu_n, \sigma^2_n). \tag{17.3}
+&Pr(x|z = n) = \mathcal{N}_{x}(\mu_n, \sigma^2_n). 
 \end{align} 
 
 
@@ -38,7 +38,7 @@ Pr(x) = \int Pr(x|z)Pr(z)dz. \tag{17.2}
 \begin{align}
 Pr(x) &= \sum_{n=1}^{N} Pr(x, z = n) \\
 &= \sum_{n=1}^{N} Pr(x|z = n) \cdot Pr(z = n) \\
-&= \sum_{n=1}^{N} \lambda_n \cdot \mathcal{Norm}_x(\mu_n, \sigma^2_n). \tag{17.4}
+&= \sum_{n=1}^{N} \lambda_n \cdot \mathcal{Norm}_x(\mu_n, \sigma^2_n). 
 \end{align} 
 
 
@@ -56,15 +56,15 @@ Pr(x) &= \sum_{n=1}^{N} Pr(x, z = n) \\
 
 在非线性潜在变量模型中，数据 \(x\) 和潜变量 \(z\) 均为连续且多维的。其先验 \(Pr(z)\) 为标准多元正态分布：
 
-\[
-Pr(z) = \mathcal{N}_z(0, I). \tag{17.5}
-\]
+\begin{equation}
+Pr(z) = \mathcal{N}_z(0, I). 
+\end{equation}
 
 似然 \(Pr(x|z, \phi)\) 亦服从正态分布，其均值由潜变量的非线性函数 \(f(z, \phi)\) 确定，协方差 \(\sigma^2 I\) 为球形：
 
-\[
-Pr(x|z, \phi) = \text{Norm}_x\left[f(z, \phi), \sigma^2 I\right]. \tag{17.6}
-\]
+\begin{equation}
+Pr(x|z, \phi) = \text{Norm}_x\left[f(z, \phi), \sigma^2 I\right]. 
+\end{equation}
 
 函数 \(f(z, \phi)\) 由带参数 \(\phi\) 的深度网络所定义。潜变量 \(z\) 的维度小于数据 \(x\) 的维度。模型 \(f(z, \phi)\) 描述了数据的关键特征，而未建模的部分则归咎于噪声 \(\sigma^2I\)。
 
@@ -74,7 +74,7 @@ Pr(x|z, \phi) = \text{Norm}_x\left[f(z, \phi), \sigma^2 I\right]. \tag{17.6}
 \begin{align}
 Pr(x|\phi) &= \int Pr(x|z, \phi) dz \\
 &= \int Pr(x|z, \phi) \cdot Pr(z) dz \\
-&= \int \text{Norm}_x\left[f(z, \phi), \sigma^2 I\right] \cdot \text{Norm}_z[0, I] dz. \tag{17.7}
+&= \int \text{Norm}_x\left[f(z, \phi), \sigma^2 I\right] \cdot \text{Norm}_z[0, I] dz. 
 \end{align} 
 
 
@@ -103,14 +103,14 @@ Pr(x|\phi) &= \int Pr(x|z, \phi) dz \\
 
 为了训练模型，我们需要最大化训练数据集 \(\{x_i\}_{i=1}^I\) 上模型参数的对数似然值。为了简化问题，我们假定似然表达式中的方差项 \(\sigma^2\) 是已知的，并专注于学习 \(\phi\)：
 
-\[
-\hat{\phi} = \underset{\phi}{\mathrm{argmax}} \left[ \sum_{i=1}^I \log Pr(x_i|\phi) \right], \tag{17.8}
-\]
+\begin{equation}
+\hat{\phi} = \underset{\phi}{\mathrm{argmax}} \left[ \sum_{i=1}^I \log Pr(x_i|\phi) \right], 
+\end{equation}
 其中：
 
-\[
-Pr(x_i|\phi) = \int \text{Norm}_{x_i} \left[ f(z, \phi), \sigma^2 I \right] \cdot \text{Norm}_z [0, I] dz. \tag{17.9}
-\]
+\begin{equation}
+Pr(x_i|\phi) = \int \text{Norm}_{x_i} \left[ f(z, \phi), \sigma^2 I \right] \cdot \text{Norm}_z [0, I] dz. 
+\end{equation}
 不幸的是，这是不切实际的。这个积分没有封闭形式的解，并且没有简单的方法可以用来评估特定 \(x\) 的积分值。
 
 \subsection{证据下界 (ELBO)}
@@ -120,26 +120,26 @@ Pr(x_i|\phi) = \int \text{Norm}_{x_i} \left[ f(z, \phi), \sigma^2 I \right] \cdo
 \subsection{詹森不等式}
 
 詹森不等式表明，对于数据 \(y\) 的期望的凹函数 \(g(\cdot)\)，有 \(g(\mathbb{E}[y])\) 大于或等于该函数的期望值：
-\[
-g(\mathbb{E}[y]) \geq \mathbb{E}[g(y)]. \tag{17.10}
-\]
+\begin{equation}
+g(\mathbb{E}[y]) \geq \mathbb{E}[g(y)]. 
+\end{equation}
 在本例中，凹函数是对数函数，因此我们有：
 
-\[
-\log(\mathbb{E}[y]) \geq \mathbb{E}[\log(y)], \tag{17.11}
-\]
+\begin{equation}
+\log(\mathbb{E}[y]) \geq \mathbb{E}[\log(y)], 
+\end{equation}
 
 或者更完整地写出期望的表达式：
 
-\[
-\log \left( \int Pr(y)ydy \right) \geq \int Pr(y)\log(y)dy. \tag{17.12}
-\]
+\begin{equation}
+\log \left( \int Pr(y)ydy \right) \geq \int Pr(y)\log(y)dy. 
+\end{equation}
 
 这在图 17.4–17.5 中被详细探讨。实际上，更通用的陈述也是成立的：
 
-\[
-\log \left[ \int Pr(y|h)[y] dy \right] \geq \int Pr(y) \log[h(y)]dy. \tag{17.13}
-\]
+\begin{equation}
+\log \left[ \int Pr(y|h)[y] dy \right] \geq \int Pr(y) \log[h(y)]dy. 
+\end{equation}
 
 
 \begin{figure}[ht!]
@@ -156,7 +156,7 @@ g(\mathbb{E}[y]) \geq \mathbb{E}[g(y)]. \tag{17.10}
 \caption{Figure17.5}
 \end{figure}
 
-`图 17.5 Jensen 不等式（连续案例）。对于凹函数，计算分布 Pr(y) 的期望值并应用该函数，所得结果大于或等于先对变量 y 应用函数变换后计算新变量的期望值。以对数函数为例，我们得到 log[E[y]] ≥ E[log[y]]。图的左侧对应不等式的左侧，图的右侧对应不等式的右侧。可以这样理解：我们在 \(y \in [0, 1]\) 范围内的橙色分布上取了一系列点的凸组合。根据图 17.4 的逻辑，这些点的组合必然位于曲线下方。另外，可以将凹函数视为相对于低值，压缩了 y 的高值，所以当我们先对 y 应用函数时，其期望值更低。`
+`图 17.5 Jensen 不等式（连续案例）。对于凹函数，计算分布 Pr(y) 的期望值并应用该函数，所得结果大于或等于先对变量 y 应用函数变换后计算新变量的期望值。以对数函数为例，我们得到 \(log[E[y]] ≥ E[log[y]]\)。图的左侧对应不等式的左侧，图的右侧对应不等式的右侧。可以这样理解：我们在 \(y \in [0, 1]\) 范围内的橙色分布上取了一系列点的凸组合。根据图 17.4 的逻辑，这些点的组合必然位于曲线下方。另外，可以将凹函数视为相对于低值，压缩了 y 的高值，所以当我们先对 y 应用函数时，其期望值更低。`
 
 \subsection{导出下界}
 
@@ -165,20 +165,20 @@ g(\mathbb{E}[y]) \geq \mathbb{E}[g(y)]. \tag{17.10}
 
 \begin{align}
 \log[Pr(x|\phi)] &= \log \left[ \int Pr(x, z|\phi) dz \right] \\
-&= \log \left[ \int \frac{q(z)}{q(z)} Pr(x, z|\phi) dz \right], \tag{17.14}
+&= \log \left[ \int \frac{q(z)}{q(z)} Pr(x, z|\phi) dz \right], 
 \end{align} 
 
 
 接着我们应用对数函数的詹森不等式（方程 17.12）来寻找一个下界：
 
-\[
-\log \left[ \int \frac{q(z)}{q(z)} Pr(x, z|\phi) dz \right] \geq \int q(z) \log \left[ \frac{Pr(x, z|\phi)}{q(z)} \right] dz, \tag{17.15}
-\]
+\begin{equation}
+\log \left[ \int \frac{q(z)}{q(z)} Pr(x, z|\phi) dz \right] \geq \int q(z) \log \left[ \frac{Pr(x, z|\phi)}{q(z)} \right] dz, 
+\end{equation}
 右侧称为*证据下界*（Evidence Lower Bound, ELBO）。之所以这样命名，是因为在贝叶斯法则的背景下 \(Pr(x|\phi)\) 被称为证据（方程 17.19）。在实践中，分布 \(q(z)\) 具有参数 \(\theta\)，因此ELBO可以表示为：
 
-\[
-ELBO[\phi, \theta] = \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\theta)} \right] dz. \tag{17.16}
-\]
+\begin{equation}
+ELBO[\phi, \theta] = \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\theta)} \right] dz. 
+\end{equation}
 
 为了学习非线性潜在变量模型，我们要将此量作为 \(\phi\) 和 \(\Theta\) 的函数最大化。执行这一计算的神经架构是变分自编码器（VAE）。
 
@@ -202,7 +202,7 @@ ELBO[\theta, \phi] &= \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\the
 &= \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)Pr(x|\phi)}{q(z|\theta)} \right] dz \\
 &= \int q(z|\theta) \log [Pr(x|\phi)] dz + \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)}{q(z|\theta)} \right] dz \\
 &= \log [Pr(x|\phi)] + \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)}{q(z|\theta)} \right] dz \\
-&= \log [Pr(x|\phi)] - D_{KL} \left[ q(z|\theta) || Pr(z|x, \phi) \right]. \tag{17.17}
+&= \log [Pr(x|\phi)] - D_{KL} \left[ q(z|\theta) || Pr(z|x, \phi) \right]. 
 \end{align} 
 
 
@@ -225,7 +225,7 @@ ELBO[\theta, \phi] &= \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\the
 ELBO[\theta, \phi] &= \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\theta)} \right] dz \\
 &= \int q(z|\theta) \log \left[ \frac{Pr(x|z, \phi)Pr(z)}{q(z|\theta)} \right] dz \\
 &= \int q(z|\theta) \log [Pr(x|z, \phi)] dz + \int q(z|\theta) \log \left[ \frac{Pr(z)}{q(z|\theta)} \right] dz \\
-&= \int q(z|\theta) \log [Pr(x|z, \phi)] dz - D_{KL} \left[ q(z|\theta) || Pr(z) \right], \tag{17.18}
+&= \int q(z|\theta) \log [Pr(x|z, \phi)] dz - D_{KL} \left[ q(z|\theta) || Pr(z) \right], 
 \end{align} 
 
 
@@ -237,9 +237,9 @@ ELBO[\theta, \phi] &= \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\the
 \section{变分近似}
 如方程 17.17 所示，当 \(q(z|\theta)\) 等同于后验 \(Pr(z|x, \phi)\) 时，我们称 ELBO 达到紧密度。理论上我们可以通过贝叶斯规则计算后验：
 
-\[
-Pr(z|x, \phi) = \frac{Pr(x|z, \phi)Pr(z)}{Pr(x|\phi)}, \tag{17.19}
-\]
+\begin{equation}
+Pr(z|x, \phi) = \frac{Pr(x|z, \phi)Pr(z)}{Pr(x|\phi)}, 
+\end{equation}
 
 但实践中这是不可行的，因为我们无法计算分母中的数据似然（参见第 17.3 节）。
 
@@ -247,9 +247,9 @@ Pr(z|x, \phi) = \frac{Pr(x|z, \phi)Pr(z)}{Pr(x|\phi)}, \tag{17.19}
 
 鉴于 \(q(z|\theta)\) 的最优选择是依赖于数据样本 \(x\) 的后验 \(Pr(z|x, \phi)\)，变分近似也应该遵循这一点，因此我们选取：
 
-\[
-q(z|x, \theta) = \text{Norm}_z \left[ g_\mu[x, \theta], g_\Sigma[x, \theta] \right], \tag{17.20}
-\]
+\begin{equation}
+q(z|x, \theta) = \text{Norm}_z \left[ g_\mu[x, \theta], g_\Sigma[x, \theta] \right], 
+\end{equation}
 
 其中 \(g_\mu[x, \theta]\) 是一个以 \(\theta\) 为参数的第二神经网络，用于预测正态变分近似的均值 \(\mu\) 和方差 \(\Sigma\)。
 
@@ -263,29 +263,29 @@ q(z|x, \theta) = \text{Norm}_z \left[ g_\mu[x, \theta], g_\Sigma[x, \theta] \rig
 \section{变分自编码器（VAE）}
 最终，我们可以阐述变分自编码器（VAE）。我们建立了一个网络来计算 ELBO：
 
-\[
-ELBO[\theta, \phi] = \int q(z|x, \theta) \log \left[ Pr(x|z, \phi) \right] dz - D_{KL} \left[ q(z|x, \theta) || Pr(z) \right], \tag{17.21}
-\]
+\begin{equation}
+ELBO[\theta, \phi] = \int q(z|x, \theta) \log \left[ Pr(x|z, \phi) \right] dz - D_{KL} \left[ q(z|x, \theta) || Pr(z) \right], 
+\end{equation}
 
 这里的分布 \(q(z|x, \theta)\) 是基于方程 17.20 的近似。
 
 第一项包含一个难以直接计算的积分，但因为它是相对于 \(q(z|x, \theta)\) 的期望值，我们可以通过采样来进行近似。对于任意函数 \(a[z]\)，我们得到：
 
-\[
-\mathbb{E}_z [a[z]] = \int a[z] q(z|x, \theta) dz \approx \frac{1}{N} \sum_{n=1}^N a[z^n], \tag{17.22}
-\]
+\begin{equation}
+\mathbb{E}_z [a[z]] = \int a[z] q(z|x, \theta) dz \approx \frac{1}{N} \sum_{n=1}^N a[z^n], 
+\end{equation}
 
 其中 \(z^n\) 是从 \(q(z|x, \theta)\) 中抽取的第 \(n\) 个样本。这种方法被称为蒙特卡罗（Monte Carlo）估计。对于一个非常近似的估计，我们可以仅使用来自 \(q(z|x, \theta)\) 的单一样本 \(z^*\)：
 
-\[
-ELBO[\theta, \phi] \approx \log \left[ Pr(x|z^*, \phi) \right] - D_{KL} \left[ q(z|x, \theta) || Pr(z) \right]. \tag{17.23}
-\]
+\begin{equation}
+ELBO[\theta, \phi] \approx \log \left[ Pr(x|z^*, \phi) \right] - D_{KL} \left[ q(z|x, \theta) || Pr(z) \right]. 
+\end{equation}
 
 第二项是变分分布 \(q(z|x, \theta) = \text{Norm}_z[\mu, \Sigma]\) 与先验 \(Pr(z) = \text{Norm}_z[0, I]\) 之间的 KL 散度。两个正态分布之间的 KL 散度可以通过封闭形式计算。特别是，当一个分布的参数为 \(\mu, \Sigma\)，而另一个为标准正态分布时，其 KL 散度可由以下公式给出：
 
-\[
-D_{KL} \left[ q(z|x, \theta) || Pr(z) \right] = \frac{1}{2} \left( \text{Tr}[\Sigma] + \mu^T \mu - D_z - \log \left| \text{det}[\Sigma] \right| \right). \tag{17.24}
-\]
+\begin{equation}
+D_{KL} \left[ q(z|x, \theta) || Pr(z) \right] = \frac{1}{2} \left( \text{Tr}[\Sigma] + \mu^T \mu - D_z - \log \left| \text{det}[\Sigma] \right| \right). 
+\end{equation}
 这里 \(D_z\) 代表潜在空间的维度。
 
 
@@ -321,9 +321,9 @@ VAE 将 ELBO 作为 \(\theta\) 和 \(\phi\) 的函数进行计算。为了最大
 
 幸运的是，这里有一个简便的方法；我们可以把随机过程部分移到网络的一个分支中，这个分支从标准正态分布 \(\text{Norm}[0, I]\) 抽取一个样本 \(e^*\)，然后利用以下关系式：
 
-\[
-z^* = \mu + \Sigma^{1/2} \cdot e^*, \tag{17.25}
-\]
+\begin{equation}
+z^* = \mu + \Sigma^{1/2} \cdot e^*, 
+\end{equation}
 
 从而从目标的高斯分布中抽取样本。如此一来，我们就可以像通常一样计算导数了，因为反向传播算法无需经过随机过程的分支。这种方法被称为*重参数化技巧*（图 17.11）。
 
@@ -345,15 +345,15 @@ z^* = \mu + \Sigma^{1/2} \cdot e^*, \tag{17.25}
 \begin{align}
 Pr(x) &= \int Pr(x|z)Pr(z)dz \\
 &= \mathbb{E}_{z} [Pr(x|z)] \\
-&= \mathbb{E}_{z} [\text{Norm}_x[f(z, \phi), \sigma^2 I]]. \tag{17.26}
+&= \mathbb{E}_{z} [\text{Norm}_x[f(z, \phi), \sigma^2 I]]. 
 \end{align}
 
 
 理论上，我们可以根据公式 17.22 通过从正态分布 \(Pr(z) = \text{Norm}_z[0,I]\) 中抽样来*近似*这个概率，并计算：
 
-\[
-Pr(x) \approx \frac{1}{N} \sum_{n=1}^{N} Pr(x|z_n). \tag{17.27}
-\]
+\begin{equation}
+Pr(x) \approx \frac{1}{N} \sum_{n=1}^{N} Pr(x|z_n). 
+\end{equation}
 
 但是，由于维度灾难的影响，我们抽取的几乎所有 \(z_n\) 的值都将具有非常低的概率；因此，我们需要抽取大量样本以获得可靠的估计。一个更优的策略是采用*重要性采样 (importance sampling)*。在这种方法中，我们从一个辅助分布 \(q(z)\) 中抽取 \(z\)，计算 \(Pr(x|z_n)\)，并利用新分布下 \(q(z)\) 的概率对结果值进行调整：
 
@@ -361,7 +361,7 @@ Pr(x) \approx \frac{1}{N} \sum_{n=1}^{N} Pr(x|z_n). \tag{17.27}
 \begin{align}
 Pr(x) &= \int \frac{Pr(x|z)Pr(z)}{q(z)}q(z)dz \\
 &= \mathbb{E}_{q(z)} \left[\frac{Pr(x|z)Pr(z)}{q(z)}\right] \\
-&\approx \frac{1}{N} \sum_{n=1}^{N} \frac{Pr(x|z_n)Pr(z_n)}{q(z_n)}, \tag{17.28}
+&\approx \frac{1}{N} \sum_{n=1}^{N} \frac{Pr(x|z_n)Pr(z_n)}{q(z_n)}, 
 \end{align} 
 
 
@@ -408,17 +408,17 @@ VAEs 不仅可以生成数据，还能修改真实数据。将数据点 \(x\) �
 
 促进解耦的方法通常会在损失函数中加入基于以下两种情形的正则化项：(i) 基于潜变量 \(z\) 的后验 \(q(z|x, \theta)\)，或 (ii) 基于聚合后验 \(q(z|\theta) = (1/I) \sum_i q(z|x_i, \theta)\)：
 
-\[
-L_{new} = -ELBO[\theta, \phi] + \lambda_1 E_{P_{r(x)}} [r_1(q(z|x, \theta))] + \lambda_2 r_2 [q(z|\theta)]. \tag{17.29}
-\]
+\begin{equation}
+L_{new} = -ELBO[\theta, \phi] + \lambda_1 E_{P_{r(x)}} [r_1(q(z|x, \theta))] + \lambda_2 r_2 [q(z|\theta)]. 
+\end{equation}
 
 其中，正则化项 \(r_1[\cdot]\) 是后验的函数，并且由 \(\lambda_1\) 加权。项 \(r_2[\cdot]\) 是聚合后验的函数，并且由 \(\lambda_2\) 加权。
 
 例如，在 *beta VAE* 中，增加了 ELBO（方程 17.18）的第二项权重：
 
-\[
-\text{ELBO}[\theta, \phi] \approx \log[Pr(x|z^*, \phi)] - \beta \cdot D_{KL} [q(z|x, \theta) || Pr(z)], \tag{17.30}
-\]
+\begin{equation}
+\text{ELBO}[\theta, \phi] \approx \log[Pr(x|z^*, \phi)] - \beta \cdot D_{KL} [q(z|x, \theta) || Pr(z)], 
+\end{equation}
 
 这里的 \(\beta > 1\) 表示与重构误差相比，先验 \(Pr(z)\) 偏差的相对权重。因为先验通常是具有球形协方差矩阵的多元正态分布，其各维度是独立的。因此，增加这一项的权重有助于使后验分布之间的相关性降低。另一个变体是总相关性 VAE，它通过增加一个项来降低潜空间中变量之间的总相关性（参见图 17.14），并致力于最大化潜变量的一个小子集与观测数据之间的互信息。
 
@@ -492,32 +492,32 @@ VAE 存在的另一个问题是潜空间中可能出现不对应任何现实样�
 
 \textbf{问题 17.3} 对于凸函数，Jensen 不等式是相反的：
 
-\[
-g[\mathbb{E}[y]] \leq \mathbb{E}[g[y]]. \tag{17.31}
-\]
+\begin{equation}
+g[\mathbb{E}[y]] \leq \mathbb{E}[g[y]]. 
+\end{equation}
 
 如果一个函数的二阶导数在任何地方都大于或等于零，则该函数是凸的。证明函数 \(g[x] = x^{2n}\) 对于任意的 \(n \in \{1, 2, 3, \ldots\}\) 是凸的。利用这个结果和 Jensen 不等式证明分布 \(Pr(x)\) 的平均值的平方 \(\mathbb{E}[x]^2\) 必须小于或等于其二阶矩 \(\mathbb{E}[x^2]\)。
 
 \textbf{问题 17.4} 展示如何从变分分布 \(q(z|x)\) 与真实后验分布 \(Pr(z|x, \phi)\) 之间的 KL 散度出发，推导出 ELBO 的表达式（如方程 17.18 所示）：
 
-\[
-D_{KL} [q(z|x) || Pr(z|x, \phi)] = \int (q(z|x) \log \frac{q(z|x)}{Pr(z|x, \phi)}) dz. \tag{17.32}
-\]
+\begin{equation}
+D_{KL} [q(z|x) || Pr(z|x, \phi)] = \int (q(z|x) \log \frac{q(z|x)}{Pr(z|x, \phi)}) dz. 
+\end{equation}
 
 从贝叶斯定理（方程 17.19）开始。
 
 问题 17.5 重参数化技巧用于计算函数 \(f[x]\) 关于其期望的导数：
 
-\[
-\frac{\partial}{\partial\phi} E_{P_{r(x|\phi)}} [f[x]], \tag{17.33}
-\]
+\begin{equation}
+\frac{\partial}{\partial\phi} E_{P_{r(x|\phi)}} [f[x]], 
+\end{equation}
 
 这里的导数是关于分布 \(P_{r(x|\phi)}\) 参数 \(\phi\) 的。证明这个导数还可以表示为：
 
 
 \begin{align}
 \frac{\partial}{\partial\phi} E_{P_{r(x|\phi)}} [f[x]] &= E_{P_{r(x|\phi)}} \left[ f[x] \frac{\partial}{\partial\phi} \log(P_{r(x|\phi)}) \right] \\
-&\approx \frac{1}{I} \sum_{i=1}^{I} f[x_i] \frac{\partial}{\partial\phi} \log(P_{r(x_i|\phi)}). \tag{17.34}
+&\approx \frac{1}{I} \sum_{i=1}^{I} f[x_i] \frac{\partial}{\partial\phi} \log(P_{r(x_i|\phi)}). 
 \end{align} 
 
 

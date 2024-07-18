@@ -13,7 +13,7 @@
 h_1 = f_1[x, \phi_1] \\
 h_2 = f_2[h_1, \phi_2] \\
 h_3 = f_3[h_2, \phi_3] \\
-y = f_4[h_3, \phi_4] \tag{11.1}
+y = f_4[h_3, \phi_4] 
 \end{align} 
 
 
@@ -32,9 +32,9 @@ y = f_4[h_3, \phi_4] \tag{11.1}
 
 考虑到数据处理的顺序性，我们也可以将该网络视为一系列嵌套函数的形式来理解：
 
-\[
-y = f_4 \left[ f_3 \left[ f_2 \left[ f_1[x, \phi_1], \phi_2 \right], \phi_3 \right], \phi_4 \right]. \tag{11.2}
-\]
+\begin{equation}
+y = f_4 \left[ f_3 \left[ f_2 \left[ f_1[x, \phi_1], \phi_2 \right], \phi_3 \right], \phi_4 \right]. 
+\end{equation}
 \subsection{顺序处理方式的限制}
 理论上，我们能够向网络中添加任意数量的层。正如前一章所示，为卷积网络增添更多层确实能提升性能；例如，拥有十八层的 VGG 网络（参见图 10.17）就超过了八层的 AlexNet（参见图 10.16）的表现。然而，当继续增加层次时，图像分类的性能又一次出现下降（参见图 11.2）。这一现象颇为意外，因为一般而言，增加模型的容量会提升其性能（参见图 8.10）。更值得注意的是，这种性能下降不仅在训练集上出现，也在测试集上观察到，这表明问题在于训练更深网络的难度，而非这些深层网络的泛化能力。
 
@@ -60,9 +60,9 @@ y = f_4 \left[ f_3 \left[ f_2 \left[ f_1[x, \phi_1], \phi_2 \right], \phi_3 \rig
 
 碎片化梯度的出现，可能是因为随着网络加深，早期网络层的变动以越来越复杂的方式影响输出。网络的第一层 \(f_1\) 对输出 \(y\) 的导数如下11.1所示：
 
-\[
-\frac{\partial y}{\partial f_1} = \frac{\partial f_4}{\partial f_3} \frac{\partial f_3}{\partial f_2} \frac{\partial f_2}{\partial f_1}. \tag{11.3}
-\]
+\begin{equation}
+\frac{\partial y}{\partial f_1} = \frac{\partial f_4}{\partial f_3} \frac{\partial f_3}{\partial f_2} \frac{\partial f_2}{\partial f_1}. 
+\end{equation}
 
 当改变决定 \(f_1\) 的参数时，这一系列的导数都可能发生变化，因为 \(f_2, f_3,\) 和 \(f_4\) 层是基于 \(f_1\) 计算的。因此，每个训练样例更新的梯度可能完全不同，导致损失函数的行为变得异常。（在公式 11.3 和 11.6 中，我们用符号 \(f_k\) 来指代函数 \(f_k[•]\) 的输出。）
 
@@ -75,7 +75,7 @@ y = f_4 \left[ f_3 \left[ f_2 \left[ f_1[x, \phi_1], \phi_2 \right], \phi_3 \rig
 h_1 = x + f_1[x, \phi_1] \\
 h_2 = h_1 + f_2[h_1, \phi_2] \\
 h_3 = h_2 + f_3[h_2, \phi_3] \\
-y = h_3 + f_4[h_3, \phi_4], \tag{11.4}
+y = h_3 + f_4[h_3, \phi_4], 
 \end{align} 
 
 
@@ -91,17 +91,17 @@ y = h_3 + f_4[h_3, \phi_4], \tag{11.4}
 
 通过替换中间变量 \(h_k\) 的表达式，我们可以将整个过程表述为一个单一的函数：
 
-\[
-y = x + f_1[x] + f_2[x + f_1[x]] + f_3[x + f_1[x] + f_2[x + f_1[x]]] + f_4[x + f_1[x] + f_2[x + f_1[x]] + f_3[x + f_1[x] + f_2[x + f_1[x]]]], \tag{11.5}
-\]
+\begin{equation}
+y = x + f_1[x] + f_2[x + f_1[x]] + f_3[x + f_1[x] + f_2[x + f_1[x]]] + f_4[x + f_1[x] + f_2[x + f_1[x]] + f_3[x + f_1[x] + f_2[x + f_1[x]]]], 
+\end{equation}
 
 这里我们为了表述的清晰，省略了参数 \(\phi\)。可以把这个方程看作是对网络的“展开”（见图 11.4b）。可以发现，最终的网络输出实际上是输入加上四个小型网络的和，这些小型网络对应于方程的每一行；换句话说，残差连接将原网络转化成了这些小网络的集合，它们的输出相加得到最终结果。
 
 另一种理解残差网络的方式是，它创造了从输入到输出的十六条不同长度的路径。例如，第一个函数 \(f_1[x]\) 出现在这十六条路径中的八条路径上，包括作为直接的加性项（即，路径长度为一）。相似地，对于公式 11.3 的导数是：
 
-\[
-\frac{\partial y}{\partial f_1} = 1 + \frac{\partial f_2}{\partial f_1} + \left( \frac{\partial f_3}{\partial f_1} \frac{\partial f_2}{\partial f_1} \right) + \left( \frac{\partial f_4}{\partial f_1} \frac{\partial f_2}{\partial f_1} \frac{\partial f_3}{\partial f_1} \frac{\partial f_2}{\partial f_1} \right), \tag{11.6}
-\]
+\begin{equation}
+\frac{\partial y}{\partial f_1} = 1 + \frac{\partial f_2}{\partial f_1} + \left( \frac{\partial f_3}{\partial f_1} \frac{\partial f_2}{\partial f_1} \right) + \left( \frac{\partial f_4}{\partial f_1} \frac{\partial f_2}{\partial f_1} \frac{\partial f_3}{\partial f_1} \frac{\partial f_2}{\partial f_1} \right), 
+\end{equation}
 
 其中每条路径都对应一个项。右手边的恒等项说明了第一层 \(f_1[x, \phi_1]\) 中参数 \(\phi_1\) 的改变如何直接影响到网络输出 \(y\) 的变化。它们也通过不同长度的其他导数链间接影响输出。通常，通过较短路径的梯度会更为稳定。因为恒等项和各种短链导数都会对每层的导数贡献，含有残差连接的网络在面对碎片化梯度时表现得更好。
 
@@ -145,23 +145,23 @@ y = x + f_1[x] + f_2[x + f_1[x]] + f_3[x + f_1[x] + f_2[x + f_1[x]]] + f_4[x + f
 
 \begin{align}
 m_h = \frac{1}{|B|} \sum_{i \in B} h_i \\
-s_h = \sqrt{\frac{1}{|B|} \sum_{i \in B} (h_i - m_h)^2}  \tag{11.7}
+s_h = \sqrt{\frac{1}{|B|} \sum_{i \in B} (h_i - m_h)^2}  
 \end{align}
 
 
 这里，所有的数值均为标量。接着，利用这些统计数据将批次中的激活值标准化，使其均值为零，方差为一：
 
-\[
-\hat{h}_i \leftarrow \frac{h_i - m_h}{s_h + \epsilon} \quad \forall i \in B \tag{11.8}
-\]
+\begin{equation}
+\hat{h}_i \leftarrow \frac{h_i - m_h}{s_h + \epsilon} \quad \forall i \in B 
+\end{equation}
 
 其中，\(\epsilon\) 是一个很小的数值，用来避免在所有批次成员的 \(h_i\) 值相同时 \(s_h = 0\) 导致的除零错误。
 
 最终，通过 \(\gamma\) 缩放并加上 \(\delta\) 来调整归一化变量：
 
-\[
-\hat{h}_i \leftarrow \gamma\hat{h}_i + \delta \quad \forall i \in B \tag{11.9}
-\]
+\begin{equation}
+\hat{h}_i \leftarrow \gamma\hat{h}_i + \delta \quad \forall i \in B 
+\end{equation}
 经过这一过程，激活值在批次所有成员中的平均值变为 \(\delta\)，标准偏差变为 \(\gamma\)。这两个参数均在训练过程中学习得到。
 
 批量归一化分别对每个隐藏单元进行独立应用。在一个具有 K 层、每层含 D 个隐藏单元的标准神经网络中，会有 KD 个学习到的偏移量 \(\delta\) 和 KD 个学习到的缩放因子 \(\gamma\)。在卷积网络中，归一化的统计量是在批次和空间位置两个维度上计算的。若网络由 K 层组成，每层包含 C 个通道，则会有 KC 个偏移量和 KC 个缩放因子。在测试阶段，由于缺乏可以用来收集统计数据的批次，解决方案是在整个训练数据集上计算 \(m_h\) 和 \(s_h\) 的统计量（而非仅在一个批次中），并在最终网络中将其固定。
@@ -343,7 +343,7 @@ f_4 = \mathbb{E}[f_{3i}] \\
 f_5 = \sqrt{f_4 + \epsilon} \\
 f_6 = \frac{1}{f_5} \\
 f_{7i} = f_{2i} \times f_6 \\
-z'_i = f_{7i} \times \gamma + \delta, \tag{11.10}
+z'_i = f_{7i} \times \gamma + \delta, 
 \end{align} 
 
 

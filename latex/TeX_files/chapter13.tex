@@ -84,7 +84,7 @@
 
 \begin{align}
 X' = XP \\
-A' = P^TAP, \tag{13.1}
+A' = P^TAP, 
 \end{align} 
 
 
@@ -110,23 +110,23 @@ A' = P^TAP, \tag{13.1}
 
 在图级任务中，输出节点嵌入会被合并（如通过求平均值）并通过线性变换或神经网络映射成一个固定大小的向量。在回归任务中，使用最小二乘法损失来计算结果与实际值之间的差异。对于二元分类，输出通过 Sigmoid 函数处理，差异则通过二元交叉熵损失计算。图属于第一类的概率可以表示为：
 
-\[
-Pr(y = 1|X, A) = \text{sig}(\beta_k + \omega_k^T H_K \frac{1}{N}), \tag{13.2}
-\]
+\begin{equation}
+Pr(y = 1|X, A) = \text{sig}(\beta_k + \omega_k^T H_K \frac{1}{N}), 
+\end{equation}
 
 其中，标量 \(\beta_k\) 和 \(1 \times D\) 向量 \(\omega_k\) 是通过学习得到的参数。通过后乘输出嵌入矩阵 \(H_K\) 和一个包含所有元素为 1 的列向量，实现了将所有嵌入相加的效果，随后除以节点数量 \(N\) 得到平均值，这一过程称为 平均池化（参见图 10.11）。
 
 \textbf{节点级任务}：网络对图中每个节点分配一个标签（分类）或一个或多个值（回归），利用图结构和节点嵌入。例如，在一个类似于图 13.2d 的由 3D 点云构建的图中，目标可能是根据节点是属于机翼还是机身来进行分类。损失函数的定义与图级任务相同，不过此时是在每个节点 \(n\) 上独立完成的：
 
-\[
-Pr(y^{(n)} = 1|X, A) = \text{sig}\left[\beta_K + \omega_k^T h_K^{(n)} \right]. \tag{13.3}
-\]
+\begin{equation}
+Pr(y^{(n)} = 1|X, A) = \text{sig}\left[\beta_K + \omega_k^T h_K^{(n)} \right]. 
+\end{equation}
 
 \textbf{边预测任务}：网络预测节点 \(n\) 与 \(m\) 之间是否应存在边。例如，在社交网络的场景中，网络可能预测两人是否相识且相互喜欢，并在是的情况下建议他们建立连接。这是一个二元分类任务，需将两个节点的嵌入映射为一个表示边存在概率的单个数值。一种做法是计算节点嵌入的点积，并通过 Sigmoid 函数处理以得出概率：
 
-\[
-Pr(y_{mn} = 1|X, A) = \text{sig}\left[h^{(m)T}h^{(n)} \right]. \tag{13.4}
-\]
+\begin{equation}
+Pr(y_{mn} = 1|X, A) = \text{sig}\left[h^{(m)T}h^{(n)} \right]. 
+\end{equation}
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter13/GraphProblems.png}
@@ -146,7 +146,7 @@ H_1 = F[X, A, \phi_0] \\
 H_2 = F[H_1, A, \phi_1] \\
 H_3 = F[H_2, A, \phi_2] \\
 \vdots \\
-H_K = F[H_{K-1}, A, \phi_{K-1}], \tag{13.5}
+H_K = F[H_{K-1}, A, \phi_{K-1}], 
 \end{align} 
 
 
@@ -155,15 +155,15 @@ H_K = F[H_{K-1}, A, \phi_{K-1}], \tag{13.5}
 \subsection{等变性与不变性}
 正如我们先前所指出的，图中的节点索引是随意的，节点索引的任何排列变换都不会改变图本身的结构。因此，任何模型都必须遵守这一性质。这就要求每一层对节点索引的排列变换保持等变性（equivariance）（参见第10.1节）。换言之，如果我们对节点索引进行排列，各阶段的节点嵌入将以同样的方式进行排列。用数学语言表示，如果 \(P\) 是一个排列矩阵，那么我们必须满足：
 
-\[
-H_{k+1}P = F[H_kP, P^TAP, \phi_k]. \tag{13.6}
-\]
+\begin{equation}
+H_{k+1}P = F[H_kP, P^TAP, \phi_k]. 
+\end{equation}
 
 对于节点分类和边预测任务，输出同样需要对节点索引的排列保持等变性。然而，对于图级任务，由于最终层聚合了整个图的信息，输出对节点顺序应保持不变性（invariance）。实际上，等式 13.2 中的输出层就实现了这一点：
 
-\[
-y = \text{sig}[\beta_K + \omega_k^T H_K \frac{1}{N}] = \text{sig}[\beta_K + \omega_k^T H_KP1/N], \tag{13.7}
-\]
+\begin{equation}
+y = \text{sig}[\beta_K + \omega_k^T H_K \frac{1}{N}] = \text{sig}[\beta_K + \omega_k^T H_KP1/N], 
+\end{equation}
 
 适用于任何排列矩阵 \(P\)（参见问题 13.6）。
 
@@ -178,22 +178,22 @@ y = \text{sig}[\beta_K + \omega_k^T H_K \frac{1}{N}] = \text{sig}[\beta_K + \ome
 \subsection{GCN 层的实例}
 这番思考促成了简单的 GCN 层设计（参见图 13.7）。在第 \(k\) 层的每个节点 \(n\)，我们通过累加其邻居节点的节点嵌入 \(h\) 来聚合信息：
 
-\[
-\text{agg}[n, k] = \sum_{m \in \text{ne}[n]} h_k^{(m)}, \tag{13.8}
-\]
+\begin{equation}
+\text{agg}[n, k] = \sum_{m \in \text{ne}[n]} h_k^{(m)}, 
+\end{equation}
 
 这里 \(\text{ne}[n]\) 返回节点 \(n\) 的邻居索引集合。接着，我们对当前节点的嵌入 \(h_k^{(n)}\) 以及聚合后的值应用线性变换 \(\Omega_k\)，加上偏置项 \(\beta_k\)，并将结果通过非线性激活函数 \(a[\cdot]\) 处理，该函数对其向量参数的每一元素独立作用：
 
-\[
-h_{k+1}^{(n)} = a \left[ \beta_k + \Omega_k \cdot h_k^{(n)} + \Omega_k \cdot \text{agg}[n, k] \right]. \tag{13.9}
-\]
+\begin{equation}
+h_{k+1}^{(n)} = a \left[ \beta_k + \Omega_k \cdot h_k^{(n)} + \Omega_k \cdot \text{agg}[n, k] \right]. 
+\end{equation}
 
 通过观察矩阵与向量后乘所得列的加权和，我们可以更为简洁地描述这一过程。邻接矩阵 \(A\) 中第 \(n\) 列在邻居对应的位置上为 1，因此，如果我们把节点嵌入组合成 \(D \times N\) 矩阵 \(H_k\) 并与邻接矩阵 \(A\) 后乘，得到的结果的第 \(n\) 列就是 \(\text{agg}[n, k]\)。如此，节点更新公式变为：
 
 
 \begin{align}
 H_{k+1} = a [\beta_{k} 1^T + \Omega_k H_k + \Omega_k H_k A] \\
-= a [\beta_{k} 1^T + \Omega_k H_k (A + I)], \tag{13.10}
+= a [\beta_{k} 1^T + \Omega_k H_k (A + I)], 
 \end{align} 
 
 
@@ -220,7 +220,7 @@ H_1 = a[\beta_0 1^T + \Omega_0 X(A + I)] \\
 H_2 = a[\beta_1 1^T + \Omega_1 H_1(A + I)] \\
 \vdots \\
 H_K = a[\beta_{K-1} 1^T + \Omega_{K-1} H_{k-1}(A + I)] \\
-f[X, A, \Phi] = \text{sig}[\beta_K + \omega_K H_K 1/N], \tag{13.11}
+f[X, A, \Phi] = \text{sig}[\beta_K + \omega_K H_K 1/N], 
 \end{align} 
 
 
@@ -250,9 +250,9 @@ f[X, A, \Phi] = \text{sig}[\beta_K + \omega_K H_K 1/N], \tag{13.11}
 \section{案例分析：节点分类}
 作为另一个示例，让我们来看一个在转导学习环境下的二分类节点任务。我们从一个包含数百万节点的商用规模图开始。部分节点已有明确的二元标签，我们的目标是为剩余的未标记节点进行标签分配。网络的架构在很大程度上与前述示例相似（参见方程 13.11），但采用了一个不同的最终层来产生一个 \(1 \times N\) 大小的输出向量：
 
-\[
-f[X, A, \Phi] = \text{sig} [\beta_K 1^T + \omega_K H_K ], \tag{13.12}
-\]
+\begin{equation}
+f[X, A, \Phi] = \text{sig} [\beta_K 1^T + \omega_K H_K ], 
+\end{equation}
 
 这里的函数 \(\text{sig}[\cdot]\) 对输入行向量的每一个元素独立应用 sigmoid 函数。我们继续使用二元交叉熵损失函数，但仅限于那些我们已知地面真值标签 y 的节点。值得注意的是，方程 13.12 实际上是将方程 13.3 中的节点分类损失函数向量化了。
 
@@ -298,15 +298,15 @@ f[X, A, \Phi] = \text{sig} [\beta_K 1^T + \omega_K H_K ], \tag{13.12}
 
 在前述的 GCN 层示例中，我们简单地通过加和的方式将累积的邻居信息 HA 和当前节点 H 结合起来：
 
-\[
-H_{k+1} = a \left[ \beta_k 1^T + \Omega_k H_k (A + I) \right]. \tag{13.13}
-\]
+\begin{equation}
+H_{k+1} = a \left[ \beta_k 1^T + \Omega_k H_k (A + I) \right]. 
+\end{equation}
 
 在另一个变体中，当前节点在加入总和之前，会先乘以一个因子 \((1 + \epsilon_k)\)，其中 \(\epsilon_k\) 是一个对于每层都不同的学习参数：
 
-\[
-H_{k+1} = a \left[ \beta_{k} 1^T + \Omega_k H_k (A + (1 + \epsilon_k)I) \right]. \tag{13.14}
-\]
+\begin{equation}
+H_{k+1} = a \left[ \beta_{k} 1^T + \Omega_k H_k (A + (1 + \epsilon_k)I) \right]. 
+\end{equation}
 
 这种方法称为“对角线增强”。还有一种变体，它对当前节点应用了一个不同的线性变换 \(\Psi_k\)：
 
@@ -314,7 +314,7 @@ H_{k+1} = a \left[ \beta_{k} 1^T + \Omega_k H_k (A + (1 + \epsilon_k)I) \right].
 \begin{align}
 H_{k+1} &= a \left[ \beta_{k} 1^T + \Omega_k H_k A + \Psi_k H_k \right] \\
 &= a \left[ \beta_{k} 1^T + \left[ \Omega_k \ \Psi_k \right] \begin{bmatrix} H_k A \\ H_k \end{bmatrix} \right] \\
-&= a \left[ \beta_{k} 1^T + \Omega'_k \begin{bmatrix} H_k A \\ H_k \end{bmatrix} \right], \tag{13.15}
+&= a \left[ \beta_{k} 1^T + \Omega'_k \begin{bmatrix} H_k A \\ H_k \end{bmatrix} \right], 
 \end{align} 
 
 
@@ -322,40 +322,40 @@ H_{k+1} &= a \left[ \beta_{k} 1^T + \Omega_k H_k A + \Psi_k H_k \right] \\
 
 \subsection{残差连接}
 在残差连接的应用中，邻居的聚合表示会先进行变换并通过激活函数处理，然后再与当前节点进行加和或连接。对于后一种情况，对应的网络方程如下：
-\[
-H_{k+1} = a \left[ \beta_k 1^T + \Omega_k H_k A \right] \tag{13.16}
-\]
+\begin{equation}
+H_{k+1} = a \left[ \beta_k 1^T + \Omega_k H_k A \right] 
+\end{equation}
 \subsection{Mean aggregation}
 尽管上述方法通过对节点嵌入进行加和来汇总邻居信息，我们还有其他方式来组合这些嵌入数据。有时候，与其简单求和，不如计算邻居的平均值，尤其是在嵌入信息的重要性超过结构信息时更是如此，因为这样做不会使得邻域贡献的大小依赖于邻居的数量：
 
-\[
-\text{agg}[n] = \frac{1}{|\text{ne}[n]|} \sum_{m \in \text{ne}[n]} h_m, \tag{13.17}
-\]
+\begin{equation}
+\text{agg}[n] = \frac{1}{|\text{ne}[n]|} \sum_{m \in \text{ne}[n]} h_m, 
+\end{equation}
 
 这里 \(\text{ne}[n]\) 表示的是包含第 \(n\) 个节点所有邻居索引的集合。通过引入一个对角线为 \(N \times N\) 的度数矩阵 \(D\)，方程 13.17 可以优雅地用矩阵形式表达出来。这个矩阵的每个非零元素代表了相应节点的邻居数目。从而，在逆矩阵 \(D^{-1}\) 中，每个对角线元素就是我们计算平均值所需的分母。据此，新的 GCN 层可以表示为：
 
-\[
-H_{k+1} = a \left[ \beta_k 1^T + \Omega_k H_k (AD^{-1} + I) \right]. \tag{13.18}
-\]
+\begin{equation}
+H_{k+1} = a \left[ \beta_k 1^T + \Omega_k H_k (AD^{-1} + I) \right]. 
+\end{equation}
 \subsection{Kipf 归一化}
 在基于平均聚合的图神经网络设计中，Kipf 归一化是一个特殊的变体，它不仅考虑节点自身，还包括其邻居节点在内进行平均计算。通过 Kipf 归一化，节点的表示总和按如下方式规范化：
 
-\[
-\text{agg}[n] = \sum_{m \in \text{ne}[n]} \frac{h_m}{\sqrt{|\text{ne}[n]||\text{ne}[m]|}}, \tag{13.19}
-\]
+\begin{equation}
+\text{agg}[n] = \sum_{m \in \text{ne}[n]} \frac{h_m}{\sqrt{|\text{ne}[n]||\text{ne}[m]|}}, 
+\end{equation}
 
 这样做的目的是对那些连接较多、因而提供的信息较少独特性的节点，给予较低的权重。这个思想也可以利用度矩阵 \(D\)，以矩阵形式精确表达：
 
-\[
-H_{k+1} = a \left[ \beta_k 1^T + \Omega_k H_k (D^{-1/2} A D^{-1/2} + I) \right]. \tag{13.20}
-\]
+\begin{equation}
+H_{k+1} = a \left[ \beta_k 1^T + \Omega_k H_k (D^{-1/2} A D^{-1/2} + I) \right]. 
+\end{equation}
 
 \subsection{最大池化聚合}
 作为对节点排列不变性的另一种处理方式，最大池化聚合通过计算邻居节点嵌入向量中的最大值来实现。最大池化的操作定义如下：
 
-\[
-\text{agg}[n] = \max_{m \in \text{ne}[n]} \left[ h_m \right], \tag{13.21}
-\]
+\begin{equation}
+\text{agg}[n] = \max_{m \in \text{ne}[n]} \left[ h_m \right], 
+\end{equation}
 
 这里的 \(\max[\cdot]\) 操作符选取当前节点 \(n\) 的所有邻居向量 \(h_m\) 中每个元素的最大值。
 
@@ -363,24 +363,24 @@ H_{k+1} = a \left[ \beta_k 1^T + \Omega_k H_k (D^{-1/2} A D^{-1/2} + I) \right].
 
 我们之前讨论的聚合方法或是平等考虑每个邻居节点的贡献，或是根据图的结构特性来加权。与之不同，图注意力网络层的权重是基于节点数据动态计算的。首先，对当前节点的嵌入进行线性变换：
 
-\[
-H'_k = \beta_k 1^T + \Omega_k H. \tag{13.22}
-\]
+\begin{equation}
+H'_k = \beta_k 1^T + \Omega_k H. 
+\end{equation}
 
 接下来，计算变换后节点嵌入之间的相似度 \(s_{mn}\)，方法是将它们成对连接，与一组学习得到的参数 \(\phi_k\) 做点积，然后应用激活函数：
 
-\[
+\begin{equation}
 s_{mn} = a \left[ \phi_k^T \left[ \begin{array}{c}
 h_m' \\
 h_n'
-\end{array} \right] \right]. \tag{13.23}
-\]
+\end{array} \right] \right]. 
+\end{equation}
 
 这个过程得到的相似度值被存放在一个 \(N \times N\) 的矩阵 \(S\) 中，每个元素代表一个节点与其他所有节点的相似度。类似于自注意力机制中的点积计算，每个输出嵌入的注意力权重经过 softmax 操作归一化，使得权重为正且和为一。但是，只有当前节点及其邻居的相似度才会被考虑。这些注意力权重随后被用于调整变换后的嵌入数据：
 
-\[
-H_{k+1} = a \left[ H'_k \cdot \text{Softmask}[S, A + I] \right], \tag{13.24}
-\]
+\begin{equation}
+H_{k+1} = a \left[ H'_k \cdot \text{Softmask}[S, A + I] \right], 
+\end{equation}
 
 其中 \(a[\cdot]\) 表示另一个激活函数。\(\text{Softmask}[\cdot,\cdot]\) 函数通过对 \(S\) 的每列应用 softmax 操作并将 \(A + I\) 为零的位置设为负无穷，从而计算出注意力权重，确保只有邻居节点的注意力被考虑。
 
@@ -423,9 +423,9 @@ Sanchez-Lengeling 等人（2021年）和 Daigavane 等人（2021年）撰写的�
 \textbf{应用领域}：图神经网络的应用领域包括图分类（例如，Zhang 等人，2018年）、节点分类（例如，Kipf 与 Welling，2017年）、边预测（例如，Zhang 与 Chen，2018年）、图聚类（例如，Tsitsulin 等人，2020年）以及推荐系统（例如，Wu 等人，2023年）。节点分类方法由 Xiao 等人（2022年）综述，图分类方法由 Errica 等人（2019年）综述，边预测方法由 Mutlu 等人（2020年）和 Kumar 等人（2020年）综述。
 
 \textbf{图神经网络}：图神经网络最初由 Gori 等人（2005年）和 Scarselli 等人（2008年）提出，将其定义为递归神经网络的一种泛化形式。该模型通过下面的迭代更新公式实现：
-\[
-h_n \leftarrow f \left[ x_n, x_{m\in \mathcal{N}(n)}, e_{ee\in \mathcal{N}(n)}, h_{m\in \mathcal{N}(n)}, \phi \right], \tag{13.25}
-\]
+\begin{equation}
+h_n \leftarrow f \left[ x_n, x_{m\in \mathcal{N}(n)}, e_{ee\in \mathcal{N}(n)}, h_{m\in \mathcal{N}(n)}, \phi \right], 
+\end{equation}
 在这个公式中，每个节点的嵌入 \(h_n\) 通过初始嵌入 \(x_n\)、相邻节点的初始嵌入 \(x_{m\in \mathcal{N}(n)}\)、相邻边的初始嵌入 \(e_{ee\in \mathcal{N}(n)}\) 以及相邻节点的嵌入 \(h_{m\in \mathcal{N}(n)}\) 进行更新。为了确保模型能够收敛，函数 \(f[\cdot, \cdot, \cdot, \cdot, \phi]\) 必须是一个收缩映射（见图 16.9）。如果我们对这个方程沿时间维度进行 \(K\) 步展开，并在每一步允许参数 \(\phi_k\) 发生变化，那么方程 13.25 就会与图卷积网络非常相似。后续的研究将图神经网络扩展到了使用门控循环单元（Li 等人，2016年）和长短期记忆网络（Selsam 等人，2019年）。
 
 \textbf{谱方法}：Bruna 等人（2013年）首次在傅立叶域内应用了卷积操作。傅立叶基向量可以通过对图的拉普拉斯矩阵 L = D − A 进行特征分解得到，其中 D 是度矩阵，A 是邻接矩阵。这种方法的缺点在于滤波器不是局部化的，并且对于大型图而言，分解过程的计算成本过高。Henaff 等人（2015年）解决了第一个问题，他们通过使傅立叶表示保持平滑（从而实现空间域的局部化）。Defferrard 等人（2016年）提出了 ChebNet，它通过利用切比雪夫多项式的递归性质来有效近似滤波器，既实现了空间局部化的滤波器，又降低了计算量。Kipf 和 Welling（2017年）进一步简化了这一过程，构造了仅使用一跳邻域的滤波器，形成了一种与本章描述的空间方法相似的公式，并搭建了谱方法和空间方法之间的桥梁。
@@ -446,9 +446,9 @@ h_n \leftarrow f \left[ x_n, x_{m\in \mathcal{N}(n)}, e_{ee\in \mathcal{N}(n)}, 
 \textbf{边图}：边图、线图或邻接图的概念最早由 Whitney（1932年）提出。Kearnes 等人（2016年）提出了一种更新节点嵌入的“编织”层概念，包括从节点嵌入更新到节点嵌入、从边嵌入更新到节点嵌入、从边嵌入更新到边嵌入，以及从节点嵌入更新到边嵌入，但此过程不涉及相邻节点。Monti 等人（2018年）引入了双原图-边图卷积神经网络（CNN），这是一种现代化的 CNN 架构，它在原图和边图之间交替进行更新。
 
 \textbf{图神经网络的能力}：Xu 等人（2019年）认为神经网络应该能区分不同的图结构；如果两个图尽管具有相同的初始节点嵌入但不同的邻接矩阵，却被映射到相同的输出，这是不应发生的。他们识别出了以前的方法（如 GCNs（Kipf \& Welling，2017年）和 GraphSAGE（Hamilton 等人，2017a年））无法区分的图结构。他们开发了一种具有与 Weisfeiler-Lehman 图同构测试（Weisfeiler \& Leman，1968年）同等区分能力的强大架构，这种测试能够区分大范围的图结构。这一成果的图同构网络基于下列聚合操作：
-\[
-h^{(n)}_{k+1} = \text{mlp} \left[ \left(1 + \epsilon_k\right) h^{(n)}_k + \sum_{m\in\mathcal{N}(n)} h^{(m)}_k \right]. \tag{13.26}
-\]
+\begin{equation}
+h^{(n)}_{k+1} = \text{mlp} \left[ \left(1 + \epsilon_k\right) h^{(n)}_k + \sum_{m\in\mathcal{N}(n)} h^{(m)}_k \right]. 
+\end{equation}
 \textbf{批处理}：关于图卷积网络的原始论文（Kipf \& Welling，2017年）采用了全批量梯度下降法，这在训练过程中的内存需求与节点数量、嵌入大小以及层数成正比。从那时起，提出了三种方法以减少内存需求并为转导设置中的随机梯度下降（SGD）创建批次：节点采样、层采样和子图采样。
 
 节点采样方法从随机选择一组目标节点开始，然后逆向穿过网络，在每个阶段添加一部分接收场中的节点。GraphSAGE（Hamilton 等人，2017a年）提出了图 13.10b 所示的固定数量邻域样本方法。Chen 等人（2018b年）引入了一种方差减少技术，但它依然依赖于节点的历史活动记录，因此内存需求仍然较高。\textbf{PinSAGE}（Ying 等人，2018a年）通过从目标节点开始的随机游走，选择访问次数最多的 \(K\) 个节点，优先连接更紧密的祖先节点。
@@ -482,7 +482,7 @@ Ying 等人（2018a年）还指出，当网络深度超过某一限度时，梯�
 
 问题 13.2* 根据下列邻接矩阵绘制对应的图形：
 
-\[
+\begin{equation}
 A_1 =
 \begin{bmatrix}
 0 & 1 & 0 & 0 & 0 & 0 \\
@@ -492,11 +492,11 @@ A_1 =
 0 & 1 & 1 & 0 & 0 & 0 \\
 0 & 0 & 1 & 1 & 0 & 0 \\
 \end{bmatrix}
-\]
+\end{equation}
 
 及
 
-\[
+\begin{equation}
 A_2 =
 \begin{bmatrix}
 0 & 1 & 1 & 0 & 0 & 1 \\
@@ -506,7 +506,7 @@ A_2 =
 0 & 1 & 0 & 1 & 0 & 0 \\
 1 & 0 & 0 & 1 & 0 & 1 \\
 \end{bmatrix}
-\]
+\end{equation}
 
 问题 13.3* 考虑图 13.14 中的两幅图，探讨以下两种情况下从节点一到节点二的走法数量：(i) 三步之内；(ii) 七步之内。
 
@@ -516,9 +516,9 @@ A_2 =
 
 问题 13.6 证明以下等式成立：
 
-\[
-\text{sig}[\beta_k + \omega_k H_{k1}] = \text{sig}[\beta_k + \omega_k H_K P_{1}], \tag{13.27}
-\]
+\begin{equation}
+\text{sig}[\beta_k + \omega_k H_{k1}] = \text{sig}[\beta_k + \omega_k H_K P_{1}], 
+\end{equation}
 其中 \(P\) 是一个 \(N \times N\) 的排列矩阵（一个矩阵，除了每行和每列恰好一个条目为一以外，其余全为零），1 是一个 \(N \times 1\) 的全一向量。
 
 问题 13.7* 考虑以下简单的 GNN 层：
@@ -534,15 +534,15 @@ H_k \\
 H_k A \\
 \end{array} \right]
 \end{array}
-\right], \tag{13.28}
+\right], 
 \end{align} 
 
 
 其中 \(H\) 是一个 \(D \times N\) 矩阵，其列包含 \(N\) 个节点嵌入，\(A\) 是 \(N \times N\) 的邻接矩阵，\(\beta\) 是偏差向量，\(\Omega\) 是权重矩阵。证明该层对节点顺序的排列是等变的，即满足以下条件：
 
-\[
-\text{GraphLayer}[H_k, A]P = \text{GraphLayer}[H_k P, P^T AP], \tag{13.29}
-\]
+\begin{equation}
+\text{GraphLayer}[H_k, A]P = \text{GraphLayer}[H_k P, P^T AP], 
+\end{equation}
 
 其中 \(P\) 是一个 \(N \times N\) 的排列矩阵。
 
@@ -550,9 +550,9 @@ H_k A \\
 
 问题 13.9 GraphSAGE 的作者 (Hamilton et al., 2017a) 提出一种池化方法，在该方法中，节点嵌入与其邻居的嵌入一起被平均计算，具体如下：
 
-\[
-\text{agg}[n] = \frac{1}{1 + |\mathcal{N}(n)|} \left( h_n + \sum_{m \in \mathcal{N}(n)} h_m \right). \tag{13.30}
-\]
+\begin{equation}
+\text{agg}[n] = \frac{1}{1 + |\mathcal{N}(n)|} \left( h_n + \sum_{m \in \mathcal{N}(n)} h_m \right). 
+\end{equation}
 
 说明如何利用线性代数方法，同时对 \(D \times N\) 嵌入矩阵 \(H\) 中所有节点嵌入执行此操作。需要使用邻接矩阵 \(A\) 和度矩阵 \(D\)。
 

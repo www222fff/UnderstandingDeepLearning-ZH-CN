@@ -14,25 +14,25 @@
 
 为了进行预测，我们需要一个函数模型 f[•]，它以 x 为输入并返回预测结果 y，即：
 
-\[
-y = f[x] \tag{2.1}
-\]
+\begin{equation}
+y = f[x] 
+\end{equation}
 
 当我们根据输入 x 来计算预测结果 y 时，这个过程称为推理（inference）。
 
 这个模型实际上是一个具有固定形式的数学方程，代表了输入和输出之间各种不同的关系。模型中也包含一些参数 $\phi$。这些参数的选择决定了输入和输出之间具体的关系。更准确地说，我们应该这样表达这个关系：
 
-\[
-y = f[x, \phi] \tag{2.2}
-\]
+\begin{equation}
+y = f[x, \phi] 
+\end{equation}
 
 当我们谈及学习或训练模型时，意味着我们在尝试找出能够根据输入合理预测输出的参数 $\phi$。我们通过一组包含 I 对输入和输出样本 ${x_i, y_i}$ 的训练数据集来学习这些参数。我们的目标是选取能够尽可能准确地将每一个训练输入映射到它对应的输出的参数。我们通过损失函数 L 来衡量这种映射的准确程度。损失函数是一个标量值，它概括了模型基于当前参数 $\phi$ 预测训练数据输出与实际输入的不匹配程度。
 
 我们可以把损失函数视为参数的函数 $L[\phi]$。在训练模型时，我们的目标是寻找一组参数 $\hat \phi$，这组参数能够使损失函数的值最小：
 
-\[
-\hat \phi = \arg \mathop{\min}\limits_{\phi} L [\phi] \tag{2.3}
-\]
+\begin{equation}
+\hat \phi = \arg \mathop{\min}\limits_{\phi} L [\phi] 
+\end{equation}
 
 如果在这个最小化过程之后损失很小，说明我们找到了一组能够从训练输入 $x_i$ 准确预测训练输出 $y_i$ 的模型参数。
 
@@ -48,7 +48,7 @@ y = f[x, \phi] \tag{2.2}
 
 \begin{align}
 y &= f[x, \phi] \notag \\
-&= \phi_0 + \phi_1 x \tag{2.4}
+&= \phi_0 + \phi_1 x 
 \end{align}
 
 
@@ -69,7 +69,7 @@ y &= f[x, \phi] \notag \\
 
 \begin{align}
 	L(\phi) &= \sum_{i=1}^{I} (f(x_i; \phi) - y_i)^2  \notag \\
-	&= \sum_{i=1}^{I} (\phi_0 + \phi_1 x_i - y_i)^2 \tag{2.5}
+	&= \sum_{i=1}^{I} (\phi_0 + \phi_1 x_i - y_i)^2 
 \end{align}
 
 
@@ -81,7 +81,7 @@ y &= f[x, \phi] \notag \\
 \begin{align}
 	\hat{\phi} &= \underset{\phi}{\mathrm{argmin}} \, L(\phi) \notag \\ 
 	&= \underset{\phi}{\mathrm{argmin}} \, \left[ \sum_{i=1}^{I} (f(x_i; \phi) - y_i)^2 \right] \notag \\ 
-	&= \underset{\phi}{\mathrm{argmin}} \, \left[ \sum_{i=1}^{I} (\phi_0 + \phi_1 x_i - y_i)^2 \right]  \tag{2.6}
+	&= \underset{\phi}{\mathrm{argmin}} \, \left[ \sum_{i=1}^{I} (\phi_0 + \phi_1 x_i - y_i)^2 \right]  
 \end{align} 
 
 
@@ -114,7 +114,7 @@ y &= f[x, \phi] \notag \\
 
 当模型训练完成后，我们想知道它在实际应用中的表现。这可以通过在一组独立的测试数据上计算损失来实现。模型预测的准确性在多大程度上能泛化到测试数据，一方面取决于训练数据的代表性和完整性；另一方面，则取决于模型的表达能力。例如，简单的模型如直线可能无法完全捕捉输入和输出之间的真实关系，这就是所谓的欠拟合。相反，表达能力过强的模型可能会描述训练数据中的一些不典型的统计特性，导致不正常的预测结果，这被称为过拟合。
 
-\section{概要}
+\section{总结}
 
 监督学习模型是一个函数 $y = f[x, \phi]$，它将输入 x 与输出 y 关联起来。这种特定的关系由参数 \(\phi\) 决定。为了训练模型，我们在训练数据集 {$x_i, y_i$} 上定义了损失函数 $L[\phi]$，以量化模型预测 $f[x_i,\phi]$ 与实际观测输出 yi 之间的不匹配程度。然后我们寻找能够最小化这个损失的参数。我们通过在不同的测试数据集上评估模型，来检查它对新输入的泛化能力。
 

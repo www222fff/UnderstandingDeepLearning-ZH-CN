@@ -47,11 +47,23 @@ L(\phi) = \sum_{i=1}^{I} l_i
 
 \textbf{观察 2：} 对偏置或权重的微小调整会在后续网络中引发一系列变化，这种变化会修改其目标隐藏单元的值。这又会导致下一层隐藏单元的值发生变化，接着是下下层，依此类推，直至模型输出和最终的损失值发生变化。
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter7/Train2BPIntuitions.png}
+\caption{反向传播过程中的正向传播阶段。目的是计算损失 l 对于每个权重（用箭头表示）和偏置（图中未展示）的导数。也就是说，我们希望了解每个参数的微小变化将如何影响损失。每个权重将其源头的隐藏单元的激活值乘以权重值，并将结果传递给目标隐藏单元。因此，任何权重的微小变化所产生的效果，都会根据源隐藏单元的激活水平而放大。比如，蓝色权重作用于第一层的第二个隐藏单元；如果该单元的激活值增加一倍，那么对蓝色权重的微小变化产生的影响也会相应增加一倍。因此，为了计算权重的导数，我们需要计算并记录下隐藏层的激活值。这一过程称为正向传播，因为它包括了按顺序执行网络方程的过程。}
+\end{figure}
+
 因此，要了解参数变化如何影响损失值，我们还需要知道每个后续隐藏层的变化如何进一步影响它们的后继层。这一逻辑同样适用于考虑同一或更早层次中的其他参数时。这意味着，我们可以一次性计算这些量，并在需要时复用。例如，设想计算对输入至隐藏层 \(h_3\)、\(h_2\)、\(h_1\) 的权重进行微小调整的影响：
 
 - 要计算对隐藏层 \(h_3\) 输入的权重或偏置的微小调整如何影响损失，我们需要知道 (i) \(h_3\) 层变化如何影响模型输出 \(f\)，以及 (ii) 模型输出的变化如何影响损失（图 7.2a）。
 - 要计算对隐藏层 \(h_2\) 输入的权重或偏置的微小调整如何影响损失，我们需要知道 (i) \(h_2\) 层的变化如何影响 \(h_3\) 层，(ii) \(h_3\) 层的变化如何影响模型输出，以及 (iii) 模型输出的变化如何影响损失（图 7.2b）。
 - 要计算对隐藏层 \(h_1\) 输入的权重或偏置的微小调整如何影响损失，我们需要知道 (i) \(h_1\) 层的变化如何影响 \(h_2\) 层，(ii) \(h_2\) 层的变化如何影响 \(h_3\) 层，(iii) \(h_3\) 层的变化如何影响模型输出，以及 (iv) 模型输出的变化如何影响损失（图 7.2c）。
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter7/Train2BPIntuitions2.png}
+\caption{反向传播过程中的反向传播阶段。a) 为了计算对第三层 h3（蓝色箭头指向的层）输入权重的改变如何影响损失，我们需要知道 h3 中的隐藏单元如何影响模型输出 f，以及 f 如何影响损失（橙色箭头指示的影响）。b) 为了计算对第二层 h2（蓝色箭头指向的层）输入权重的微小改变如何影响损失，我们需要了解 (i) h2 中的隐藏单元如何影响 h3，(ii) h3 如何影响 f，以及 (iii) f 如何影响损失（橙色箭头指示的影响）。c) 类似地，为了计算对第一层 h1（蓝色箭头指向的层）输入权重的微小改变如何影响损失，我们需要知道 h1 如何影响 h2，以及这些变化如何通过网络传递影响到损失（橙色箭头指示的影响）。反向传播首先在网络末端计算导数，然后逆向进行，以此利用这些计算过程中的固有重复性。}
+\end{figure}
 
 随着我们向网络的前端回溯，大部分必需的计算在前一步已经完成，因此无需重复计算。这种沿网络反向进行的计算导数的过程称为 *反向传播*。
 
@@ -83,6 +95,12 @@ f(x, \phi) = \beta_3 + \omega_3 \cdot \cos[\beta_2 + \omega_2 \cdot \exp[\beta_1
 \end{align}
 
 这些表达式的推导和编码不仅容易出错，而且未能充分利用其中的重复性元素；值得注意的是，三个指数函数项实际上是一致的。
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter7/Train2BP1.png}
+\caption{反向传播过程中的正向传播阶段。我们依次计算并记录每一个中间变量，直至最终计算出损失。}
+\end{figure}
 
 反向传播算法是一种同时计算所有这些导数的高效方法，它主要分为两个步骤：（i）前向传播，在此过程中我们计算并保存一系列中间值及网络的输出结果；（ii）反向传播，在此过程中我们从网络的输出层开始，逆向计算每个参数的导数，同时复用之前阶段的计算结果。
 
@@ -188,6 +206,24 @@ f_3 &= \beta_3 + \Omega_3h_3 \notag \\
 
 
 右侧的三个项的维度分别是 \(D_3 \times D_3, D_3 \times D_f\) 和 \(D_f \times 1\)，这里 \(D_3\) 表示第三层隐藏单元的数目，\(D_f\) 表示模型输出 \(f_3\) 的维度。
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter7/Train2BP2.png}
+\caption{反向传播过程中的反向传播第一阶段。我们从函数的最末端开始逆向进行，计算损失 l 对于各个中间变量的导数 \(\partial li /\partial f•\) 和 \(\partial li /\partial h•\)。每个导数的计算都是基于前一个导数，并乘以形如 \(\partial fk/\partial hk\) 或 \(\partial hk/\partial fk−1\) 的项进行的。}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter7/Train2BP3.png}
+\caption{反向传播过程中的第二阶段。我们最终计算了导数 \(\partial li /\partial \beta•\) 和 \(\partial li /\partial \omega•\)。每个导数的计算都是通过将 \(\partial li/\partial fk\) 项乘以适当的 \(\partial fk/\partial \partial \beta k\) 或 \(\partial fk/\partial \omega k\) 来实现的。}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter7/Train2ReLUDeriv.png}
+\caption{整流线性单元的导数。当输入小于零时，整流线性单元（橙色曲线）输出为零；当输入大于零时，输出为输入值。其导数（青色曲线）在输入小于零时为零（因为此处斜率为零），在输入大于零时为一（因为此处斜率为一）。}
+\end{figure}
 
 类似地，我们也可以分析当改变 \(f_1\) 和 \(f_0\) 时，损失的变化情况：
 
@@ -361,6 +397,12 @@ E[f_i^\prime] &= E\left[\beta_i + \sum_{j=1}^{D_h} \Omega_{ij}h_j \right] \notag
 
 其中 \(D_h\) 是应用权重的原始层的维度。这种初始化方法被称为 He 初始化。
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter7/code.png}
+\caption{权重初始化。设想一个具有 50 个隐藏层，每层有 Dh = 100 个隐藏单元的深度网络。该网络的 100 维输入 x 从标准正态分布中初始化，设定单一固定目标 y = 0，并使用最小二乘损失函数。偏置向量 \(\beta k\) 初始化为零，权重矩阵 \(\Omega k\) 则采用均值为零的正态分布初始化，并设置五种不同的方差 \(\sigma \Omega^2 \in \{0.001, 0.01, 0.02, 0.1, 1.0\}\)。a) 正向传播计算出的隐藏单元激活方差随网络层变化的函数图。对于 He 初始化\((\sigma \Omega_2 = 2/Dh = 0.02)\)，激活方差保持稳定。但是，对于较大的值，方差迅速增加；对于较小的值，方差迅速减少（注意此处使用了对数刻度）。b) 反向传播中梯度的方差（用实线表示）延续了这一趋势；如果初始化值大于 0.02，梯度大小会随着网络反向传播而迅速增大。如果初始化值小于这个值，则梯度大小会减小。这两种情况分别被称为梯度爆炸和梯度消失问题。}
+\end{figure}
+
 \subsection{反向传播的初始化}
 一个相似的论证说明了反向传播期间梯度 \(\frac{\partial l}{\partial f_k}\) 的方差的变化情况。在反向传播过程中，我们将其与权重矩阵的转置 \(\Omega^T\) 相乘（见方程 7.24），因此相应的表达式变为：
 \begin{equation}
@@ -375,16 +417,21 @@ E[f_i^\prime] &= E\left[\beta_i + \sum_{j=1}^{D_h} \Omega_{ij}h_j \right] \notag
 \sigma^2_n = \frac{4}{D_h + D_{h'}} 
 \end{equation}
 
-
 图 7.7 通过实验数据表明，当参数进行适当的初始化后，正向传播过程中隐藏单元的方差以及反向传播过程中梯度的方差均能保持稳定。
 
 \section{示例训练代码}
 本书主要专注于科学研究；并非旨在指导实现深度学习模型。然而，在图 7.8 中，我们呈现了一段 PyTorch 代码，该代码实践了迄今为止本书探讨的理念。该代码定义了一个神经网络并初始化了权重。它生成了随机的输入和输出数据集，并定义了一个最小二乘损失函数。模型通过在大小为 10 的批次中使用具有动量的 SGD 在 100 轮次(epoch)内进行训练，学习率从 0.01 开始，并每 10 轮次减半。
 
-核心观点是，虽然深度学习的底层原理相当复杂，其实现过程却相对简单。比如，反向传播的所有细节都封装在了一行代码 `loss.backward()` 中。
+核心观点是，虽然深度学习的底层原理相当复杂，其实现过程却相对简单。比如，反向传播的所有细节都封装在了一行代码 loss.backward()  中。
 
 \section{总结}
 上一章引入了随机梯度下降（SGD），一个旨在找到函数最小值的迭代优化算法。在神经网络的背景下，这一算法寻找能够最小化损失函数的参数。SGD 依赖于损失函数相对于参数的梯度，这需要在优化前进行初始化。本章解决了深度神经网络面临的这两大问题。
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter7/Train2Exploding.png}
+\caption{在随机数据上训练双层网络的示例代码。}
+\end{figure}
 
 梯度必须对大量参数进行评估，针对每个批次中的每一个样本，以及每一次 SGD 迭代。因此，高效的梯度计算显得至关重要，为此引入了反向传播算法。此外，谨慎的参数初始化也极为关键。在正向传播过程中，隐藏单元激活的幅度可能会指数级地增加或减少。反向传播过程中，梯度幅度的变化同样可能出现，这种现象被称为梯度消失和梯度爆炸问题，它们都会阻碍训练过程，但可以通过恰当的初始化来避免。
 
@@ -472,7 +519,7 @@ rect[z] = \begin{cases}
 \frac{\partial \ell}{\partial \Omega} = \frac{\partial \ell}{\partial h^T}. 
 \end{equation}
 
-\textbf{问题 7.10} 导出对于使用泄漏 ReLU 激活函数的网络反向传播算法的反向传递方程，定义为：
+\textbf{问题 7.10} 导出对于使用leaky ReLU 激活函数的网络反向传播算法的反向传递方程，定义为：
 \begin{equation}
 a[z] = ReLU[z] = \begin{cases}
 \alpha \cdot z & z < 0 \\
@@ -513,10 +560,8 @@ y &= f_4 + f_5.
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter7/Train2CompGraph.png}
-\caption{Figure7.9}
+\caption{针对问题 7.12 和问题 7.13 的计算图，根据 Domke (2010) 的研究进行了展示。}
 \end{figure}
-
-`图 7.9 针对问题 7.12 和问题 7.13 的计算图，根据 Domke (2010) 的研究进行了展示。`
 
 \textbf{问题 7.13} 对于问题 7.42 中相同的函数，通过正向传播法计算 \(\frac{\partial y}{\partial x}\) 的导数。即依次计算：
 
@@ -543,48 +588,3 @@ a & a \geq 0
 
 \textbf{问题 7.17} 修改图 7.8 中的代码以解决一个二元分类问题。你需要 (i) 将目标 \(y\) 修改为二元值，(ii) 修改网络以预测介于 0 和 1 之间的数值，(iii) 适当修改损失函数。
 
-\section{附图}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter7/Train2BPIntuitions.png}
-\caption{图 7.1 反向传播过程中的正向传播阶段。目的是计算损失 l 对于每个权重（用箭头表示）和偏置（图中未展示）的导数。也就是说，我们希望了解每个参数的微小变化将如何影响损失。每个权重将其源头的隐藏单元的激活值乘以权重值，并将结果传递给目标隐藏单元。因此，任何权重的微小变化所产生的效果，都会根据源隐藏单元的激活水平而放大。比如，蓝色权重作用于第一层的第二个隐藏单元；如果该单元的激活值增加一倍，那么对蓝色权重的微小变化产生的影响也会相应增加一倍。因此，为了计算权重的导数，我们需要计算并记录下隐藏层的激活值。这一过程称为正向传播，因为它包括了按顺序执行网络方程的过程。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter7/Train2BPIntuitions2.png}
-\caption{图 7.2 反向传播过程中的反向传播阶段。a) 为了计算对第三层 h3（蓝色箭头指向的层）输入权重的改变如何影响损失，我们需要知道 h3 中的隐藏单元如何影响模型输出 f，以及 f 如何影响损失（橙色箭头指示的影响）。b) 为了计算对第二层 h2（蓝色箭头指向的层）输入权重的微小改变如何影响损失，我们需要了解 (i) h2 中的隐藏单元如何影响 h3，(ii) h3 如何影响 f，以及 (iii) f 如何影响损失（橙色箭头指示的影响）。c) 类似地，为了计算对第一层 h1（蓝色箭头指向的层）输入权重的微小改变如何影响损失，我们需要知道 h1 如何影响 h2，以及这些变化如何通过网络传递影响到损失（橙色箭头指示的影响）。反向传播首先在网络末端计算导数，然后逆向进行，以此利用这些计算过程中的固有重复性。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter7/Train2BP1.png}
-\caption{图 7.3 反向传播过程中的正向传播阶段。我们依次计算并记录每一个中间变量，直至最终计算出损失。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter7/Train2BP2.png}
-\caption{图 7.4 反向传播过程中的反向传播第一阶段。我们从函数的最末端开始逆向进行，计算损失 l 对于各个中间变量的导数 \(\partial li /\partial f•\) 和 \(\partial li /\partial h•\)。每个导数的计算都是基于前一个导数，并乘以形如 \(\partial fk/\partial hk\) 或 \(\partial hk/\partial fk−1\) 的项进行的。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter7/Train2BP3.png}
-\caption{图 7.5 反向传播过程中的第二阶段。我们最终计算了导数 \(\partial li /\partial \beta•\) 和 \(\partial li /\partial \omega•\)。每个导数的计算都是通过将 \(\partial li/\partial fk\) 项乘以适当的 \(\partial fk/\partial \partial \beta k\) 或 \(\partial fk/\partial \omega k\) 来实现的。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter7/Train2ReLUDeriv.png}
-\caption{图 7.6 整流线性单元的导数。当输入小于零时，整流线性单元（橙色曲线）输出为零；当输入大于零时，输出为输入值。其导数（青色曲线）在输入小于零时为零（因为此处斜率为零），在输入大于零时为一（因为此处斜率为一）。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter7/Train2Exploding.png}
-\caption{图 7.8 在随机数据上训练双层网络的示例代码。}
-\end{figure}
-图 7.7 权重初始化。设想一个具有 50 个隐藏层，每层有 Dh = 100 个隐藏单元的深度网络。该网络的 100 维输入 x 从标准正态分布中初始化，设定单一固定目标 y = 0，并使用最小二乘损失函数。偏置向量 \(\beta k\) 初始化为零，权重矩阵 \(\Omega k\) 则采用均值为零的正态分布初始化，并设置五种不同的方差 \(\sigma \Omega^2 \in \{0.001, 0.01, 0.02, 0.1, 1.0\}\)。a) 正向传播计算出的隐藏单元激活方差随网络层变化的函数图。对于 He 初始化\((\sigma \Omega_2 = 2/Dh = 0.02)\)，激活方差保持稳定。但是，对于较大的值，方差迅速增加；对于较小的值，方差迅速减少（注意此处使用了对数刻度）。b) 反向传播中梯度的方差（用实线表示）延续了这一趋势；如果初始化值大于 0.02，梯度大小会随着网络反向传播而迅速增大。如果初始化值小于这个值，则梯度大小会减小。这两种情况分别被称为梯度爆炸和梯度消失问题。
-![Figure7.8](figures/chapter7/code.png)

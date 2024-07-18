@@ -7,7 +7,7 @@
 
 \begin{align}
 	y &= f[x, \phi] \notag \\ 
-	&= \phi_0 + \phi_1a[\theta_{10} + \theta_{11}x] + \phi_2a[\theta_{20} + \theta_{21}x] + \phi_3a[\theta_{30} + \theta_{31}x] \tag{3.1}
+	&= \phi_0 + \phi_1a[\theta_{10} + \theta_{11}x] + \phi_2a[\theta_{20} + \theta_{21}x] + \phi_3a[\theta_{30} + \theta_{31}x] 
 \end{align}
 
 
@@ -15,13 +15,13 @@
 
 接下来，我们需要定义激活函数（activation function）\(a[\cdot]\)。虽然有很多选择，但最常用的是整流线性单元（ReLU）：
 
-\[
+\begin{equation}
 a[z] = ReLU[z] = 
 \begin{cases}
 	0 & \text{if } z < 0 \\
 	z & \text{if } z \geq 0
-\end{cases} \tag{3.2}
-\]
+\end{cases} 
+\end{equation}
 
 这个函数在输入为正时返回输入值，否则返回零（参见图 3.1）。
 
@@ -41,14 +41,14 @@ a[z] = ReLU[z] =
 \begin{align}
 	h1 = a[\theta_{10} + \theta_{11}x] \notag \\
 	h2 = a[\theta_{20} + \theta_{21}x] \notag \\
-	h3 = a[\theta_{30} + \theta_{31}x]  \tag{3.3}
+	h3 = a[\theta_{30} + \theta_{31}x]  
 \end{align} 
 
 这里的 \(h1, h2, h3\) 被称为隐藏单元。然后，我们通过将这些隐藏单元与一个线性函数结合来计算输出：
 
-\[
-y = \phi_0 + \phi_1h1 + \phi_2h2 + \phi_3h3 \tag{3.4}
-\]
+\begin{equation}
+y = \phi_0 + \phi_1h1 + \phi_2h2 + \phi_3h3 
+\end{equation}
 
 图 3.3 展示了形成图 3.2a 中函数的计算流程。每个隐藏单元内包含了一个关于输入的线性函数 \(\theta_0 + \theta_1x\)，该线性函数在零点以下被 ReLU 函数 \(a[\cdot]\) 截断。这三条线在零点交叉的位置形成了最终输出函数的三个“拐点”。然后，分别用 \(\phi_1, \phi_2, \phi_3\) 对这三条被截断的线加权。最后，加上偏移量 \(\phi_0\) 来控制最终函数的整体高度。
 
@@ -79,16 +79,16 @@ y = \phi_0 + \phi_1h1 + \phi_2h2 + \phi_3h3 \tag{3.4}
 \section{通用逼近定理}
 在上一节中，我们介绍了一个只有一个输入、一个输出、使用ReLU激活函数，并配备了三个隐藏单元的神经网络示例。现在，让我们稍微扩展这个概念，考虑一个拥有 \(D\) 个隐藏单元的网络，其中第 \(d^{th}\) 个隐藏单元表示为：
 
-\[
-h_d = a[\theta_{d0} + \theta_{d1}x], \tag{3.5}
-\]
+\begin{equation}
+h_d = a[\theta_{d0} + \theta_{d1}x], 
+\end{equation}
 
 这些隐藏单元通过线性方式结合，共同产生输出：
 
 
-\[
-y = \phi_0 + \sum_{d=1}^{D} \phi_dh_d. \tag{3.6}
-\]
+\begin{equation}
+y = \phi_0 + \sum_{d=1}^{D} \phi_dh_d. 
+\end{equation}
 
 在浅层网络中，隐藏单元的数量是衡量网络“容量”（即其处理复杂性的能力）的一个指标。当使用 ReLU 激活函数时，具有 \(D\) 个隐藏单元的网络输出最多有 \(D\) 个拐点，因此它是一个最多有 \(D + 1\) 个线性区域的分段线性函数。随着增加更多的隐藏单元，模型能够逼近更为复杂的函数。
 
@@ -106,14 +106,14 @@ y = \phi_0 + \sum_{d=1}^{D} \phi_dh_d. \tag{3.6}
 	h_1 = a[\theta_{10} + \theta_{11}x] \notag \\
 	h_2 = a[\theta_{20} + \theta_{21}x] \notag \\
 	h_3 = a[\theta_{30} + \theta_{31}x] \notag \\
-	h_4 = a[\theta_{40} + \theta_{41}x]  \tag{3.7}
+	h_4 = a[\theta_{40} + \theta_{41}x]  
 \end{align} 
 
 以及
 
 \begin{align}
 	y1 = \phi_{10} + \phi_{11}h1 + \phi_{12}h2 + \phi_{13}h3 + \phi_{14}h4 \notag \\
-	y2 = \phi_{20} + \phi_{21}h1 + \phi_{22}h2 + \phi_{23}h3 + \phi_{24}h4. \tag{3.8}
+	y2 = \phi_{20} + \phi_{21}h1 + \phi_{22}h2 + \phi_{23}h3 + \phi_{24}h4. 
 \end{align} 
 
 
@@ -147,16 +147,16 @@ y = \phi_0 + \sum_{d=1}^{D} \phi_dh_d. \tag{3.6}
 \begin{align}
 	h1 = a[\theta_{10} + \theta_{11}x_1 + \theta_{12}x_2] \notag \\
 	h2 = a[\theta_{20} + \theta_{21}x_1 + \theta_{22}x_2] \notag \\
-	h3 = a[\theta_{30} + \theta_{31}x_1 + \theta_{32}x_2] \tag{3.9}
+	h3 = a[\theta_{30} + \theta_{31}x_1 + \theta_{32}x_2] 
 \end{align} 
 
 
 
 这里，每个输入都对应一个斜率参数。隐藏单元以通常的方式结合，形成输出：
 
-\[
-y = \phi_0 + \phi_1h1 + \phi_2h2 + \phi_3h3 \tag{3.10}
-\]
+\begin{equation}
+y = \phi_0 + \phi_1h1 + \phi_2h2 + \phi_3h3 
+\end{equation}
 
 
 图 3.8 展示了这个网络的处理过程。每个隐藏单元接收两个输入的线性组合，这在三维输入/输出空间中形成了一个有方向的平面。激活函数将这些平面的负值剪切为零。接着，这些被剪切的平面在第二个线性函数（方程 3.10）中被重新组合，形成了一个由凸多边形区域组成的连续分段线性表面（见图 3.8j）。每个区域代表了一种不同的激活模式。例如，在中央的三角形区域中，第一个和第三个隐藏单元处于激活状态，而第二个则未激活。当模型有超过两个输入时，可视化变得更加困难。不过，其基本原理是相似的：输出将是输入的连续分段线性函数，其中线性区域在多维输入空间中呈现为凸多面体。
@@ -179,16 +179,16 @@ y = \phi_0 + \phi_1h1 + \phi_2h2 + \phi_3h3 \tag{3.10}
 
 我们已经通过几个示例来展示浅层网络的工作原理。现在我们定义一个浅层神经网络的通用方程 \( y = f[x, \phi] \)，它利用 \( h \in \mathbb{R}^{D_h} \) 个隐藏单元将多维输入 \( x \in \mathbb{R}^{D_i} \) 映射到多维输出 \( y \in \mathbb{R}^{D_o} \)。每个隐藏单元的计算方式如下：
 
-\[
-h_d = a \left[ \theta_{d0} + \sum_{i=1}^{D_i} \theta_{di}x_i \right] \tag{3.11}
-\]
+\begin{equation}
+h_d = a \left[ \theta_{d0} + \sum_{i=1}^{D_i} \theta_{di}x_i \right] 
+\end{equation}
 
 
 这些隐藏单元被线性方式组合，以产生输出：
 
-\[
-y_j = \phi_{j0} + \sum_{d=1}^{D_h} \phi_{jd}h_d \tag{3.12}
-\]
+\begin{equation}
+y_j = \phi_{j0} + \sum_{d=1}^{D_h} \phi_{jd}h_d 
+\end{equation}
 
 其中 \(a[\cdot]\)  是一种非线性激活函数。该模型的参数为 \(\phi = \{ \theta_{\cdot}, \phi_{\cdot}\}\)。图 3.11 展示了一个包含三个输入、三个隐藏单元和两个输出的示例。
 
@@ -234,14 +234,14 @@ y_j = \phi_{j0} + \sum_{d=1}^{D_h} \phi_{jd}h_d \tag{3.12}
 
 此外，还研究了多种平滑函数（见图 3.13c–d），例如soft-plus函数（Glorot et al., 2011）、高斯误差线性单元（Gaussian Error Linear Unit，Hendrycks \& Gimpel, 2016）、S形线性单元（Sigmoid Linear Unit，Hendrycks \& Gimpel, 2016）和指数线性单元（Exponential Linear Unit，Clevert et al., 2015）。这些函数大多旨在避免ReLU消亡问题，同时限制负值的梯度过大。Klambauer et al. (2017) 提出了缩放指数线性单元（Scaled Exponential Linear Unit，见图 3.13e），这一激活函数特别有趣，因为当输入方差在有限范围内时，它能帮助稳定激活值的方差（详见第7.5节）。2017年，Ramachandran et al. 采用了一种经验方法来选择激活函数。他们在可能的函数空间中寻找，在各种监督学习任务上表现最佳的函数。他们找到的最佳函数是 \(a[x] = x/(1 + exp[−\beta x])\)，其中 \(\beta\) 是一个可学习的参数（见图 3.13f）。他们将这个函数命名为Swish。有趣的是，Swish实际上是对 Hendrycks \& Gimpel (2016) 和 Elfwing et al. (2018) 之前提出的激活函数的再发现。2019年，Howard et al. 提出了HardSwish函数，它近似于Swish，形状非常相似，但计算速度更快：
 
-\[
+\begin{equation}
 HardSwish[z] =
 \begin{cases} 
 	0 & \text{for } z < -3 \notag \\
 	\frac{z(z + 3)}{6} & \text{for } -3 \leq z \leq 3 \notag \\
 	z & \text{for } z > 3 
-\end{cases} \tag{3.13}
-\]
+\end{cases} 
+\end{equation}
 
 尽管这些激活函数各有特点，但目前尚无定论哪种在实际应用中明显优于其他。不过，渗漏ReLU、参数化ReLU和许多连续函数在特定情况下相比ReLU确实表现出了轻微的性能提升。在本书剩余部分，我们主要关注使用基本ReLU函数的神经网络，因为它们创建的函数更容易根据线性区域数量进行刻画。
 
@@ -275,9 +275,9 @@ HardSwish[z] =
 
 
 \textbf{问题 3.5} 证明以下性质对于 \(\alpha \in \mathbb{R}^+\) 成立：
-\[
-ReLU[\alpha \cdot z] = \alpha \cdot ReLU[z] \tag{3.14}
-\]
+\begin{equation}
+ReLU[\alpha \cdot z] = \alpha \cdot ReLU[z] 
+\end{equation}
 这是 ReLU 函数的非负齐次性质。
 
 \textbf{问题 3.6} 继续问题 3.5，当我们将方程 3.3 和 3.4 中定义的浅层网络的参数 \(\theta_{10}\) 和 \(\theta_{11}\) 乘以一个正常数 \(\alpha\) 并将斜率 \(\phi_1\) 除以同一参数 \(\alpha\) 时，会发生什么？如果 \(\alpha\) 是负数呢？
@@ -285,24 +285,24 @@ ReLU[\alpha \cdot z] = \alpha \cdot ReLU[z] \tag{3.14}
 \textbf{问题 3.7} 考虑使用最小二乘损失函数拟合方程 3.1 中的模型。这个损失函数是否有唯一的最小值？即，是否存在一组“最佳”参数？
 
 \textbf{问题 3.8} 考虑将 ReLU 激活函数替换为 (i) 海维赛德阶跃函数 \(heaviside[z]\)，(ii) 双曲正切函数 \(tanh[z]\)，以及 (iii) 矩形函数 \(rect[z]\)。为每种激活函数重绘图 3.3，并简要描述使用一个输入、三个隐藏单元和一个输出的神经网络，对于每种激活函数所能创造的函数族。
-\[
+\begin{equation}
 heaviside[z] = \begin{cases}
 	0 & z < 0 \\
 	1 & z \geq 0
 \end{cases}
-\]
-\[
+\end{equation}
+\begin{equation}
 rect[z] = \begin{cases}
 	0 & z < 0 \\
 	1 & 0 \leq z \leq 1 \\
 	0 & z > 1
-\end{cases} \tag{3.15}
-\]
+\end{cases} 
+\end{equation}
 
 请针对以下每一个函数，重新绘制一份图 3.3。原始的参数为：
 \begin{align}
 	\phi &= [\phi_0, \phi_1, \phi_2, \phi_3, \theta_{10}, \theta_{20}, 	\theta_{30}, 	\theta_{31}] \notag \\
-	&= [-0.23, -1.3, 1.3, 0.66, -0.2, 0.4, -0.9, 0.9, 1.1, -0.7]。\tag{3.16}
+	&= [-0.23, -1.3, 1.3, 0.66, -0.2, 0.4, -0.9, 0.9, 1.1, -0.7]。
 \end{align}
 
 对于每个激活函数，尝试用通俗的语言解释一下，对于那些神经网络来说，它们只有一个输入，三个隐藏单元和一个输出，可以创造出什么样的函数族。

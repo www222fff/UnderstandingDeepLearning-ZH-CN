@@ -27,7 +27,7 @@
 
 \begin{align}
 &z_1 = \sqrt{1 - \beta_1} \cdot x + \sqrt{\beta_1} \cdot \epsilon_1 \\
-&z_t = \sqrt{1 - \beta_t} \cdot z_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t \quad \forall t \in \{2, \ldots, T\}, \tag{18.1}
+&z_t = \sqrt{1 - \beta_t} \cdot z_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t \quad \forall t \in \{2, \ldots, T\}, 
 \end{align} 
 
 其中 \( \epsilon_t \) 是从标准正态分布中抽取的噪声。第一项逐渐减弱原始数据和已添加噪声的影响，而第二项引入更多噪声。噪声级别 \( \beta_t \in [0, 1] \) 控制噪声融合的快慢，这一系列参数被称为 \textit{噪声调度}（noise schedule）。前向过程可以等价表达为：
@@ -36,7 +36,7 @@
 
 \begin{align}
 &q(z_1|x) = \text{Norm}_{z_1} \left[ \sqrt{1 - \beta_1}, \beta_1 \right] \\
-&q(z_t|z_{t-1}) = \text{Norm}_{z_t} \left[ \sqrt{1 - \beta_{t-1}}, \beta_t \right] \quad \forall t \in \{2, \ldots, T\}. \tag{18.2}
+&q(z_t|z_{t-1}) = \text{Norm}_{z_t} \left[ \sqrt{1 - \beta_{t-1}}, \beta_t \right] \quad \forall t \in \{2, \ldots, T\}. 
 \end{align} 
 
 
@@ -44,9 +44,9 @@
 
 给定输入 x，所有潜变量 \(z_1, z_2, \ldots, z_T\) 的联合分布表达为：
 
-\[
-q(z_1\ldots T|x) = q(z_1|x) \prod_{t=2}^{T} q(z_t|z_{t-1}). \tag{18.3}
-\]
+\begin{equation}
+q(z_1\ldots T|x) = q(z_1|x) \prod_{t=2}^{T} q(z_t|z_{t-1}). 
+\end{equation}
 
 
 \begin{figure}[ht!]
@@ -62,7 +62,7 @@ Figure 18.2
 
 \begin{align}
 &z_1 = \sqrt{1 - \beta_1} \cdot x + \sqrt{\beta_1} \cdot \epsilon_1 \\
-&z_2 = \sqrt{1 - \beta_2} \cdot z_1 + \sqrt{\beta_2} \cdot \epsilon_2 \tag{18.4}
+&z_2 = \sqrt{1 - \beta_2} \cdot z_1 + \sqrt{\beta_2} \cdot \epsilon_2 
 \end{align} 
 
 
@@ -71,30 +71,30 @@ Figure 18.2
 \begin{align}
 z_2 &= \sqrt{1 - \beta_2} \left( \sqrt{1 - \beta_1} \cdot x + \sqrt{\beta_1} \cdot \epsilon_1 \right) + \sqrt{\beta_2} \cdot \epsilon_2 \\
 &= \sqrt{1 - \beta_2} \left( \sqrt{1 - \beta_1} \cdot x + \sqrt{1 - (1 - \beta_1)} \cdot \epsilon_1 \right) + \sqrt{\beta_2} \cdot \epsilon_2 \\
-&= \sqrt{(1 - \beta_2)(1 - \beta_1)} \cdot x + \sqrt{\beta_2 - (1 - \beta_2)(1 - \beta_1)} \cdot \epsilon_1 + \sqrt{\beta_2} \cdot \epsilon_2. \tag{18.5}
+&= \sqrt{(1 - \beta_2)(1 - \beta_1)} \cdot x + \sqrt{\beta_2 - (1 - \beta_2)(1 - \beta_1)} \cdot \epsilon_1 + \sqrt{\beta_2} \cdot \epsilon_2. 
 \end{align} 
 
 
 最后两项分别是均值为零的正态分布中独立抽取的样本，其方差为 \(1 - \beta_2 - (1 - \beta_2)(1 - \beta_1)\) 和 \(\beta_2\)。这些项的和的均值为零，其方差为各部分方差之和（参见问题 18.2）。因此：
 
-\[
-z_2 = \sqrt{(1 - \beta_2)(1 - \beta_1)} \cdot x + \sqrt{1 - (1 - \beta_2)(1 - \beta_1)} \cdot \epsilon, \tag{18.6}
-\]
+\begin{equation}
+z_2 = \sqrt{(1 - \beta_2)(1 - \beta_1)} \cdot x + \sqrt{1 - (1 - \beta_2)(1 - \beta_1)} \cdot \epsilon, 
+\end{equation}
 
 其中，\(\epsilon\) 也是标准正态分布的一个样本。
 
 
 若继续这一过程，将该方程代入 \(z_3\) 的表达式中，以此类推，我们可以得出：
 
-\[
-z_t = \sqrt{\alpha_t} \cdot x + \sqrt{1 - \alpha_t} \cdot \epsilon, \tag{18.7}
-\]
+\begin{equation}
+z_t = \sqrt{\alpha_t} \cdot x + \sqrt{1 - \alpha_t} \cdot \epsilon, 
+\end{equation}
 
 其中 \(\alpha_t = \prod_{s=1}^{t} (1 - \beta_s)\)。这可以等价地表示为概率形式：
 
-\[
-q(z_t|x) = \text{Norm}_{z_t} \left[ \sqrt{\alpha_t} \cdot x, 1 - \alpha_t \right]. \tag{18.8}
-\]
+\begin{equation}
+q(z_t|x) = \text{Norm}_{z_t} \left[ \sqrt{\alpha_t} \cdot x, 1 - \alpha_t \right]. 
+\end{equation}
 
 对于任何初始数据点 x，变量 \(z_t\) 遵循均值和方差已知的正态分布。因此，如果我们不考虑中间变量 \(z_1 \ldots z_{t-1}\) 的演化历史，生成 \(q(z_t|x)\) 的样本就变得简单。
 
@@ -113,7 +113,7 @@ q(z_t|x) = \text{Norm}_{z_t} \left[ \sqrt{\alpha_t} \cdot x, 1 - \alpha_t \right
 
 \begin{align}
 q(z_t) &= \int \int \ldots \int q(z_1\ldots t, x) dz_1\ldots dz_{t-1}dx \\
-&= \int \int \ldots \int q(z_1\ldots t|x) Pr(x) dz_1\ldots dz_{t-1}dx, \tag{18.9}
+&= \int \int \ldots \int q(z_1\ldots t|x) Pr(x) dz_1\ldots dz_{t-1}dx, 
 \end{align} 
 
 
@@ -121,9 +121,9 @@ q(z_t) &= \int \int \ldots \int q(z_1\ldots t, x) dz_1\ldots dz_{t-1}dx \\
 
 但是，鉴于我们已有表示扩散核 \(q(z_t|x)\) 的表达式，该表达式直接“跳过”了中间变量，因此我们可以等价地表达为：
 
-\[
-q(z_t) = \int q(z_t|x) Pr(x)dx. \tag{18.10}
-\]
+\begin{equation}
+q(z_t) = \int q(z_t|x) Pr(x)dx. 
+\end{equation}
 
 所以，如果我们不断从数据分布 \(Pr(x)\) 中取样，并在每个样本上应用扩散核 \(q(z_t|x)\)，就能得到边际分布 \(q(z_t)\)（见图 18.4）。然而，由于不知道原始数据分布 \(Pr(x)\)，边际分布不能用封闭形式表示。
 
@@ -138,9 +138,9 @@ q(z_t) = \int q(z_t|x) Pr(x)dx. \tag{18.10}
 \subsection{条件分布 \(q(z_{t-1}|z_t)\)}
 我们定义条件概率 \(q(z_{t-1}|z_t)\) 来描述混合过程（见方程 18.2）。为了逆向这一过程，我们采用贝叶斯规则：
 
-\[
-q(z_{t-1}|z_t) = \frac{q(z_t|z_{t-1})q(z_{t-1})}{q(z_t)} \tag{18.11}
-\]
+\begin{equation}
+q(z_{t-1}|z_t) = \frac{q(z_t|z_{t-1})q(z_{t-1})}{q(z_t)} 
+\end{equation}
 
 这一计算难以实现，因为我们无法得出边际分布 \(q(z_{t-1})\)。
 
@@ -166,30 +166,30 @@ q(z_{t-1}|z_t) = \frac{q(z_t|z_{t-1})q(z_{t-1})}{q(z_t)} \tag{18.11}
 q(z_{t-1}|z_t, x) &= \frac{q(z_t|z_{t-1}, x)q(z_{t-1}|x)}{q(z_t|x)} \\
 &\propto q(z_t|z_{t-1})q(z_{t-1}|x) \\
 &= \text{Norm}_{z_t} \left[ \sqrt{1 - \beta_t \cdot z_{t-1}, \beta_t} \right] \text{Norm}_{z_{t-1}} \left[ \sqrt{\alpha_{t-1} \cdot x, (1 - \alpha_{t-1})} \right] \\
-&\propto \text{Norm}_{z_{t-1}} \left[ \frac{1}{\sqrt{1 - \beta_t}} z_t, \frac{\beta_t}{1 - \beta_t} \right] \text{Norm}_{z_{t-1}} \left[ \sqrt{\alpha_{t-1} \cdot x, (1 - \alpha_{t-1})} \right] \tag{18.12}
+&\propto \text{Norm}_{z_{t-1}} \left[ \frac{1}{\sqrt{1 - \beta_t}} z_t, \frac{\beta_t}{1 - \beta_t} \right] \text{Norm}_{z_{t-1}} \left[ \sqrt{\alpha_{t-1} \cdot x, (1 - \alpha_{t-1})} \right] 
 \end{align} 
 
 
 在第一行和第二行之间，我们依据扩散过程是马尔可夫的，因此 \(q(z_t|z_{t-1}, x) = q(z_t|z_{t-1})\)，所有关于 \(z_t\) 的信息均由 \(z_{t-1}\) 表达。在第三行和第四行之间，我们应用高斯变量变换公式：
 
-\[
-\text{Norm}_{v} [Aw, B] \propto \text{Norm}_{w} \left[ (A^T B^{-1} A)^{-1} A^T B^{-1} v, (A^T B^{-1} A)^{-1} \right], \tag{18.13}
-\]
+\begin{equation}
+\text{Norm}_{v} [Aw, B] \propto \text{Norm}_{w} \left[ (A^T B^{-1} A)^{-1} A^T B^{-1} v, (A^T B^{-1} A)^{-1} \right], 
+\end{equation}
 
 将第一个分布转换为 \(z_{t-1}\) 的形式。接下来，我们利用另一个高斯公式：
 
-\[
-\text{Norm}_{w}[a, A] \cdot \text{Norm}_{w}[b, B] \propto \text{Norm}_{w} \left[ (A^{-1} + B^{-1})^{-1} (A^{-1} a + B^{-1} b), (A^{-1} + B^{-1})^{-1} \right], \tag{18.14}
-\]
+\begin{equation}
+\text{Norm}_{w}[a, A] \cdot \text{Norm}_{w}[b, B] \propto \text{Norm}_{w} \left[ (A^{-1} + B^{-1})^{-1} (A^{-1} a + B^{-1} b), (A^{-1} + B^{-1})^{-1} \right], 
+\end{equation}
 
 结合 \(z_{t-1}\) 中的两个正态分布，得到：
 
-\[
+\begin{equation}
 q(z_{t-1}|z_t, x) = \text{Norm}_{z_{t-1}} \left[
 \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{\frac{\beta_t}{1 - \alpha_t}} z_t + \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} x, 
 \frac{\beta_t (1 - \alpha_{t-1})}{1 - \alpha_t} 
-\right]. \tag{18.15}
-\]
+\right]. 
+\end{equation}
 
 需要注意的是，方程 18.12、18.13 和 18.14 中的比例常数最终必须相互抵消，因为最终结果是一个已正确归一化的概率分布。
 
@@ -208,7 +208,7 @@ q(z_{t-1}|z_t, x) = \text{Norm}_{z_{t-1}} \left[
 \begin{align}
 &Pr(z_T) = \text{Norm}_{z_T}[0, I] \\
 &Pr(z_{t-1}|z_t, \phi_t) = \text{Norm}_{z_{t-1}}[f_t[z_t, \phi_t], \sigma_t^2] \\
-&Pr(x|z_1, \phi_1) = \text{Norm}_{x}[f_1[z_1, \phi_1], \sigma_1^2], \tag{18.16}
+&Pr(x|z_1, \phi_1) = \text{Norm}_{x}[f_1[z_1, \phi_1], \sigma_1^2], 
 \end{align} 
 
 
@@ -219,21 +219,21 @@ q(z_{t-1}|z_t, x) = \text{Norm}_{z_{t-1}} \left[
 \section{训练}
 观测变量 \(x\) 和潜在变量 \(\{z_t\}\) 的联合分布定义如下：
 
-\[
-Pr(x, z_1...T|\phi_1...T) = Pr(x|z_1, \phi_1) \prod_{t=2}^{T} Pr(z_{t-1}|z_t, \phi_t) \cdot Pr(z_T) \tag{18.17}
-\]
+\begin{equation}
+Pr(x, z_1...T|\phi_1...T) = Pr(x|z_1, \phi_1) \prod_{t=2}^{T} Pr(z_{t-1}|z_t, \phi_t) \cdot Pr(z_T) 
+\end{equation}
 
 通过对潜在变量边际化处理，我们得到观测数据的似然函数 \(Pr(x|\phi_1...T)\)：
 
-\[
-Pr(x|\phi_1...T) = \int Pr(x, z_1...T|\phi_1...T)dz_1...T. \tag{18.18}
-\]
+\begin{equation}
+Pr(x|\phi_1...T) = \int Pr(x, z_1...T|\phi_1...T)dz_1...T. 
+\end{equation}
 
 为了训练模型，我们需要最大化训练数据集 \(\{x_i\}\) 相对于参数 \(\phi\) 的对数似然函数：
 
-\[
-\hat{\phi}_{1...T} = \arg\max_{\phi_1...T} \left[ \sum_{i=1}^{I} \log Pr(x_i|\phi_1...T) \right]. \tag{18.19}
-\]
+\begin{equation}
+\hat{\phi}_{1...T} = \arg\max_{\phi_1...T} \left[ \sum_{i=1}^{I} \log Pr(x_i|\phi_1...T) \right]. 
+\end{equation}
 
 因为方程 18.18 中的边际化过程难以直接处理，所以我们不能直接进行最大化。因此，我们采用詹森不等式 (Jensen's inequality) 来定义似然的下界，并以此对参数 \(\phi_{1...T}\) 进行优化，这一做法与我们在变分自编码器 (VAE) 的处理方式完全一致（参见章节 17.3.1）。
 
@@ -244,15 +244,15 @@ Pr(x|\phi_1...T) = \int Pr(x, z_1...T|\phi_1...T)dz_1...T. \tag{18.18}
 \begin{align}
 \log \left[ Pr(x|\phi_1...T) \right] &= \log \left[ \int Pr(x, z_1...T|\phi_1...T)dz_1...T \right] \\
 &= \log \left[ \int \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} q(z_1...T|x) dz_1...T \right] \\
-&\geq \int q(z_1...T|x) \log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] dz_1...T. \tag{18.20}
+&\geq \int q(z_1...T|x) \log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] dz_1...T. 
 \end{align} 
 
 
 从而得到证据下界（ELBO）：
 
-\[
-\text{ELBO}[\phi_1...T] = \int q(z_1...T|x) \log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] dz_1...T. \tag{18.21}
-\]
+\begin{equation}
+\text{ELBO}[\phi_1...T] = \int q(z_1...T|x) \log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] dz_1...T. 
+\end{equation}
 
 在变分自编码器（VAE）中，编码器 \(q(z|x)\) 逼近潜在变量的后验分布，以使得边界尽可能紧密，解码器则努力最大化这一边界（见图 17.10）。在扩散模型中，所有工作均由解码器承担，因为编码器没有参数。解码器通过改变其参数使静态编码器近似后验分布 \(Pr(z_1...T|x, \phi_1...T)\)，并围绕这一边界优化其参数，以此使边界更加紧密（参见图 17.6）。
 
@@ -263,15 +263,15 @@ Pr(x|\phi_1...T) = \int Pr(x, z_1...T|\phi_1...T)dz_1...T. \tag{18.18}
 
 \begin{align}
 \log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] &= \log \left[ \frac{Pr(x|z_1, \phi_1) \prod_{t=2}^{T} Pr(z_{t-1}|z_t, \phi_t) \cdot Pr(z_T)}{q(z_1|x) \prod_{t=2}^{T} q(z_t|z_{t-1})} \right] \\
-&= \log \left[ \frac{Pr(x|z_1, \phi_1)}{q(z_1|x)} \right] + \log \left[ \prod_{t=2}^{T} \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_t|z_{t-1})} \right] + \log [ Pr(z_T) ]. \tag{18.22}
+&= \log \left[ \frac{Pr(x|z_1, \phi_1)}{q(z_1|x)} \right] + \log \left[ \prod_{t=2}^{T} \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_t|z_{t-1})} \right] + \log [ Pr(z_T) ]. 
 \end{align} 
 
 
 然后我们展开第二项的分母：
 
-\[
-q(z_t|z_{t-1}) = q(z_t|z_{t-1}, x)q(z_t|x) / q(z_{t-1}|x), \tag{18.23}
-\]
+\begin{equation}
+q(z_t|z_{t-1}) = q(z_t|z_{t-1}, x)q(z_t|x) / q(z_{t-1}|x), 
+\end{equation}
 
 其中第一个等式成立是因为关于变量 \(z_t\) 的所有信息都包含在 \(z_{t-1}\) 中，所以额外的条件数据 \(x\) 是无关的。第二个等式是贝叶斯规则的直接应用。
 
@@ -280,7 +280,7 @@ q(z_t|z_{t-1}) = q(z_t|z_{t-1}, x)q(z_t|x) / q(z_{t-1}|x), \tag{18.23}
 \begin{align}
 \log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] &= \log \left[ \frac{Pr(x|z_1, \phi_1)}{q(z_1|x)} \right] + \log \left[ \frac{\prod_{t=2}^{T} Pr(z_{t-1}|z_t, \phi_t) \cdot q(z_{t-1}|x)}{\prod_{t=2}^{T} q(z_t|z_{t-1}, x) \cdot q(z_t|x)} \right] + \log \left[ \frac{Pr(z_T)}{q(z_T|x)} \right] \\
 &= \log \left[ \frac{Pr(x|z_1, \phi_1)}{q(z_1|x)} \right] + \log \left[ \prod_{t=2}^{T} \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_t|z_{t-1}, x)} \right] + \log \left[ \frac{Pr(z_T)}{q(z_T|x)} \right] \\
-&\approx \log \left[ Pr(x|z_1, \phi_1) \right] + \sum_{t=2}^{T} \log \left[ \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_t|z_{t-1}, x)} \right], \tag{18.24}
+&\approx \log \left[ Pr(x|z_1, \phi_1) \right] + \sum_{t=2}^{T} \log \left[ \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_t|z_{t-1}, x)} \right], 
 \end{align} 
 
 
@@ -301,9 +301,9 @@ q(z_t|z_{t-1}) = q(z_t|z_{t-1}, x)q(z_t|x) / q(z_{t-1}|x), \tag{18.23}
 \subsection{分析 ELBO}
 ELBO 中的第一个概率项在等式 18.16 中被定义为：
 
-\[
-Pr(x|z_1, \phi_1) = \text{Norm}_x \left[ f_1[z_1, \phi_1], \sigma^2_{1} \right], \tag{18.26}
-\]
+\begin{equation}
+Pr(x|z_1, \phi_1) = \text{Norm}_x \left[ f_1[z_1, \phi_1], \sigma^2_{1} \right], 
+\end{equation}
 
 这相当于 VAE 中的重构项。如果模型预测与观测数据匹配，ELBO 将会增大。与 VAE 相同，我们将使用蒙特卡洛估计来近似这个数量对数的期望值（见等式 17.22-17.23），其中我们用从 \(q(z_1|x)\) 抽取的样本来估计期望值。
 
@@ -312,15 +312,15 @@ ELBO 中的 KL 散度项衡量了 \(Pr(z_{t-1}|z_t, \phi_t)\) 与 \(q(z_{t-1}|z_
 
 \begin{align}
 &Pr(z_{t-1}|z_t, \phi_t) = \text{Norm}_{z_{t-1}} \left[ f_t[z_t, \phi_t], \sigma^2_t \right] \\
-&q(z_{t-1}|z_t, x) = \text{Norm}_{z_{t-1}} \left[ \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} - \frac{\sqrt{\alpha_{t-1}\beta_t}}{1 - \alpha_t} z_t + \frac{\sqrt{\alpha_{t-1}\beta_t}}{1 - \alpha_t} x, \beta_t(1 - \alpha_{t-1}) \right]. \tag{18.27}
+&q(z_{t-1}|z_t, x) = \text{Norm}_{z_{t-1}} \left[ \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} - \frac{\sqrt{\alpha_{t-1}\beta_t}}{1 - \alpha_t} z_t + \frac{\sqrt{\alpha_{t-1}\beta_t}}{1 - \alpha_t} x, \beta_t(1 - \alpha_{t-1}) \right]. 
 \end{align} 
 
 
 两个正态分布之间的 KL 散度有一个封闭形式的表达式。此外，这个表达式中的许多项不依赖于 \(\phi\)（见问题 18.8），表达式简化为均值之间的平方差加上一个常数 C：
 
-\[
-D_{KL} \left[ q(z_{t-1}|z_t, x)||Pr(z_{t-1}|z_t, \phi_t) \right] = \frac{1}{2\sigma^2_t} \left| \left| \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} - \sqrt{\frac{\beta_t}{1 - \alpha_t}} z_t + \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} x - f_t[z_t, \phi] \right| \right|^2 + C. \tag{18.28}
-\]
+\begin{equation}
+D_{KL} \left[ q(z_{t-1}|z_t, x)||Pr(z_{t-1}|z_t, \phi_t) \right] = \frac{1}{2\sigma^2_t} \left| \left| \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} - \sqrt{\frac{\beta_t}{1 - \alpha_t}} z_t + \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} x - f_t[z_t, \phi] \right| \right|^2 + C. 
+\end{equation}
 
 \subsection{扩散损失函数}
 为了拟合模型，我们需要最大化 ELBO，并将其通过参数 \(\phi_{1...T}\) 来实现。我们将这个过程转化为最小化问题，方法是乘以负一，并用样本来近似期望值，以此来定义损失函数：
@@ -328,7 +328,7 @@ D_{KL} \left[ q(z_{t-1}|z_t, x)||Pr(z_{t-1}|z_t, \phi_t) \right] = \frac{1}{2\si
 
 \begin{align}
 L(\phi_{1...T}) &= \sum_{i=1}^I \left( -\log \text{Norm}_{x_i} [f_1[z_{i1}, \phi_1], \sigma^2_{1}] \right) \\ 
-+ &\sum_{t=2}^T \frac{1}{2\sigma^2_t} \left| \left| \frac{1 - \alpha_{t-1}}{1 - \alpha_t} - \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} z_{it} + \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} x_i - f_t[z_{it}, \phi_t] \right| \right|^2), \tag{18.29}
++ &\sum_{t=2}^T \frac{1}{2\sigma^2_t} \left| \left| \frac{1 - \alpha_{t-1}}{1 - \alpha_t} - \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} z_{it} + \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} x_i - f_t[z_{it}, \phi_t] \right| \right|^2), 
 \end{align} 
 
 
@@ -363,22 +363,22 @@ L(\phi_{1...T}) &= \sum_{i=1}^I \left( -\log \text{Norm}_{x_i} [f_1[z_{i1}, \phi
 \subsection{目标的重参数化}
 原始的扩散更新由下式给出：
 
-\[
-z_t = \sqrt{\alpha_t} \cdot x + \sqrt{1 - \alpha_t} \cdot \epsilon. \tag{18.30}
-\]
+\begin{equation}
+z_t = \sqrt{\alpha_t} \cdot x + \sqrt{1 - \alpha_t} \cdot \epsilon. 
+\end{equation}
 
 因此，在方程 18.28 中的数据项 \(x\) 可以表示为扩散图像减去其上添加的噪声：
 
-\[
-x = \frac{1}{\sqrt{\alpha_t}} \cdot z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{\alpha_t}} \cdot \epsilon. \tag{18.31}
-\]
+\begin{equation}
+x = \frac{1}{\sqrt{\alpha_t}} \cdot z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{\alpha_t}} \cdot \epsilon. 
+\end{equation}
 
 将这个表示代入方程 18.29 中的目标项，我们得到：
 
 \begin{align}
 \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t}z_t &+ \frac{\sqrt{\alpha_{t-1}}\beta_t}{1 - \alpha_t}x  \\
 &= \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t} z_t + \frac{\sqrt{\alpha_{t-1}}\beta_t}{1 - \alpha_t} \left( \frac{1}{\sqrt{\alpha_t}} z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{\alpha_t}} \epsilon \right) \\
-&= \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t} z_t + \frac{\beta_t}{1 - \alpha_t} \left( \frac{1}{\sqrt{1 - \beta_t}} z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{1 - \beta_t}} \epsilon \right), \tag{18.32}
+&= \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t} z_t + \frac{\beta_t}{1 - \alpha_t} \left( \frac{1}{\sqrt{1 - \beta_t}} z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{1 - \beta_t}} \epsilon \right), 
 \end{align} 
 
 
@@ -390,7 +390,7 @@ x = \frac{1}{\sqrt{\alpha_t}} \cdot z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{\alph
 &= \left( \frac{(1 - \alpha_{t-1})(1 - \beta_t) + \beta_t}{(1 - \alpha_t)\sqrt{1 - \beta_t}} \right) z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon \\
 &= \frac{1 - \alpha_{t-1} - \beta_t + \beta_t}{(1 - \alpha_t)\sqrt{1 - \beta_t}} z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon \\
 &= \frac{1 - \alpha_{t-1}}{(1 - \alpha_t)\sqrt{1 - \beta_t}} z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon \\
-&= \frac{1}{\sqrt{1 - \beta_t}} z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon, \tag{18.33}
+&= \frac{1}{\sqrt{1 - \beta_t}} z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon, 
 \end{align} 
 
 
@@ -399,38 +399,38 @@ x = \frac{1}{\sqrt{\alpha_t}} \cdot z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{\alph
 
 最后，将这个结果代回损失函数（方程 18.29），我们得到：
 
-\[
-L(\phi_{1...T}) = \sum_{i=1}^I -\log \text{Norm}_{x_i} [f_1[z_{i1}, \phi_1], \sigma^2_{1}] + \sum_{t=2}^T \frac{1}{2\sigma^2_t} \left| \left| \left( \frac{1}{\sqrt{1 - \beta_t}}z_{it} - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}}\epsilon_{it} \right) - f_t[z_{it}, \phi_t] \right| \right|^2, \tag{18.34}
-\]
+\begin{equation}
+L(\phi_{1...T}) = \sum_{i=1}^I -\log \text{Norm}_{x_i} [f_1[z_{i1}, \phi_1], \sigma^2_{1}] + \sum_{t=2}^T \frac{1}{2\sigma^2_t} \left| \left| \left( \frac{1}{\sqrt{1 - \beta_t}}z_{it} - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}}\epsilon_{it} \right) - f_t[z_{it}, \phi_t] \right| \right|^2, 
+\end{equation}
 
 \subsection{网络的重参数化}
 现在我们用新模型 \(\hat{\epsilon} = g_t[z_t, \phi_t]\) 替换原有的模型中的 \(\hat{z}_{t-1} = f_t[z_t, \phi_t]\) 部分，这个新模型用于预测与 \(x\) 混合生成 \(z_t\) 的噪声 \(\epsilon\)：
 
-\[
+\begin{equation}
 f_t[z_t, \phi_t] = \frac{1}{\sqrt{1 - \beta_t}}z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}}g_t[z_t, \phi_t].
-\quad \tag{18.35}
-\]
+\quad 
+\end{equation}
 将这个新模型代入方程 18.34，我们得到以下准则：
-\[
-L(\phi_1...T) = \sum_{i=1}^{I} -\log \left[  \left( \text{Norm}_{x_i} [f_1(z_{i1}, \phi_1), \sigma_1^2 I] \right) \right] + \sum_{t=2}^{T} \frac{\beta_t^2}{(1 - \alpha_t)(1 - \beta_t)2\sigma_t^2} \left\| g_t[z_{it}, \phi_t] - \epsilon_{it} \right\|^2 . \tag{18.36}
-\]
+\begin{equation}
+L(\phi_1...T) = \sum_{i=1}^{I} -\log \left[  \left( \text{Norm}_{x_i} [f_1(z_{i1}, \phi_1), \sigma_1^2 I] \right) \right] + \sum_{t=2}^{T} \frac{\beta_t^2}{(1 - \alpha_t)(1 - \beta_t)2\sigma_t^2} \left\| g_t[z_{it}, \phi_t] - \epsilon_{it} \right\|^2 . 
+\end{equation}
 
 对数正态分布的表达可以被转换为一个最小二乘损失加上常数 \(C_i\)（参见 5.3.1 节）：
 
-\[
+\begin{equation}
 L(\phi_1...T) = \sum_{i=1}^{I} \frac{1}{2\sigma_1^2} \left\| x_i - f_1(z_{i1}, \phi_1) \right\|^2 + \sum_{t=2}^{T} \frac{\beta_t^2}{(1 - \alpha_t)(1 - \beta_t)2\sigma_t^2} \left\| g_t[z_{it}, \phi_t] - \epsilon_{it} \right\|^2 + C_i.
-\]
+\end{equation}
 将方程 18.31 和 18.35 中的 \(x\) 和 \(f_1[z_1, \phi_1]\) 的定义代入后，第一项可以简化为：
 
-\[
-\frac{1}{2\sigma_1^2} \|x_i - f_1[z_{i1}, \phi_1]\|^2 = \frac{1}{2\sigma_1^2} \left\| \frac{\beta_1}{\sqrt{1 - \alpha_1}\sqrt{1 - \beta_1}} g_1[z_{i1}, \phi_1] - \frac{\beta_1}{\sqrt{1 - \alpha_1}\sqrt{1 - \beta_1}} \epsilon_{i1} \right\|^2. \tag{18.37}
-\]
+\begin{equation}
+\frac{1}{2\sigma_1^2} \|x_i - f_1[z_{i1}, \phi_1]\|^2 = \frac{1}{2\sigma_1^2} \left\| \frac{\beta_1}{\sqrt{1 - \alpha_1}\sqrt{1 - \beta_1}} g_1[z_{i1}, \phi_1] - \frac{\beta_1}{\sqrt{1 - \alpha_1}\sqrt{1 - \beta_1}} \epsilon_{i1} \right\|^2. 
+\end{equation}
 
 把这个结果加回最终的损失函数，我们得到：
 
-\[
-L(\phi_1...T) = \sum_{i=1}^{I} \sum_{t=1}^{T} \frac{\beta_t^2}{(1 - \alpha_t)(1 - \beta_t)2\sigma_t^2} \| g_t[z_{it}, \phi_t] - \epsilon_{it} \|^2, \tag{18.38}
-\]
+\begin{equation}
+L(\phi_1...T) = \sum_{i=1}^{I} \sum_{t=1}^{T} \frac{\beta_t^2}{(1 - \alpha_t)(1 - \beta_t)2\sigma_t^2} \| g_t[z_{it}, \phi_t] - \epsilon_{it} \|^2, 
+\end{equation}
 
 这里我们忽略了加性常数 \(C_i\)。
 
@@ -439,7 +439,7 @@ L(\phi_1...T) = \sum_{i=1}^{I} \sum_{t=1}^{T} \frac{\beta_t^2}{(1 - \alpha_t)(1 
 
 \begin{align}
 L(\phi_1...T) &= \sum_{i=1}^{I} \sum_{t=1}^{T} \left\| g_t[z_{it}, \phi_t] - \epsilon_{it} \right\|^2 \\
-&= \sum_{i=1}^{I} \sum_{t=1}^{T} \left\| g_t \left[ \sqrt{\alpha_t} \cdot x_i + \sqrt{1 - \alpha_t} \cdot \epsilon_{it}, \phi_t \right] - \epsilon_{it} \right\|^2,  \tag{18.39}
+&= \sum_{i=1}^{I} \sum_{t=1}^{T} \left\| g_t \left[ \sqrt{\alpha_t} \cdot x_i + \sqrt{1 - \alpha_t} \cdot \epsilon_{it}, \phi_t \right] - \epsilon_{it} \right\|^2,  
 \end{align} 
 
 其中我们在第二行使用扩散核（方程 18.30）重写了 \(z_t\)。
@@ -481,9 +481,9 @@ L(\phi_1...T) &= \sum_{i=1}^{I} \sum_{t=1}^{T} \left\| g_t[z_{it}, \phi_t] - \ep
 \subsection{条件生成}
 如果数据有关联标签 c，我们可以利用这些标签来控制生成过程。在生成对抗网络（GANs）中，这有时能够改进生成的结果，我们有理由相信，在扩散模型中也能达到类似的效果；如果我们对图像包含的内容有所了解，去除噪声就更加容易。在扩散模型中进行条件合成的一种方法是*分类器引导*。这种方法调整了从 \(z_t\) 到 \(z_{t-1}\) 的去噪步骤，以包含类别信息 c。实际操作中，这意味着在算法 18.2 的最终更新步骤中增加了一个额外的项：
 
-\[
-z_{t-1} = \hat{z}_{t-1} + \alpha \frac{\sigma^2_t}{\sigma^2_{\epsilon}} \nabla_{z_t} \log Pr(c|z_t) + \sigma_{\epsilon} \cdot \epsilon. \tag{18.40}
-\]
+\begin{equation}
+z_{t-1} = \hat{z}_{t-1} + \alpha \frac{\sigma^2_t}{\sigma^2_{\epsilon}} \nabla_{z_t} \log Pr(c|z_t) + \sigma_{\epsilon} \cdot \epsilon. 
+\end{equation}
 
 这个新项取决于基于潜变量 \(z_t\) 的分类器 \(Pr(c|z_t)\) 的梯度。它将 U-Net 的下采样部分的特征映射到类别 c。如同 U-Net，这通常贯穿所有时间步，并将时间作为输入。现在，从 \(z_t\) 更新到 \(z_{t-1}\) 更有可能得到类别 c。
 
@@ -566,49 +566,49 @@ Salimans 和 Ho（2022）将去噪过程中的连续步骤简化为单一步骤�
 \section{习题}
 \textbf{问题 18.1} 证明如果 \(Var[x_{t-1}] = 1\) 并且我们使用更新：
 
-\[
-x_t = \sqrt{1 - \beta_t} \cdot x_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t, \tag{18.41}
-\]
+\begin{equation}
+x_t = \sqrt{1 - \beta_t} \cdot x_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t, 
+\end{equation}
 
 那么 \(Var[x_t] = 1\)，所以方差保持不变。
 
 \textbf{问题 18.2} 考虑变量：
 
-\[
-z = a \cdot \epsilon_1 + b \cdot \epsilon_2, \tag{18.42}
-\]
+\begin{equation}
+z = a \cdot \epsilon_1 + b \cdot \epsilon_2, 
+\end{equation}
 
 其中 \(\epsilon_1\) 和 \(\epsilon_2\) 都是从独立的标准正态分布中抽取的，这个分布的平均值为零，方差为单位。证明：
 
-\[
+\begin{equation}
 E[z] = 0
-\]
+\end{equation}
 
-\[
-Var[z] = a^2 + b^2, \tag{18.43}
-\]
+\begin{equation}
+Var[z] = a^2 + b^2, 
+\end{equation}
 
 因此，我们可以等价地计算 \(z = \sqrt{a^2 + b^2} \cdot \epsilon\)，其中 \(\epsilon\) 也是从标准正态分布中抽取的。
 
 \textbf{问题 18.3} 继续等式 18.5 中的过程以显示：
 
-\[
-z_3 = \sqrt{(1 - \beta_3)(1 - \beta_2)(1 - \beta_1)} \cdot x + \sqrt{1 - (1 - \beta_3)(1 - \beta_2)(1 - \beta_1)} \cdot \epsilon', \tag{18.44}
-\]
+\begin{equation}
+z_3 = \sqrt{(1 - \beta_3)(1 - \beta_2)(1 - \beta_1)} \cdot x + \sqrt{1 - (1 - \beta_3)(1 - \beta_2)(1 - \beta_1)} \cdot \epsilon', 
+\end{equation}
 
 其中 \(\epsilon'\) 是从标准正态分布中抽取的。
 
 \textbf{问题 18.4} 证明关系：
 
-\[
-\text{Norm}[A\mathbf{w}, B] \text{ or Norm} \left[ (A^T B^{-1} A)^{-1} A^T B^{-1}\mathbf{v}, (A^T B^{-1} A)^{-1} \right]. \tag{18.45}
-\]
+\begin{equation}
+\text{Norm}[A\mathbf{w}, B] \text{ or Norm} \left[ (A^T B^{-1} A)^{-1} A^T B^{-1}\mathbf{v}, (A^T B^{-1} A)^{-1} \right]. 
+\end{equation}
 
 \textbf{问题 18.5} 证明关系：
 
-\[
-\text{Norm}[x, a] \text{Norm}[x, b] \propto \text{Norm}_x \left[ (A^{-1} + B^{-1})^{-1}(A^{-1}a + B^{-1}b), (A^{-1} + B^{-1})^{-1} \right]. \tag{18.46}
-\]
+\begin{equation}
+\text{Norm}[x, a] \text{Norm}[x, b] \propto \text{Norm}_x \left[ (A^{-1} + B^{-1})^{-1}(A^{-1}a + B^{-1}b), (A^{-1} + B^{-1})^{-1} \right]. 
+\end{equation}
 
 \textbf{问题 18.6} 导出公式 18.15。
 
@@ -616,23 +616,23 @@ z_3 = \sqrt{(1 - \beta_3)(1 - \beta_2)(1 - \beta_1)} \cdot x + \sqrt{1 - (1 - \b
 
 \textbf{问题 18.8} 两个正态分布在 D 维空间中的 KL 散度，均值分别为 a 和 b，协方差矩阵分别为 A 和 B，其给出为：
 
-\[
-D_{KL} [\text{Norm}[w, A] \| \text{Norm}[w, B]] = \frac{1}{2} \left( \text{tr}[B^{-1}A] - d + (a - b)^T B^{-1}(a - b) + \log \frac{|B|}{|A|} \right). \tag{18.47}
-\]
+\begin{equation}
+D_{KL} [\text{Norm}[w, A] \| \text{Norm}[w, B]] = \frac{1}{2} \left( \text{tr}[B^{-1}A] - d + (a - b)^T B^{-1}(a - b) + \log \frac{|B|}{|A|} \right). 
+\end{equation}
 
 将等式 18.27 的定义代入这个表达式，并显示参数\(\phi\)依赖的唯一项是等式 18.28 的第一项。
 
 \textbf{Problem 18.9} 如果 \(\alpha_t = \prod_{s=1}^{t} (1 - \beta_s)\), 则:
 
-\[
-\sqrt{\frac{\alpha_t}{\alpha_{t-1}}} = \sqrt{1 - \beta_t}. \tag{18.48}
-\]
+\begin{equation}
+\sqrt{\frac{\alpha_t}{\alpha_{t-1}}} = \sqrt{1 - \beta_t}. 
+\end{equation}
 
 \textbf{问题 18.10} 如果 \(\alpha_t = \prod_{s=1}^{t} (1 - \beta_s)\), 则:
 
-\[
-\frac{(1 - \alpha_{t-1})(1 - \beta_t) + \beta_t}{(1 - \alpha_t)\sqrt{1 - \beta_t}} = \frac{1}{\sqrt{1 - \beta_t}}. \tag{18.49}
-\]
+\begin{equation}
+\frac{(1 - \alpha_{t-1})(1 - \beta_t) + \beta_t}{(1 - \alpha_t)\sqrt{1 - \beta_t}} = \frac{1}{\sqrt{1 - \beta_t}}. 
+\end{equation}
 
 \textbf{问题 18.11} 证明等式 18.37。
 
