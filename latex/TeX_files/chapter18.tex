@@ -25,7 +25,7 @@
 扩散或前向过程（图 18.2）将数据样例 \( x \) 映射为一系列与 \( x \) 同维度的中间变量 \( z_1, z_2, \ldots, z_T \)，过程如下：
 
 \begin{align}
-&z_1 = \sqrt{1 - \beta_1} \cdot x + \sqrt{\beta_1} \cdot \epsilon_1 \\
+&z_1 = \sqrt{1 - \beta_1} \cdot x + \sqrt{\beta_1} \cdot \epsilon_1 \notag \\
 &z_t = \sqrt{1 - \beta_t} \cdot z_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t \quad \forall t \in \{2, \ldots, T\}, 
 \end{align} 
 
@@ -34,7 +34,7 @@
 
 
 \begin{align}
-&q(z_1|x) = \text{Norm}_{z_1} \left[ \sqrt{1 - \beta_1}, \beta_1 \right] \\
+&q(z_1|x) = \text{Norm}_{z_1} \left[ \sqrt{1 - \beta_1}, \beta_1 \right] \notag \\
 &q(z_t|z_{t-1}) = \text{Norm}_{z_t} \left[ \sqrt{1 - \beta_{t-1}}, \beta_t \right] \quad \forall t \in \{2, \ldots, T\}. 
 \end{align} 
 
@@ -59,7 +59,7 @@ q(z_1\ldots T|x) = q(z_1|x) \prod_{t=2}^{T} q(z_t|z_{t-1}).
 
 
 \begin{align}
-&z_1 = \sqrt{1 - \beta_1} \cdot x + \sqrt{\beta_1} \cdot \epsilon_1 \\
+&z_1 = \sqrt{1 - \beta_1} \cdot x + \sqrt{\beta_1} \cdot \epsilon_1 \notag \\
 &z_2 = \sqrt{1 - \beta_2} \cdot z_1 + \sqrt{\beta_2} \cdot \epsilon_2 
 \end{align} 
 
@@ -67,8 +67,8 @@ q(z_1\ldots T|x) = q(z_1|x) \prod_{t=2}^{T} q(z_t|z_{t-1}).
 将第一步的结果代入第二步，我们得到：
 
 \begin{align}
-z_2 &= \sqrt{1 - \beta_2} \left( \sqrt{1 - \beta_1} \cdot x + \sqrt{\beta_1} \cdot \epsilon_1 \right) + \sqrt{\beta_2} \cdot \epsilon_2 \\
-&= \sqrt{1 - \beta_2} \left( \sqrt{1 - \beta_1} \cdot x + \sqrt{1 - (1 - \beta_1)} \cdot \epsilon_1 \right) + \sqrt{\beta_2} \cdot \epsilon_2 \\
+z_2 &= \sqrt{1 - \beta_2} \left( \sqrt{1 - \beta_1} \cdot x + \sqrt{\beta_1} \cdot \epsilon_1 \right) + \sqrt{\beta_2} \cdot \epsilon_2 \notag \\
+&= \sqrt{1 - \beta_2} \left( \sqrt{1 - \beta_1} \cdot x + \sqrt{1 - (1 - \beta_1)} \cdot \epsilon_1 \right) + \sqrt{\beta_2} \cdot \epsilon_2 \notag \\
 &= \sqrt{(1 - \beta_2)(1 - \beta_1)} \cdot x + \sqrt{\beta_2 - (1 - \beta_2)(1 - \beta_1)} \cdot \epsilon_1 + \sqrt{\beta_2} \cdot \epsilon_2. 
 \end{align} 
 
@@ -109,7 +109,7 @@ q(z_t|x) = \text{Norm}_{z_t} \left[ \sqrt{\alpha_t} \cdot x, 1 - \alpha_t \right
 
 
 \begin{align}
-q(z_t) &= \int \int \ldots \int q(z_1\ldots t, x) dz_1\ldots dz_{t-1}dx \\
+q(z_t) &= \int \int \ldots \int q(z_1\ldots t, x) dz_1\ldots dz_{t-1}dx \notag \\
 &= \int \int \ldots \int q(z_1\ldots t|x) Pr(x) dz_1\ldots dz_{t-1}dx, 
 \end{align} 
 
@@ -158,9 +158,9 @@ q(z_{t-1}|z_t) = \frac{q(z_t|z_{t-1})q(z_{t-1})}{q(z_t)}
 
 
 \begin{align}
-q(z_{t-1}|z_t, x) &= \frac{q(z_t|z_{t-1}, x)q(z_{t-1}|x)}{q(z_t|x)} \\
-&\propto q(z_t|z_{t-1})q(z_{t-1}|x) \\
-&= \text{Norm}_{z_t} \left[ \sqrt{1 - \beta_t \cdot z_{t-1}, \beta_t} \right] \text{Norm}_{z_{t-1}} \left[ \sqrt{\alpha_{t-1} \cdot x, (1 - \alpha_{t-1})} \right] \\
+q(z_{t-1}|z_t, x) &= \frac{q(z_t|z_{t-1}, x)q(z_{t-1}|x)}{q(z_t|x)} \notag \\
+&\propto q(z_t|z_{t-1})q(z_{t-1}|x) \notag \\
+&= \text{Norm}_{z_t} \left[ \sqrt{1 - \beta_t \cdot z_{t-1}, \beta_t} \right] \text{Norm}_{z_{t-1}} \left[ \sqrt{\alpha_{t-1} \cdot x, (1 - \alpha_{t-1})} \right] \notag \\
 &\propto \text{Norm}_{z_{t-1}} \left[ \frac{1}{\sqrt{1 - \beta_t}} z_t, \frac{\beta_t}{1 - \beta_t} \right] \text{Norm}_{z_{t-1}} \left[ \sqrt{\alpha_{t-1} \cdot x, (1 - \alpha_{t-1})} \right] 
 \end{align} 
 
@@ -200,8 +200,8 @@ q(z_{t-1}|z_t, x) = \text{Norm}_{z_{t-1}} \left[
 
 
 \begin{align}
-&Pr(z_T) = \text{Norm}_{z_T}[0, I] \\
-&Pr(z_{t-1}|z_t, \phi_t) = \text{Norm}_{z_{t-1}}[f_t[z_t, \phi_t], \sigma_t^2] \\
+&Pr(z_T) = \text{Norm}_{z_T}[0, I] \notag \\
+&Pr(z_{t-1}|z_t, \phi_t) = \text{Norm}_{z_{t-1}}[f_t[z_t, \phi_t], \sigma_t^2] \notag \\
 &Pr(x|z_1, \phi_1) = \text{Norm}_{x}[f_1[z_1, \phi_1], \sigma_1^2], 
 \end{align} 
 
@@ -256,7 +256,7 @@ Pr(x|\phi_1...T) = \int Pr(x, z_1...T|\phi_1...T)dz_1...T.
 
 
 \begin{align}
-\log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] &= \log \left[ \frac{Pr(x|z_1, \phi_1) \prod_{t=2}^{T} Pr(z_{t-1}|z_t, \phi_t) \cdot Pr(z_T)}{q(z_1|x) \prod_{t=2}^{T} q(z_t|z_{t-1})} \right] \\
+\log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] &= \log \left[ \frac{Pr(x|z_1, \phi_1) \prod_{t=2}^{T} Pr(z_{t-1}|z_t, \phi_t) \cdot Pr(z_T)}{q(z_1|x) \prod_{t=2}^{T} q(z_t|z_{t-1})} \right] \notag \\
 &= \log \left[ \frac{Pr(x|z_1, \phi_1)}{q(z_1|x)} \right] + \log \left[ \prod_{t=2}^{T} \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_t|z_{t-1})} \right] + \log [ Pr(z_T) ]. 
 \end{align} 
 
@@ -286,9 +286,9 @@ q(z_t|z_{t-1}) = q(z_t|z_{t-1}, x)q(z_t|x) / q(z_{t-1}|x),
 
 
 \begin{align}
-\text{ELBO}[\phi_{1...T}] &= \int q(z_{1...T|x}) \log \frac{Pr(x, z_{1...T}|\phi_{1...T})}{q(z_{1...T|x})} dz_{1...T} \\
-&\approx \int q(z_{1...T|x}) \left( \log [Pr(x|z_1, \phi_1)] + \sum_{t=2}^T \log \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_{t-1}|z_t, x)} \right) dz_{1...T} \\
-&= E_{q(z_{1|x})} \left[ \log [Pr(x|z_1, \phi_1)] \right] \\
+\text{ELBO}[\phi_{1...T}] &= \int q(z_{1...T|x}) \log \frac{Pr(x, z_{1...T}|\phi_{1...T})}{q(z_{1...T|x})} dz_{1...T} \notag \\
+&\approx \int q(z_{1...T|x}) \left( \log [Pr(x|z_1, \phi_1)] + \sum_{t=2}^T \log \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_{t-1}|z_t, x)} \right) dz_{1...T} \notag \\
+&= E_{q(z_{1|x})} \left[ \log [Pr(x|z_1, \phi_1)] \right] \notag \\
 &- \sum_{t=2}^T E_{q(z_{t|x})} \left[ D_{KL} \left[ q(z_{t-1}|z_t, x)||Pr(z_{t-1}|z_t, \phi_t) \right] \right],
 \end{align}
 
@@ -308,7 +308,7 @@ ELBO 中的 KL 散度项衡量了 \(Pr(z_{t-1}|z_t, \phi_t)\) 与 \(q(z_{t-1}|z_
 
 
 \begin{align}
-&Pr(z_{t-1}|z_t, \phi_t) = \text{Norm}_{z_{t-1}} \left[ f_t[z_t, \phi_t], \sigma^2_t \right] \\
+&Pr(z_{t-1}|z_t, \phi_t) = \text{Norm}_{z_{t-1}} \left[ f_t[z_t, \phi_t], \sigma^2_t \right] \notag \\
 &q(z_{t-1}|z_t, x) = \text{Norm}_{z_{t-1}} \left[ \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} - \frac{\sqrt{\alpha_{t-1}\beta_t}}{1 - \alpha_t} z_t + \frac{\sqrt{\alpha_{t-1}\beta_t}}{1 - \alpha_t} x, \beta_t(1 - \alpha_{t-1}) \right]. 
 \end{align} 
 
@@ -316,7 +316,7 @@ ELBO 中的 KL 散度项衡量了 \(Pr(z_{t-1}|z_t, \phi_t)\) 与 \(q(z_{t-1}|z_
 两个正态分布之间的 KL 散度有一个封闭形式的表达式。此外，这个表达式中的许多项不依赖于 \(\phi\)（见问题 18.8），表达式简化为均值之间的平方差加上一个常数 C：
 
 \begin{align}
-&D_{KL} \left[ q(z_{t-1}|z_t, x)||Pr(z_{t-1}|z_t, \phi_t) \right] = \\
+&D_{KL} \left[ q(z_{t-1}|z_t, x)||Pr(z_{t-1}|z_t, \phi_t) \right] = \notag \\
 &\frac{1}{2\sigma^2_t} \left| \left| \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} - \sqrt{\frac{\beta_t}{1 - \alpha_t}} z_t + \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} x - f_t[z_t, \phi] \right| \right|^2 + C. 
 \end{align}
 
@@ -325,7 +325,7 @@ ELBO 中的 KL 散度项衡量了 \(Pr(z_{t-1}|z_t, \phi_t)\) 与 \(q(z_{t-1}|z_
 
 
 \begin{align}
-L(\phi_{1...T}) &= \sum_{i=1}^I \left( -\log \text{Norm}_{x_i} [f_1[z_{i1}, \phi_1], \sigma^2_{1}] \right) \\ 
+L(\phi_{1...T}) &= \sum_{i=1}^I \left( -\log \text{Norm}_{x_i} [f_1[z_{i1}, \phi_1], \sigma^2_{1}] \right) \notag \\ 
 + &\sum_{t=2}^T \frac{1}{2\sigma^2_t} \left| \left| \frac{1 - \alpha_{t-1}}{1 - \alpha_t} - \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} z_{it} + \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} x_i - f_t[z_{it}, \phi_t] \right| \right|^2), 
 \end{align} 
 
@@ -372,8 +372,8 @@ x = \frac{1}{\sqrt{\alpha_t}} \cdot z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{\alph
 将这个表示代入方程 18.29 中的目标项，我们得到：
 
 \begin{align}
-\frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t}z_t &+ \frac{\sqrt{\alpha_{t-1}}\beta_t}{1 - \alpha_t}x  \\
-&= \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t} z_t + \frac{\sqrt{\alpha_{t-1}}\beta_t}{1 - \alpha_t} \left( \frac{1}{\sqrt{\alpha_t}} z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{\alpha_t}} \epsilon \right) \\
+\frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t}z_t &+ \frac{\sqrt{\alpha_{t-1}}\beta_t}{1 - \alpha_t}x  \notag \\
+&= \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t} z_t + \frac{\sqrt{\alpha_{t-1}}\beta_t}{1 - \alpha_t} \left( \frac{1}{\sqrt{\alpha_t}} z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{\alpha_t}} \epsilon \right) \notag \\
 &= \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t} z_t + \frac{\beta_t}{1 - \alpha_t} \left( \frac{1}{\sqrt{1 - \beta_t}} z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{1 - \beta_t}} \epsilon \right), 
 \end{align} 
 
@@ -381,11 +381,11 @@ x = \frac{1}{\sqrt{\alpha_t}} \cdot z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{\alph
 这里我们利用了从第二行到第三行 \(\sqrt{\alpha_t} / \sqrt{\alpha_{t-1}} = \sqrt{1 - \beta_t}\) 的关系。进一步简化，可以得到：
 
 \begin{align}
-\frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t} z_t &+ \frac{\sqrt{\alpha_{t-1}\beta_t}}{1 - \alpha_t} x  \\
-&= \left( \frac{(1 - \alpha_{t-1})\sqrt{1 - \beta_t}}{1 - \alpha_t} + \frac{\beta_t}{(1 - \alpha_t)\sqrt{1 - \beta_t}} \right) z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon \\
-&= \left( \frac{(1 - \alpha_{t-1})(1 - \beta_t) + \beta_t}{(1 - \alpha_t)\sqrt{1 - \beta_t}} \right) z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon \\
-&= \frac{1 - \alpha_{t-1} - \beta_t + \beta_t}{(1 - \alpha_t)\sqrt{1 - \beta_t}} z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon \\
-&= \frac{1 - \alpha_{t-1}}{(1 - \alpha_t)\sqrt{1 - \beta_t}} z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon \\
+\frac{(1 - \alpha_{t-1})}{1 - \alpha_t} \sqrt{1 - \beta_t} z_t &+ \frac{\sqrt{\alpha_{t-1}\beta_t}}{1 - \alpha_t} x  \notag \\
+&= \left( \frac{(1 - \alpha_{t-1})\sqrt{1 - \beta_t}}{1 - \alpha_t} + \frac{\beta_t}{(1 - \alpha_t)\sqrt{1 - \beta_t}} \right) z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon \notag \\
+&= \left( \frac{(1 - \alpha_{t-1})(1 - \beta_t) + \beta_t}{(1 - \alpha_t)\sqrt{1 - \beta_t}} \right) z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon \notag \\
+&= \frac{1 - \alpha_{t-1} - \beta_t + \beta_t}{(1 - \alpha_t)\sqrt{1 - \beta_t}} z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon \notag \\
+&= \frac{1 - \alpha_{t-1}}{(1 - \alpha_t)\sqrt{1 - \beta_t}} z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon \notag \\
 &= \frac{1}{\sqrt{1 - \beta_t}} z_t - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}} \epsilon, 
 \end{align} 
 
@@ -396,7 +396,7 @@ x = \frac{1}{\sqrt{\alpha_t}} \cdot z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{\alph
 最后，将这个结果代回损失函数（方程 18.29），我们得到：
 
 \begin{align}
-L(\phi_{1...T}) &= \sum_{i=1}^I -\log \text{Norm}_{x_i} [f_1[z_{i1}, \phi_1], \sigma^2_{1}] \\
+L(\phi_{1...T}) &= \sum_{i=1}^I -\log \text{Norm}_{x_i} [f_1[z_{i1}, \phi_1], \sigma^2_{1}] \notag \\
 &+ \sum_{t=2}^T \frac{1}{2\sigma^2_t} \left| \left| \left( \frac{1}{\sqrt{1 - \beta_t}}z_{it} - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}}\epsilon_{it} \right) - f_t[z_{it}, \phi_t] \right| \right|^2, 
 \end{align}
 
@@ -409,14 +409,14 @@ f_t[z_t, \phi_t] = \frac{1}{\sqrt{1 - \beta_t}}z_t - \frac{\beta_t}{\sqrt{1 - \a
 \end{equation}
 将这个新模型代入方程 18.34，我们得到以下准则：
 \begin{align}
-L(\phi_1...T) &= \sum_{i=1}^{I} -\log \left[  \left( \text{Norm}_{x_i} [f_1(z_{i1}, \phi_1), \sigma_1^2 I] \right) \right] \\
+L(\phi_1...T) &= \sum_{i=1}^{I} -\log \left[  \left( \text{Norm}_{x_i} [f_1(z_{i1}, \phi_1), \sigma_1^2 I] \right) \right] \notag \\
 &+ \sum_{t=2}^{T} \frac{\beta_t^2}{(1 - \alpha_t)(1 - \beta_t)2\sigma_t^2} \left\| g_t[z_{it}, \phi_t] - \epsilon_{it} \right\|^2 . 
 \end{align}
 
 对数正态分布的表达可以被转换为一个最小二乘损失加上常数 \(C_i\)（参见 5.3.1 节）：
 
 \begin{equation}
-L(\phi_1...T) = \sum_{i=1}^{I} \frac{1}{2\sigma_1^2} \left\| x_i - f_1(z_{i1}, \phi_1) \right\|^2 + \sum_{t=2}^{T} \frac{\beta_t^2}{(1 - \alpha_t)(1 - \beta_t)2\sigma_t^2} \left\| g_t[z_{it}, \phi_t] - \epsilon_{it} \right\|^2 + C_i.
+L(\phi_1...T) = \sum_{i=1}^{I} \frac{1}{2\sigma_1^2} \left\| x_i - f_1(z_{i1}, \phi_1) \right\|^2 + \sum_{t=2}^{T} \frac{\beta_t^2}{(1 - \alpha_t)(1 - \beta_t)2\sigma_t^2} \left\| g_t[z_{it}, \phi_t] - \epsilon_{it} \right\|^2 + C_i. \notag
 \end{equation}
 将方程 18.31 和 18.35 中的 \(x\) 和 \(f_1[z_1, \phi_1]\) 的定义代入后，第一项可以简化为：
 
@@ -436,7 +436,7 @@ L(\phi_1...T) = \sum_{i=1}^{I} \sum_{t=1}^{T} \frac{\beta_t^2}{(1 - \alpha_t)(1 
 
 
 \begin{align}
-L(\phi_1...T) &= \sum_{i=1}^{I} \sum_{t=1}^{T} \left\| g_t[z_{it}, \phi_t] - \epsilon_{it} \right\|^2 \\
+L(\phi_1...T) &= \sum_{i=1}^{I} \sum_{t=1}^{T} \left\| g_t[z_{it}, \phi_t] - \epsilon_{it} \right\|^2 \notag \\
 &= \sum_{i=1}^{I} \sum_{t=1}^{T} \left\| g_t \left[ \sqrt{\alpha_t} \cdot x_i + \sqrt{1 - \alpha_t} \cdot \epsilon_{it}, \phi_t \right] - \epsilon_{it} \right\|^2,  
 \end{align} 
 
@@ -577,7 +577,7 @@ z = a \cdot \epsilon_1 + b \cdot \epsilon_2,
 其中 \(\epsilon_1\) 和 \(\epsilon_2\) 都是从独立的标准正态分布中抽取的，这个分布的平均值为零，方差为单位。证明：
 
 \begin{equation}
-E[z] = 0
+E[z] = 0 \notag
 \end{equation}
 
 \begin{equation}

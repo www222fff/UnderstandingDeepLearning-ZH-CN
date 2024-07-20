@@ -79,7 +79,7 @@
 
 
 \begin{align}
-X' = XP \\
+X' = XP \notag \\
 A' = P^TAP, 
 \end{align} 
 
@@ -136,10 +136,10 @@ GCN 的每一层都是一个带参数 \(\Phi\) 的函数 \(F[\cdot]\)，它接�
 
 
 \begin{align}
-H_1 = F[X, A, \phi_0] \\
-H_2 = F[H_1, A, \phi_1] \\
-H_3 = F[H_2, A, \phi_2] \\
-\vdots \\
+H_1 = F[X, A, \phi_0] \notag \\
+H_2 = F[H_1, A, \phi_1] \notag \\
+H_3 = F[H_2, A, \phi_2] \notag \\
+\vdots \notag \\
 H_K = F[H_{K-1}, A, \phi_{K-1}], 
 \end{align} 
 
@@ -186,7 +186,7 @@ h_{k+1}^{(n)} = a \left[ \beta_k + \Omega_k \cdot h_k^{(n)} + \Omega_k \cdot \te
 
 
 \begin{align}
-H_{k+1} = a [\beta_{k} 1^T + \Omega_k H_k + \Omega_k H_k A] \\
+H_{k+1} = a [\beta_{k} 1^T + \Omega_k H_k + \Omega_k H_k A] \notag \\
 = a [\beta_{k} 1^T + \Omega_k H_k (A + I)], 
 \end{align} 
 
@@ -209,10 +209,10 @@ H_{k+1} = a [\beta_{k} 1^T + \Omega_k H_k + \Omega_k H_k A] \\
 
 
 \begin{align}
-H_1 = a[\beta_0 1^T + \Omega_0 X(A + I)] \\
-H_2 = a[\beta_1 1^T + \Omega_1 H_1(A + I)] \\
-\vdots \\
-H_K = a[\beta_{K-1} 1^T + \Omega_{K-1} H_{k-1}(A + I)] \\
+H_1 = a[\beta_0 1^T + \Omega_0 X(A + I)] \notag \\
+H_2 = a[\beta_1 1^T + \Omega_1 H_1(A + I)] \notag \\
+\vdots \notag \\
+H_K = a[\beta_{K-1} 1^T + \Omega_{K-1} H_{k-1}(A + I)] \notag \\
 f[X, A, \Phi] = \text{sig}[\beta_K + \omega_K H_K 1/N], 
 \end{align} 
 
@@ -301,8 +301,8 @@ H_{k+1} = a \left[ \beta_{k} 1^T + \Omega_k H_k (A + (1 + \epsilon_k)I) \right].
 
 
 \begin{align}
-H_{k+1} &= a \left[ \beta_{k} 1^T + \Omega_k H_k A + \Psi_k H_k \right] \\
-&= a \left[ \beta_{k} 1^T + \left[ \Omega_k \ \Psi_k \right] \begin{bmatrix} H_k A \\ H_k \end{bmatrix} \right] \\
+H_{k+1} &= a \left[ \beta_{k} 1^T + \Omega_k H_k A + \Psi_k H_k \right] \notag \\
+&= a \left[ \beta_{k} 1^T + \left[ \Omega_k \ \Psi_k \right] \begin{bmatrix} H_k A \\ H_k \end{bmatrix} \right] \notag \\
 &= a \left[ \beta_{k} 1^T + \Omega'_k \begin{bmatrix} H_k A \\ H_k \end{bmatrix} \right], 
 \end{align} 
 
@@ -477,7 +477,7 @@ A_1 =
 0 & 1 & 0 & 0 & 1 & 1 \\
 0 & 1 & 0 & 0 & 0 & 1 \\
 0 & 1 & 1 & 0 & 0 & 0 \\
-0 & 0 & 1 & 1 & 0 & 0 \\
+0 & 0 & 1 & 1 & 0 & 0  \notag \\
 \end{bmatrix}
 \end{equation}
 
@@ -491,7 +491,7 @@ A_2 =
 1 & 1 & 0 & 0 & 0 & 0 \\
 1 & 0 & 0 & 0 & 1 & 1 \\
 0 & 1 & 0 & 1 & 0 & 0 \\
-1 & 0 & 0 & 1 & 0 & 1 \\
+1 & 0 & 0 & 1 & 0 & 1 \notag \\
 \end{bmatrix}
 \end{equation}
 
@@ -512,12 +512,12 @@ A_2 =
 
 
 \begin{align}
-H_{k+1} = \text{GraphLayer}[H_k, A] \\
+H_{k+1} = \text{GraphLayer}[H_k, A] \notag \\
 = a \left[
 \begin{array}{c}
-\beta_k 1^T \\
+\beta_k 1^T  \\
 \Omega_k \left[ \begin{array}{c}
-H_k \\
+H_k  \\
 H_k A \\
 \end{array} \right]
 \end{array}

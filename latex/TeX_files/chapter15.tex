@@ -35,7 +35,7 @@ x_j^* = g[z_j, \theta] = z_j + \theta,
 我们接下来将精确定义训练生成式对抗网络（GAN）所用的损失函数。鉴别器\(f(x, \phi)\)接收输入\(x\)，拥有参数\(\phi\)，并返回一个标量值，当输入被判定为真实样本时，此值较大。鉴于这是一个二分类任务，我们适用了二元交叉熵损失函数（见第5.4节），它的原始形式是：
 
 \begin{equation}
-\hat{\phi} = \text{argmin}_{\phi} \left[ \sum_i (1 - y_i) \log \left( 1 - \text{sig}[f(x_i, \phi)] \right) - y_i \log \left( \text{sig}[f(x_i, \phi)] \right) \right], 
+\hat{\phi} = \underset{\phi}{\arg\min} \left[ \sum_i (1 - y_i) \log \left( 1 - \text{sig}[f(x_i, \phi)] \right) - y_i \log \left( \text{sig}[f(x_i, \phi)] \right) \right], 
 \end{equation}
 
 这里\(y_i \in \{0, 1\}\)表示标签，而\(\text{sig}[\cdot]\)代表logistic sigmoid函数（参见图5.7）。
@@ -43,7 +43,7 @@ x_j^* = g[z_j, \theta] = z_j + \theta,
 在此基础上，我们假定真实样本\(x\)的标签\(y = 1\)，生成样本\(x^*\)的标签\(y = 0\)，因此损失函数变为：
 
 \begin{equation}
-\hat{\phi} = \text{argmin}_{\phi} \left[ \sum_j -\log \left( 1 - \text{sig}[f(x_j^*, \phi)] \right) - \sum_i \log \left( \text{sig}[f(x_i, \phi)] \right) \right], 
+\hat{\phi} = \underset{\phi}{\arg\min} \left[ \sum_j -\log \left( 1 - \text{sig}[f(x_j^*, \phi)] \right) - \sum_i \log \left( \text{sig}[f(x_i, \phi)] \right) \right], 
 \end{equation}
 
 其中索引\(i\)和\(j\)分别代表真实样本和生成样本。
@@ -51,7 +51,7 @@ x_j^* = g[z_j, \theta] = z_j + \theta,
 现在，我们用生成器的定义\(x_j^* = g(z_j, \theta)\)来替代，并注意到对于\(\theta\)我们需要寻求最大化，因为我们希望生成的样本被误判（即，它们被识别为合成样本的可能性低，或负对数似然度高）：
 
 \begin{equation}
-\hat{\theta} = \text{argmax}_{\theta} \min_{\phi} \left[ \sum_j -\log \left(1 - \text{sig}[f(g(z_j, \theta), \phi)] \right) - \sum_i \log \left( \text{sig}[f(x_i, \phi)] \right) \right]. 
+\hat{\theta} = \text{argmax}_{\theta} \left[ \min_{\phi} \left[ \sum_j -\log \left(1 - \text{sig}[f(g(z_j, \theta), \phi)] \right) - \sum_i \log \left( \text{sig}[f(x_i, \phi)] \right) \right]  \right]. 
 \end{equation}
 
 \subsection{训练 GANs}
@@ -61,7 +61,7 @@ x_j^* = g[z_j, \theta] = z_j + \theta,
 
 
 \begin{align}
-&L[\phi] = \sum_j -\log \left[ 1 - \text{sig}[f(g(z_j, \theta), \phi)] \right] - \sum_i \log \left[ \text{sig}[f(x_i, \phi)] \right] \\
+&L[\phi] = \sum_j -\log \left[ 1 - \text{sig}[f(g(z_j, \theta), \phi)] \right] - \sum_i \log \left[ \text{sig}[f(x_i, \phi)] \right] \notag \\
 &L[\theta] = \sum_j \log \left[ 1 - \text{sig}[f(g(z_j, \theta), \phi)] \right], 
 \end{align} 
 
@@ -73,7 +73,7 @@ x_j^* = g[z_j, \theta] = z_j + \theta,
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GanDiscrimGen.png}
-\caption{GAN 损失函数。一个潜变量 zj 从基本分布中提取，并通过生成器生成样本 x∗。一批生成样本 {x∗j } 和真实样本 {xi} 被送至鉴别器，后者为每个样本分配一个真实性的概率。调整鉴别器参数 \(\phi\)，以提高对真实样本的识别概率，降低对生成样本的识别概率。同时调整生成器参数 \(\theta\)，使其能够让鉴别器更倾向于将生成样本判定为真实。}
+\caption{GAN 损失函数。一个潜变量 \(z_j\) 从基本分布中提取，并通过生成器生成样本 \( x^* \)。一批生成样本 \( x_j^* \) 和真实样本 \(\{x_i\}\) 被送至鉴别器，后者为每个样本分配一个真实性的概率。调整鉴别器参数 \(\phi\)，以提高对真实样本的识别概率，降低对生成样本的识别概率。同时调整生成器参数 \(\theta\)，使其能够让鉴别器更倾向于将生成样本判定为真实。}
 \end{figure}
 
 
@@ -115,8 +115,8 @@ x_j^* = g[z_j, \theta] = z_j + \theta,
 
 
 \begin{align}
-L[\phi] &= \frac{1}{J} \sum_{j=1}^{J} \log \left[ 1 - \text{sig}[f(x_j^*, \phi)] \right] + \frac{1}{I} \sum_{i=1}^{I} \log \left[ \text{sig}[f(x_i, \phi)] \right] \\
-&\approx \mathbb{E}_{x^*} \left[ \log \left( 1 - \text{sig}[f(x^*, \phi)] \right) \right] + \mathbb{E}_{x} \left[ \log \left( \text{sig}[f(x, \phi)] \right) \right] \\
+L[\phi] &= \frac{1}{J} \sum_{j=1}^{J} \log \left[ 1 - \text{sig}[f(x_j^*, \phi)] \right] + \frac{1}{I} \sum_{i=1}^{I} \log \left[ \text{sig}[f(x_i, \phi)] \right] \notag \\
+&\approx \mathbb{E}_{x^*} \left[ \log \left( 1 - \text{sig}[f(x^*, \phi)] \right) \right] + \mathbb{E}_{x} \left[ \log \left( \text{sig}[f(x, \phi)] \right) \right] \notag \\
 &= \int Pr(x^*) \log \left[ 1 - \text{sig}[f(x^*, \phi)] \right] dx^* + \int Pr(x) \log \left[ \text{sig}[f(x, \phi)] \right] dx, 
 \end{align} 
 
@@ -133,8 +133,8 @@ Pr(\text{real}|\tilde{x}) = \text{sig}[f(\tilde{x}, \phi)] = \frac{Pr(\tilde{x}|
 
 
 \begin{align}
-L[\phi] &= \int Pr(x^*) \log [1 - sig[f(x^*, \phi)]] dx^* + \int Pr(x) \log [sig[f(x, \phi)]] dx \\
-&= \int Pr(x^*) \log \left[ \frac{1 - Pr(x)}{Pr(x^*) + Pr(x)} \right] dx^* + \int Pr(x) \log \left[ \frac{Pr(x)}{Pr(x^*) + Pr(x)} \right] dx \\
+L[\phi] &= \int Pr(x^*) \log [1 - sig[f(x^*, \phi)]] dx^* + \int Pr(x) \log [sig[f(x, \phi)]] dx \notag\\
+&= \int Pr(x^*) \log \left[ \frac{1 - Pr(x)}{Pr(x^*) + Pr(x)} \right] dx^* + \int Pr(x) \log \left[ \frac{Pr(x)}{Pr(x^*) + Pr(x)} \right] dx \notag \\
 &= \int Pr(x^*) \log \left[ \frac{Pr(x^*)}{Pr(x^*) + Pr(x)} \right] dx^* + \int Pr(x) \log \left[ \frac{Pr(x)}{Pr(x^*) + Pr(x)} \right] dx. 
 \end{align} 
 
@@ -144,9 +144,9 @@ L[\phi] &= \int Pr(x^*) \log [1 - sig[f(x^*, \phi)]] dx^* + \int Pr(x) \log [sig
 
 
 \begin{align}
-D_{JS} [ Pr(x^*) \| Pr(x) ] &= \frac{1}{2} D_{KL} \left[ Pr(x^*) \| \frac{Pr(x^*) + Pr(x)}{2} \right] \\
-&+ \frac{1}{2} D_{KL} \left[ Pr(x) \| \frac{Pr(x^*) + Pr(x)}{2} \right] \\
-&= \frac{1}{2} \int Pr(x^*) \log \left[ \frac{2Pr(x^*)}{Pr(x^*) + Pr(x)} \right] dx^* \\
+D_{JS} [ Pr(x^*) \| Pr(x) ] &= \frac{1}{2} D_{KL} \left[ Pr(x^*) \| \frac{Pr(x^*) + Pr(x)}{2} \right] \notag \\
+&+ \frac{1}{2} D_{KL} \left[ Pr(x) \| \frac{Pr(x^*) + Pr(x)}{2} \right] \notag \\
+&= \frac{1}{2} \int Pr(x^*) \log \left[ \frac{2Pr(x^*)}{Pr(x^*) + Pr(x)} \right] dx^* \notag \\
 &+ \frac{1}{2} \int Pr(x) \log \left[ \frac{2Pr(x)}{Pr(x^*) + Pr(x)} \right] dx. 
 \end{align} 
 
@@ -193,8 +193,8 @@ D_w [ Pr(x) || q(x) ] = \min_{P} \left[ \sum_{i,j} P_{ij} \cdot |i - j| \right],
 这一计算受到几个约束条件的限制：
 
 \begin{align}
-& \sum_j P_{ij} = Pr(x = i), \quad Pr(x) \text{ 的起始分布} \\
-& \sum_i P_{ij} = q(x = j), \quad q(x) \text{ 的起始分布} \\
+& \sum_j P_{ij} = Pr(x = i), \quad Pr(x) \text{ 的起始分布} \notag \\
+& \sum_i P_{ij} = q(x = j), \quad q(x) \text{ 的起始分布} \notag \\
 & P_{ij} \geq 0, \quad \text{所有质量都是非负的。} 
 \end{align}
     
@@ -257,7 +257,7 @@ D_w [Pr(x), q(x)] = \max_{[f]x} \left[ \int Pr(x)f(x)dx - \int q(x)f(x)dx \right
 
 
 \begin{align}
-L[\phi] &= \sum_j [f[x_j^*, \phi]] - \sum_i [f[x_i, \phi]], \\
+L[\phi] &= \sum_j [f[x_j^*, \phi]] - \sum_i [f[x_i, \phi]], \notag \\
 &= \sum_j [f[g[z_j, \theta], \phi]] - \sum_i [f[x_i, \phi]], 
 \end{align} 
 
@@ -469,7 +469,7 @@ b = [Pr(x=1), Pr(x=2), Pr(x=3), Pr(x=4), q(x=1), q(x=2), q(x=3), q(x=4)]^T
 Pr(z) = \begin{cases}
 0 & z < 0 \\
 1 & 0 \leq z \leq 1 \\
-0 & z > 1
+0 & z > 1 \notag
 \end{cases}
 \end{equation}
 

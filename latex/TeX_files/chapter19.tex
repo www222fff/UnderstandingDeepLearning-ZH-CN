@@ -13,8 +13,20 @@
 \subsection{马尔科夫过程}
 马尔科夫过程是一种假设，认为世界总是存在于一系列可能的状态中。马尔科夫性指的是，一个状态的出现概率只与其前一个状态有关，而与更早的状态无关。状态之间的转变通过转移概率 \(Pr(s_{t+1}|s_t)\) 描述，即从当前状态 \(s_t\) 转移到下一个状态 \(s_{t+1}\) 的概率，这里的 t 表示时间步。因此，马尔科夫过程是不断演化的，它生成一系列状态 \(s_1, s_2, s_3\) ...（图 19.1）。
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceMDP.png}
+\caption{马尔可夫过程。马尔可夫过程由一组状态和定义从当前状态 \(s_t\) 转移到状态 \(s_{t+1}\) 的概率的转移概率 \(Pr(s_{t+1}|s_t)\) 组成。a) 企鹅可以在冰面上访问 16 个不同的位置（状态）。b) 冰面很滑，所以企鹅每次都有相同的概率移动到任一相邻状态。例如，在位置 6，它分别有 25\% 的概率移动到状态 2、5、7 和 10。从这个过程中得到的轨迹 \(\tau = \{s_1, s_2, s_3, \ldots\}\) 是一个状态序列}
+\end{figure}
+
 \subsection{马尔可夫奖励过程}
 *马尔科夫奖励过程* 包含一个分布 \(Pr(r_{t+1}|s_t)\)，用以确定在状态 \(s_t\) 下，下一时间步骤可能获得的奖励 \(r_{t+1}\)。这构建了一个由状态和其对应奖励组成的序列 \(r_1, s_1, r_2, s_2, r_3, s_3, r_4 \ldots\)（图 19.2）。
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceMDP2.png}
+\caption{马尔可夫奖励过程。它把一个奖励分布 \(Pr(r_{t+1}|s_t)\) 与每个状态 \(s_t\) 相关联。a) 这里，奖励是确定的：企鹅如果落在鱼上获得 \(+1\) 奖励，否则为 \(0\)。轨迹 \(\tau\) 现在是状态和奖励交替的序列 \(s_1, r_2, s_2, r_3, s_3, r_4 \ldots\)，在八步后终止。序列的总回报 \(G_t\) 是折扣后未来奖励的总和，此处的折扣因子为 \(\gamma = 0.9\)。b-c) 随着企鹅沿轨迹前进逐渐靠近奖励，其回报逐步增加。}
+\end{figure}
 
 在马尔科夫奖励过程中，还引入了一个*折扣因子* \(\gamma \in (0, 1)\) 来计算在时间点 \(t\) 的*回报* \(G_t\)：
 
@@ -28,12 +40,33 @@ G_t = \sum_{k=0}^{\infty} \gamma^k r_{t+k+1}.
 
 *马尔科夫决策过程*（MDP）为每一个时间步增加了一组可能的*动作*。这些动作 \(a_t\) 会改变转移概率，现在表示为 \(Pr(s_{t+1}|s_t, a_t)\)。奖励同样可能受到动作的影响，现表示为 \(Pr(r_{t+1}|s_t, a_t)\)。MDP 描述了一个由状态、动作及奖励组成的序列 \(s_1, a_1, r_2, s_2, a_2, r_3, s_3, a_3, r_4 \ldots\)（图 19.3）。进行这些动作的实体称为*智能体*。
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceMDP3.png}
+\caption{马尔可夫决策过程。a) 智能体（企鹅）可以在每个状态中选择一组动作之一执行。动作会影响到转移到下一状态的概率及获得奖励的可能性。b) 在这里，四个动作分别对应上、右、下、左移动。c) 在任何状态下（如状态 6），动作会改变到下一个状态的转移概率。企鹅有 50\% 的概率向预定方向移动，但由于冰面滑，它也可能以相同的概率滑到其他相邻位置。因此，在面板 (a) 中，实际采取的动作（灰色箭头）不一定与轨迹（橙色线）一致。这里的动作并不影响奖励，因此 \(Pr(r_{t+1}|s_t, a_t) = Pr(r_{t+1}|s_t)\)。MDP 的轨迹 \(\tau\) 是由状态 \(s_t\)、动作 \(a_t\) 和奖励 \(r_{t+1}\) 交替构成的序列。请注意，在此，企鹅在离开有鱼的状态时获得奖励，即通过鱼的格子即可获得奖励，无论是故意还是偶然。}
+\end{figure}
 
 \subsection{部分可观测马尔可夫决策过程}
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforcePOMDP.png}
+\caption{部分可观测马尔可夫决策过程（POMDP）。在 POMDP 中，智能体无法完全知晓状态。例如，企鹅在状态三时只能看到虚线框内的区域，这与其在状态九的视角无异。在前者中，向右移动将导致掉入冰洞（奖励为 -2），而在后者中，则可获得鱼（奖励为 +3）。}
+\end{figure}
 在*部分可观测马尔科夫决策过程*（POMDP）中，状态并不直接显现给智能体（图 19.4）。智能体得到的是观测值 \(o_t\)，这个观测值根据 \(Pr(o_t|s_t)\) 的概率分布得出。因此，POMDP 创造了一个由状态、观测、动作和奖励组成的序列 \(s_1, o_1, a_1, r_2, s_2, o_2, a_2, r_3, s_3, o_3, a_3, r_4 \ldots\)。一般而言，每个观测值与某些状态更为匹配，但不足以精确确定具体的状态。
 
 \subsection{策略}
 *策略*（图 19.5）是指导智能体在各个状态下采取何种行动的规则。策略可以是随机的，即为每个状态定义一系列动作的概率分布；也可以是确定性的，即智能体在特定状态下总是执行相同的动作。随机策略 \(\pi(a|s)\) 对于状态 \(s\) 下的每个可能动作提供一个概率分布，用于抽样决定新的动作。确定性策略 \(\pi(a|s)\) 对于状态 \(s\) 下选定的动作 \(a\) 返回一，对其他动作返回零。*静态*策略仅与当前状态相关，而*非静态*策略还考虑了时间步的变化。
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforcePolicy.png}
+\caption{策略。a) 确定性策略在每个状态下总是采取相同的动作（箭头指示）。虽然有些策略优于其他策略，但这种策略能够基本引导企鹅从左上角向右下角移动以获取奖励。b) 此策略更具随机性。c) 随机策略为每个状态设定一个动作的概率分布（概率由箭头大小表示），这有助于智能体更全面地探索状态，这在部分可观测的马尔可夫决策过程中可能是必要的以达到最优表现。}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceMDPLoop.png}
+\caption{强化学习循环。智能体在时间点 \(t\) 根据策略 \(\pi[a_t|s_t]\) 和当前状态 \(s_t\) 执行动作 \(a_t\)，引发新的状态 \(s_{t+1}\)（通过状态转移函数）和奖励 \(r_{t+1}\)（通过奖励函数）的产生。这两者随后被反馈给智能体，促使其选择下一个动作。}
+\end{figure}
 
 环境与智能体之间形成一个交互循环（图 19.6）。智能体接收上一时间步的状态 \(s_t\) 和奖励 \(r_t\)，并依此来调整策略 \(\pi(a|s_t)\)，选择下一步的动作 \(a_t\)。随后，环境根据 \(Pr(s_{t+1}|s_t, a_t)\) 确定下一个状态，并根据 \(Pr(r_{t+1}|s_t, a_t)\) 确定奖励。
 
@@ -45,6 +78,12 @@ G_t = \sum_{k=0}^{\infty} \gamma^k r_{t+k+1}.
 \subsection{状态与动作价值}
 
 回报 \(G_t\) 取决于状态 \(s_t\) 和策略 \(\pi(a|s)\)。智能体将从这个状态出发，经历一系列状态的变迁，执行动作并收获奖励。由于策略 \(\pi(a|s_t)\)、状态转移 \(Pr(s_{t+1}|s_t, a_t)\) 以及奖励 \(Pr(r_{t+1}|s_t, a_t)\) 都具有随机性，即使是从同一起点出发，智能体经历的序列也会每次不同。
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceValueOfAction.png}
+\caption{状态和动作价值。a) 状态 \(s_t\) 的价值 \(v(s_t|\pi)\)（每个位置的数值）代表在策略 \(\pi\)（灰色箭头）下，从该状态出发可获得的预期回报，即多条轨迹的折扣奖励平均值。这里，靠鱼越近的状态价值越高。b) 在状态 \(s_t\) 中采取动作 \(a_t\) 的价值 \(q(s_t, a_t, \pi)\)（每个位置/状态对应的四个数值分别对应四种动作）反映了采取该动作所期望的回报。这个价值会随着接近鱼而增加，并且朝鱼的方向的动作价值更高。c) 如果我们了解某状态的动作价值，策略就可以调整为选择这些价值中的最大者（面板 b 的红色数字表示）。}
+\end{figure}
 
 在特定策略 \(\pi\) 下，通过考虑预期回报 \(v(s_t|\pi)\)，我们可以评估一个状态的价值。这是从该状态开始，遵循策略所得到的平均回报，称为*状态价值*或*状态价值函数*（图 19.7a）：
 
@@ -91,11 +130,23 @@ q^*(s_t, a_t) = \max_{\pi} \mathbb{E} [ G_t|s_t, a_t, \pi ].
 v(s_t) = \sum_{a_t} \pi(a_t|s_t)q(s_t, a_t). 
 \end{equation}
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceBellman3.png}
+\caption{状态值与动作值的关系。状态六的值 \(v[s_t =6]\) 是其动作值 \(q[s_t =6,a_t]\) 的加权和，权重是采取各动作的策略概率 \(\pi[a_t|s_t =6]\)。}
+\end{figure}
+
 同理，动作的价值等于执行该动作所获得的即时奖励 \(r_{t+1} = r(s_t, a_t)\)，加上下一状态 \(s_{t+1}\) 的价值 \(v(s_{t+1})\) 经过折扣 \(\gamma\) 后的结果（图 19.9）。因为状态 \(s_{t+1}\) 的确定不是一成不变的，我们需要根据转移概率 \(Pr(s_{t+1}|s_t, a_t)\) 来加权 \(v(s_{t+1})\)：
 
 \begin{equation}
 q(s_t, a_t) = r(s_t, a_t) + \gamma \sum_{s_{t+1}} Pr(s_{t+1}|s_t, a_t)v(s_{t+1}). 
 \end{equation}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceBellman2.png}
+\caption{动作值与状态值的关系。在状态六采取动作二的价值 \(q[s_t = 6, a_t = 2]\) 等于采该动作获得的奖励 \(r[s_t = 6, a_t = 2]\) 加上后继状态的折扣价值 \(v[s_t+1]\) 的加权和，其中权重为转移概率 \(Pr(s_{t+1}|s_t = 6, a_t = 2)\)。通过贝尔曼方程，这种关系与图 19.8 的状态值和动作值关系相连，形成了当前与下一个状态值和动作值之间的联系。}
+\end{figure}
 
 将方程 19.8 代入方程 19.7，我们可以得到时间 \(t\) 和 \(t + 1\) 之间状态价值的关系：
 
@@ -144,10 +195,22 @@ v(s_t) \leftarrow \sum_{a_t} \pi(a_t|s_t) \left[ r(s_t, a_t) + \gamma \sum_{s_{t
 
 根据策略改进定理，这种方法能够保证策略的持续优化。这两个步骤持续迭代，直到策略稳定（图 19.10）。
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceDP.png}
+\caption{动态规划。a) 最初，状态值设为零，策略随机选定（箭头表示）。b) 状态值根据其邻近值进行更新（经过两次迭代后的方程 19.11）。策略调整为指向价值最高的状态（方程 19.12）。c) 经过多次迭代，算法逐步优化至最佳策略，此时企鹅会尽量避开洞并寻找鱼。}
+\end{figure}
+
 这种方法有多种变体。在策略迭代中，会先将策略评估迭代至收敛，然后再进行策略改进。值的更新可以在每次扫描时就地或同步进行。值迭代中，策略评估只进行一次扫描就直接进入策略改进。异步动态规划算法无需每步都系统地遍历所有状态，而是可以任意顺序地就地更新部分状态。
 
 \subsection{蒙特卡洛方法}
 与动态规划算法不同，蒙特卡洛方法不需要预先知道 MDP 的转移概率和奖励结构。它们通过重复采样 MDP 的轨迹并观察奖励来积累经验。这些方法在计算行动价值（基于累积的经验）和更新策略（基于行动价值）之间交替进行。
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceMC.png}
+\caption{蒙特卡洛方法。a) 初始时，策略（箭头）是随机设置的。通过反复模拟 MDP，记录下各次模拟的轨迹（橙色和棕色路径表示两个轨迹）。b) 通过对这些轨迹观测到的回报进行平均，经验性地估计动作价值。这里，所有动作价值起初都是零，后根据观测到的动作进行更新。c) 接下来可以根据获得最优（或较优）奖励的动作来更新策略。}
+\end{figure}
 
 为了估计行动价值 \(q(s, a)\)，会运行一系列轮次。每个轮次从给定状态和行为开始，随后按照当前策略执行，产生一连串的行为、状态和收益（图 19.11a）。给定状态-行为对的行动价值，在当前策略下，通过平均每次观察到此对后获得的实证回报来估计（图 19.11b）。然后，通过选择每个状态下价值最大的行为来更新策略（图 19.11c）：
 
@@ -176,6 +239,12 @@ q(s_t, a_t) \leftarrow q(s_t, a_t) + \alpha \left[ r(s_{t+1}, a_t) + \gamma q(s_
 q(s_t, a_t) \leftarrow q(s_t, a_t) + \alpha \left[ r(s_t, a_t) + \gamma \max_{a} [q(s_{t+1}, a)] - q(s_t, a_t) \right], 
 \end{equation}
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceTD.png}
+\caption{Q-learning：a) 智能体在状态st处开始，并按策略采取动作at=2。它未在冰面上滑倒，并向下移动，在离开原始状态时获得奖励r[st,at]=0。b) 找到新状态下的最大动作价值（此处为0.43）。c) 基于对后续状态的最大动作价值的当前估计、奖励、折现因子 \(\gamma=0.9\) 和学习率\(\alpha=0.1\)，原始状态的动作2的价值被更新为1.12。这导致原始状态的最高动作价值发生变化，因而策略也随之改变。}
+\end{figure}
+
 其中，每一步的行动选择是基于不同的行为策略 \(\pi'\) 来确定的。
 
 在这两种情况下，策略通过在每个状态下取行动价值的最大值来更新（方程 19.13）。可以证明，这些更新是收敛映射（参见方程 16.20）；只要每个状态-行动对被访问无限次，行动价值就会最终收敛。
@@ -200,7 +269,20 @@ L(\phi) = \left[ r(s_t, a_t) + \gamma \max_{a} q(s_{t+1}, a; \phi) - q(s_t, a_t;
 \subsection{深度 Q-网络在 ATARI 游戏中的应用}
 深度网络非常适合于从高维状态空间进行预测，因此在拟合 Q-学习中成为模型的自然选择。理论上，它们能够同时处理状态和动作作为输入以预测值，但实践中，网络只接收状态作为输入，并同时预测各个动作的值。
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceDQL.png}
+\caption{阿塔里基准。阿塔里基准包含了 49 款阿塔里 2600 游戏，如突破、乒乓及多种射击、平台等类型的游戏。a-d) 单屏幕游戏的状态无法仅通过一个画面完全确定，因为物体的速度信息不可见。因此，通常用几个连续帧（此处为四帧）来表达状态。e) 通过操纵杆模拟用户的动作输入。f) 共有十八种动作，对应八个方向的移动或停止，并且对这九种状态，按钮可按下或不按。}
+\end{figure}
+
 Deep Q-Network 是一个突破性的强化学习架构，它利用深度网络学会了玩 ATARI 2600 游戏。观测数据包括 220×160 像素的图像，每个像素拥有 128 种可能的颜色（见图 19.13）。这些图像被重塑为 84×84 像素，并且只保留了亮度值。不幸的是，单一帧图像无法展现完整的状态。例如，游戏中物体的速度未知。为解决这个问题，网络在每个时间步骤摄取最后四帧图像，组成 \(s_t\)。网络通过三个卷积层及一个全连接层处理这些帧，以预测每个动作的价值（见图 19.14）。
+
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceDQL2.png}
+\caption{深度 Q-网络架构。输入 \(s_t\) 为阿塔里游戏的四帧连续画面，每帧调整至 84×84 像素并转为灰度图。这些帧作为四通道输入，先经过 8×8 卷积处理（步长为 4），然后是 4×4 卷积（步长为 2），最后通过两个全连接层。最终输出为此状态下 18 个动作的动作价值 \(q[s_t, a_t]\) 预测。}
+\end{figure}
 
 对标准训练过程进行了数项修改。首先，根据游戏得分驱动的奖励被限制在 −1 到 +1 之间，这种做法旨在平衡不同游戏间得分的巨大差异，并允许使用统一的学习率。其次，系统采用了经验回放机制。不是仅基于当前步骤的 \(<s_t, a_t, r_{t+1}, s_{t+1}>\) 元组或最近 I 个元组的批处理来更新网络，而是将所有近期的元组都保存在一个缓冲区内。这个缓冲区被随机采样以在每一步生成一个批量，这种方法使得数据样本被多次重用，并降低了批次中样本间因相邻帧的相似性而产生的相关性。
 
@@ -228,7 +310,7 @@ q(s_t, a_t) \leftarrow q(s_t, a_t) + \alpha \left[ r(s_t, a_t) + \gamma \max_{a}
 
 
 \begin{align}
-&q_1(s_t, a_t) \leftarrow q_1(s_t, a_t) + \alpha \left[ r(s_t, a_t) + \gamma \cdot q_2 \left( s_{t+1}, argmax_{a} [q_1(s_{t+1}, a, \phi_1)] \right) - q_1(s_t, a_t) \right] \\
+&q_1(s_t, a_t) \leftarrow q_1(s_t, a_t) + \alpha \left[ r(s_t, a_t) + \gamma \cdot q_2 \left( s_{t+1}, argmax_{a} [q_1(s_{t+1}, a, \phi_1)] \right) - q_1(s_t, a_t) \right] \notag\\
 &q_2(s_t, a_t) \leftarrow q_2(s_t, a_t) + \alpha \left[ r(s_t, a_t) + \gamma \cdot q_1 \left( s_{t+1}, argmax_{a} [q_2(s_{t+1}, a, \phi_2)] \right) - q_2(s_t, a_t) \right] 
 \end{align} 
 
@@ -276,10 +358,15 @@ Pr(\tau|\theta) = Pr(s_1) \prod_{t=1}^{T} \pi(a_t|s_t, \theta)Pr(s_{t+1}|s_t, a_
 
 我们希望通过经验观察到的轨迹的总和来近似这个积分。这些轨迹来源于分布 \(Pr(\tau|\theta)\)，因此为了进展，我们用这个分布乘除被积函数：
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforcePolicyGrad.png}
+\caption{策略梯度。同一策略下的五次模拟（亮度高表示奖励大）。轨迹 1、2 和 3 持续获得高奖励，但这种轨迹在当前策略下已频繁出现，故无需变动。相反，轨迹 4 奖励较低，策略需调整以避免生成类似轨迹。轨迹 5 奖励高且不常见，根据方程 19.25，它将引起策略的最大改变。}
+\end{figure}
 
 \begin{align}
-\theta &\leftarrow \theta + \alpha \cdot \int \frac{\partial Pr(\tau|\theta)}{\partial \theta} r(\tau) d\tau \\
-&= \theta + \alpha \cdot \int Pr(\tau|\theta) \frac{1}{Pr(\tau|\theta)} \frac{\partial Pr(\tau|\theta)}{\partial \theta} r(\tau) d\tau \\
+\theta &\leftarrow \theta + \alpha \cdot \int \frac{\partial Pr(\tau|\theta)}{\partial \theta} r(\tau) d\tau \notag\\
+&= \theta + \alpha \cdot \int Pr(\tau|\theta) \frac{1}{Pr(\tau|\theta)} \frac{\partial Pr(\tau|\theta)}{\partial \theta} r(\tau) d\tau \notag\\
 &\approx \theta + \alpha \cdot \frac{1}{I} \sum_{i=1}^I \frac{1}{Pr(\tau_i|\theta)} \frac{\partial Pr(\tau_i|\theta)}{\partial \theta} r(\tau_i). 
 \end{align} 
 
@@ -303,7 +390,7 @@ Pr(\tau|\theta) = Pr(s_1) \prod_{t=1}^{T} \pi(a_t|s_t, \theta)Pr(s_{t+1}|s_t, a_
 
 
 \begin{align}
-\log[Pr(\tau|\theta)] &= \log [Pr(s_1)] \prod_{t=1}^{T} \pi(a_t|s_t, \theta) Pr(s_{t+1}|s_t, a_t) \\
+\log[Pr(\tau|\theta)] &= \log [Pr(s_1)] \prod_{t=1}^{T} \pi(a_t|s_t, \theta) Pr(s_{t+1}|s_t, a_t) \notag\\
 &= \log [Pr(s_1)] + \sum_{t=1}^{T} \log [\pi(a_t|s_t, \theta)] + \sum_{t=1}^{T} \log [Pr(s_{t+1}|s_t, a_t)], 
 \end{align} 
 
@@ -355,6 +442,12 @@ r[\tau_{it}] = \sum_{k=t+1}^{T} \gamma^{k-t-1} r_{ik},
 \begin{equation}
 \mathbb{E}_{\tau}\left[ \sum_{t=1}^T \frac{\partial \log[\pi_{\text{ait}}[s_{it}, \theta]]}{\partial \theta} \cdot b \right] = 0, 
 \end{equation}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforcementVariance.png}
+\caption{使用控制变量降低估计方差。a) 考虑基于少量样本估计 \(E[a]\)。估计值（样本均值）会因样本数和方差的不同而变化。b) 接着观察一个与 \(a\) 共变的变量 \(b\)，其期望值 \(E[b] = 0\) 且方差与 \(a\) 相同。c) \(a - b\) 的样本方差明显低于 \(a\) 的方差，但其期望值 \(E[a - b] = E[a]\)，因此我们得到了一个方差更低的估计器。}
+\end{figure}
 
 期望值就不会改变。然而，如果基线与其他无关且增加不确定性的因素相关联，那么减去基线就能减少方差（见图 19.16）。这是控制变量方法的一个特殊情况（参见问题 19.7）。
 
@@ -416,6 +509,12 @@ L[\phi] = \sum_{i=1}^{I} \sum_{t=1}^{T} \left( r_{it} + \gamma \cdot v[s_{i,t+1}
 
 虽然存在基于 Q-Learning 和策略梯度的离线 RL 方法，但这一领域开启了新的可能性。特别地，我们可以将其视作一个序列学习问题，目的是在给定状态、奖励和行动的历史下预测下一个行动。决策变换器（Decision Transformer）采用 Transformer 解码器框架（见第12.7节）进行预测（见图 19.17）。
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceDecisionTransformer.png}
+\caption{决策变换器。决策变换器把离线强化学习处理为序列预测问题。输入是状态、动作和剩余回报的序列，每个元素都被转换为固定大小的嵌入。每一步，网络预测下一动作。在测试阶段，剩余回报未知；实际中，通常从一个初始估计出发，逐渐扣除观测到的奖励。}
+\end{figure}
+
 但目标是基于*未来奖励*预测行动，这些在标准的 \(s, a, r\) 序列中无法体现。因此，决策变换器用*剩余回报* \(R_t:T = \sum_{t'=t}^T r_{t'}\)（即未来奖励的累积和）来替换当前奖励 \(r_t\)。剩余部分的框架与标准的 Transformer 解码器非常相似。状态、行动和剩余回报通过学习得到的映射转换成固定大小的嵌入。对于 Atari 游戏，状态嵌入可能通过类似图 19.14 中的卷积网络进行转换。行动和剩余回报的嵌入可类似于单词嵌入（见图 12.9）进行学习。Transformer 通过带掩码的自注意力和位置嵌入进行训练。
 
 这种方法在训练时自然有效，但在推理时会遇到问题，因为我们不知道剩余回报。这可以通过在第一步设定目标总回报，并随着奖励的获得逐步减少这个值来解决。例如，在 Atari 游戏中，目标总回报可能是赢得比赛所需的总分。
@@ -469,6 +568,13 @@ Fortunato 等人（2018）提出了噪声深度 Q-网络，其特点是 Q-网络
 
 
 \section{习题}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceProbReturn.png}
+\caption{通过 MDP 的一条轨迹。企鹅在到达第一个鱼位置时获得 +1 奖励，掉入洞时失去 -2 奖励，到达第二个鱼位置时再获得 +1 奖励。折扣因子 \(\gamma\) 设定为 0.9。}
+\end{figure}
+
 \textbf{问题 19.1} 在图 19.18 展示的 MDP 示例中考虑一条特定的轨迹。假设折扣因子 \(\gamma\) 为 0.9，请计算该轨迹中每一步的回报。
 
 \textbf{问题 19.2} 证明策略改进定理。假设从策略 \(\pi\) 更改为策略 \(\pi'\)，在状态 \(s_t\) 时新策略 \(\pi'\) 选择能够最大化期望回报的动作：
@@ -481,7 +587,7 @@ Fortunato 等人（2018）提出了噪声深度 Q-网络，其特点是 Q-网络
 
 
 \begin{align}
-v[s_t | \pi] &\leq q[s_t, \pi'[a_t|s_t] | \pi] \\
+v[s_t | \pi] &\leq q[s_t, \pi'[a_t|s_t] | \pi] \notag\\
 &= \mathbb{E}_{\pi'}[r_{t+1} + \gamma \cdot v[s_{t+1} | \pi]]. 
 \end{align} 
 
@@ -542,112 +648,31 @@ b = \frac{\mathbb{E}[g(\theta)^2r[\tau]]}{\mathbb{E}[g(\theta)^2]}.
 \end{equation}
 
 
-\section{附图}
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceMDP.png}
-\caption{马尔可夫过程。马尔可夫过程由一组状态和定义从当前状态 \(s_t\) 转移到状态 \(s_{t+1}\) 的概率的转移概率 \(Pr(s_{t+1}|s_t)\) 组成。a) 企鹅可以在冰面上访问 16 个不同的位置（状态）。b) 冰面很滑，所以企鹅每次都有相同的概率移动到任一相邻状态。例如，在位置 6，它分别有 25\% 的概率移动到状态 2、5、7 和 10。从这个过程中得到的轨迹 \(\tau = \{s_1, s_2, s_3, \ldots\}\) 是一个状态序列}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceMDP2.png}
-\caption{马尔可夫奖励过程。它把一个奖励分布 \(Pr(r_{t+1}|s_t)\) 与每个状态 \(s_t\) 相关联。a) 这里，奖励是确定的：企鹅如果落在鱼上获得 \(+1\) 奖励，否则为 \(0\)。轨迹 \(\tau\) 现在是状态和奖励交替的序列 \(s_1, r_2, s_2, r_3, s_3, r_4 \ldots\)，在八步后终止。序列的总回报 \(G_t\) 是折扣后未来奖励的总和，此处的折扣因子为 \(\gamma = 0.9\)。b-c) 随着企鹅沿轨迹前进逐渐靠近奖励，其回报逐步增加。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceMDP3.png}
-\caption{马尔可夫决策过程。a) 智能体（企鹅）可以在每个状态中选择一组动作之一执行。动作会影响到转移到下一状态的概率及获得奖励的可能性。b) 在这里，四个动作分别对应上、右、下、左移动。c) 在任何状态下（如状态 6），动作会改变到下一个状态的转移概率。企鹅有 50\% 的概率向预定方向移动，但由于冰面滑，它也可能以相同的概率滑到其他相邻位置。因此，在面板 (a) 中，实际采取的动作（灰色箭头）不一定与轨迹（橙色线）一致。这里的动作并不影响奖励，因此 \(Pr(r_{t+1}|s_t, a_t) = Pr(r_{t+1}|s_t)\)。MDP 的轨迹 \(\tau\) 是由状态 \(s_t\)、动作 \(a_t\) 和奖励 \(r_{t+1}\) 交替构成的序列。请注意，在此，企鹅在离开有鱼的状态时获得奖励，即通过鱼的格子即可获得奖励，无论是故意还是偶然。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforcePOMDP.png}
-\caption{部分可观测马尔可夫决策过程（POMDP）。在 POMDP 中，智能体无法完全知晓状态。例如，企鹅在状态三时只能看到虚线框内的区域，这与其在状态九的视角无异。在前者中，向右移动将导致掉入冰洞（奖励为 -2），而在后者中，则可获得鱼（奖励为 +3）。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforcePolicy.png}
-\caption{策略。a) 确定性策略在每个状态下总是采取相同的动作（箭头指示）。虽然有些策略优于其他策略，但这种策略能够基本引导企鹅从左上角向右下角移动以获取奖励。b) 此策略更具随机性。c) 随机策略为每个状态设定一个动作的概率分布（概率由箭头大小表示），这有助于智能体更全面地探索状态，这在部分可观测的马尔可夫决策过程中可能是必要的以达到最优表现。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceMDPLoop.png}
-\caption{强化学习循环。智能体在时间点 \(t\) 根据策略 \(\pi[a_t|s_t]\) 和当前状态 \(s_t\) 执行动作 \(a_t\)，引发新的状态 \(s_{t+1}\)（通过状态转移函数）和奖励 \(r_{t+1}\)（通过奖励函数）的产生。这两者随后被反馈给智能体，促使其选择下一个动作。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceValueOfAction.png}
-\caption{状态和动作价值。a) 状态 \(s_t\) 的价值 \(v(s_t|\pi)\)（每个位置的数值）代表在策略 \(\pi\)（灰色箭头）下，从该状态出发可获得的预期回报，即多条轨迹的折扣奖励平均值。这里，靠鱼越近的状态价值越高。b) 在状态 \(s_t\) 中采取动作 \(a_t\) 的价值 \(q(s_t, a_t, \pi)\)（每个位置/状态对应的四个数值分别对应四种动作）反映了采取该动作所期望的回报。这个价值会随着接近鱼而增加，并且朝鱼的方向的动作价值更高。c) 如果我们了解某状态的动作价值，策略就可以调整为选择这些价值中的最大者（面板 b 的红色数字表示）。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceBellman3.png}
-\caption{状态值与动作值的关系。状态六的值 \(v[s_t =6]\) 是其动作值 \(q[s_t =6,a_t]\) 的加权和，权重是采取各动作的策略概率 \(\pi[a_t|s_t =6]\)。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceBellman2.png}
-\caption{动作值与状态值的关系。在状态六采取动作二的价值 \(q[s_t = 6, a_t = 2]\) 等于采该动作获得的奖励 \(r[s_t = 6, a_t = 2]\) 加上后继状态的折扣价值 \(v[s_t+1]\) 的加权和，其中权重为转移概率 \(Pr(s_{t+1}|s_t = 6, a_t = 2)\)。通过贝尔曼方程，这种关系与图 19.8 的状态值和动作值关系相连，形成了当前与下一个状态值和动作值之间的联系。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceDP.png}
-\caption{动态规划。a) 最初，状态值设为零，策略随机选定（箭头表示）。b) 状态值根据其邻近值进行更新（经过两次迭代后的方程 19.11）。策略调整为指向价值最高的状态（方程 19.12）。c) 经过多次迭代，算法逐步优化至最佳策略，此时企鹅会尽量避开洞并寻找鱼。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceMC.png}
-\caption{蒙特卡洛方法。a) 初始时，策略（箭头）是随机设置的。通过反复模拟 MDP，记录下各次模拟的轨迹（橙色和棕色路径表示两个轨迹）。b) 通过对这些轨迹观测到的回报进行平均，经验性地估计动作价值。这里，所有动作价值起初都是零，后根据观测到的动作进行更新。c) 接下来可以根据获得最优（或较优）奖励的动作来更新策略。}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceTD.png}
-\caption{Q-learning：a) 智能体在状态st处开始，并按策略采取动作at=2。它未在冰面上滑倒，并向下移动，在离开原始状态时获得奖励r[st,at]=0。b) 找到新状态下的最大动作价值（此处为0.43）。c) 基于对后续状态的最大动作价值的当前估计、奖励、折现因子 \(\gamma=0.9\) 和学习率\(\alpha=0.1\)，原始状态的动作2的价值被更新为1.12。这导致原始状态的最高动作价值发生变化，因而策略也随之改变。}
-\end{figure}
 
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceDQL.png}
-\caption{阿塔里基准。阿塔里基准包含了 49 款阿塔里 2600 游戏，如突破、乒乓及多种射击、平台等类型的游戏。a-d) 单屏幕游戏的状态无法仅通过一个画面完全确定，因为物体的速度信息不可见。因此，通常用几个连续帧（此处为四帧）来表达状态。e) 通过操纵杆模拟用户的动作输入。f) 共有十八种动作，对应八个方向的移动或停止，并且对这九种状态，按钮可按下或不按。}
-\end{figure}
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceDQL2.png}
-\caption{深度 Q-网络架构。输入 \(s_t\) 为阿塔里游戏的四帧连续画面，每帧调整至 84×84 像素并转为灰度图。这些帧作为四通道输入，先经过 8×8 卷积处理（步长为 4），然后是 4×4 卷积（步长为 2），最后通过两个全连接层。最终输出为此状态下 18 个动作的动作价值 \(q[s_t, a_t]\) 预测。}
-\end{figure}
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforcePolicyGrad.png}
-\caption{策略梯度。同一策略下的五次模拟（亮度高表示奖励大）。轨迹 1、2 和 3 持续获得高奖励，但这种轨迹在当前策略下已频繁出现，故无需变动。相反，轨迹 4 奖励较低，策略需调整以避免生成类似轨迹。轨迹 5 奖励高且不常见，根据方程 19.25，它将引起策略的最大改变。}
-\end{figure}
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforcementVariance.png}
-\caption{使用控制变量降低估计方差。a) 考虑基于少量样本估计 \(E[a]\)。估计值（样本均值）会因样本数和方差的不同而变化。b) 接着观察一个与 \(a\) 共变的变量 \(b\)，其期望值 \(E[b] = 0\) 且方差与 \(a\) 相同。c) \(a - b\) 的样本方差明显低于 \(a\) 的方差，但其期望值 \(E[a - b] = E[a]\)，因此我们得到了一个方差更低的估计器。}
-\end{figure}
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceDecisionTransformer.png}
-\caption{决策变换器。决策变换器把离线强化学习处理为序列预测问题。输入是状态、动作和剩余回报的序列，每个元素都被转换为固定大小的嵌入。每一步，网络预测下一动作。在测试阶段，剩余回报未知；实际中，通常从一个初始估计出发，逐渐扣除观测到的奖励。}
-\end{figure}
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.7\linewidth]{png/chapter19/ReinforceProbReturn.png}
-\caption{通过 MDP 的一条轨迹。企鹅在到达第一个鱼位置时获得 +1 奖励，掉入洞时失去 -2 奖励，到达第二个鱼位置时再获得 +1 奖励。折扣因子 \(\gamma\) 设定为 0.9。}
-\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

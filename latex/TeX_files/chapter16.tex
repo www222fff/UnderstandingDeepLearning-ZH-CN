@@ -48,8 +48,8 @@ Pr(x|\phi) = \left| \frac{\partial f(z, \phi)}{\partial z} \right|^{-1} \cdot Pr
 
 
 \begin{align}
-\hat{\phi} &= \underset{\phi}{\arg\max} \left[ \prod_{i=1}^I Pr(x_i|\phi) \right] \\
-&= \underset{\phi}{\arg\min} \left[ -\sum_{i=1}^I \log[Pr(x_i|\phi)] \right] \\
+\hat{\phi} &= \underset{\phi}{\arg\max} \left[ \prod_{i=1}^I Pr(x_i|\phi) \right] \notag \\
+&= \underset{\phi}{\arg\min} \left[ -\sum_{i=1}^I \log[Pr(x_i|\phi)] \right] \notag \\
 &= \underset{\phi}{\arg\min} \left[ \sum_{i=1}^I \log \left| \frac{\partial f(z_i, \phi)}{\partial z_i} \right|^{-1} - \log[Pr(z_i)] \right], 
 \end{align} 
 
@@ -103,7 +103,7 @@ z = f^{-1}[x, \phi] = f_1^{-1} \left[ ... \left[ f_{k-1}^{-1} \left[ f_k^{-1}[x,
 
 
 \begin{align}
-\hat{\phi} &= \underset{\phi}{\arg\max} \left[ \prod_{i=1}^I Pr(z_i) \cdot \left| \frac{\partial f[z_i, \phi]}{\partial z_i} \right|^{-1} \right] \\
+\hat{\phi} &= \underset{\phi}{\arg\max} \left[ \prod_{i=1}^I Pr(z_i) \cdot \left| \frac{\partial f[z_i, \phi]}{\partial z_i} \right|^{-1} \right] \notag \\
 &= \underset{\phi}{\arg\min} \left[ \sum_{i=1}^I \log \left| \frac{\partial f[z_i, \phi]}{\partial z_i} \right| - \log[Pr(z_i)] \right], 
 \end{align} 
 
@@ -179,7 +179,7 @@ f[h_d, \phi] = \left( \sum_{k=1}^{b-1} \phi_k \right) + (hK - b)\phi_b,
 耦合流通过将输入 \(h\) 分割成两个部分 \(h = [h_1^T, h_2^T]^T\) 来工作，其流的定义为：
 
 \begin{align}
-&h_1' = h_1 \\
+&h_1' = h_1 \notag \\
 &h_2' = g[h_2, \phi[h_1]]. 
 \end{align} 
 
@@ -188,7 +188,7 @@ f[h_d, \phi] = \left( \sum_{k=1}^{b-1} \phi_k \right) + (hK - b)\phi_b,
 
 
 \begin{align}
-&h_1 = h_1' \\
+&h_1 = h_1' \notag \\
 &h_2 = g^{-1}[h_2', \phi[h_1]]. 
 \end{align} 
 
@@ -219,9 +219,9 @@ h_d' = g[h_d, \phi[h_{1:d-1}]].
 
 
 \begin{align}
-&h'^1 = g(h_1, \phi) \\
-&h'^2 = g(h_2, \phi|h_1) \\
-&h'^3 = g(h_3, \phi|h_{1:2}) \\
+&h'^1 = g(h_1, \phi) \notag \\
+&h'^2 = g(h_2, \phi|h_1) \notag \\
+&h'^3 = g(h_3, \phi|h_{1:2}) \notag \\
 &h'^4 = g(h_4, \phi|h_{1:3}) .  
 \end{align}
 
@@ -230,9 +230,9 @@ h_d' = g[h_d, \phi[h_{1:d-1}]].
 
 
 \begin{align}
-&h_1 = g^{-1}(h'^1, \phi) \\
-&h_2 = g^{-1}(h'^2, \phi|h_1) \\
-&h_3 = g^{-1}(h'^3, \phi|h_{1:2}) \\
+&h_1 = g^{-1}(h'^1, \phi) \notag \\
+&h_2 = g^{-1}(h'^2, \phi|h_1) \notag \\
+&h_3 = g^{-1}(h'^3, \phi|h_{1:2}) \notag \\
 &h_4 = g^{-1}(h'^4, \phi|h_{1:3}) . 
 \end{align} 
 
@@ -256,7 +256,7 @@ h_d' = g[h_d, \phi[h_{1:d-1}]].
 残差流受到残差网络设计的启发，将输入分为两部分 \(h = [h^T_1, h^T_2]^T\)（与耦合流类似），并按如下方式定义输出：
 
 \begin{align}
-&h'^1 = h_1 + f_1[h_2, \phi_1] \\
+&h'^1 = h_1 + f_1[h_2, \phi_1] \notag \\
 &h'^2 = h_2 + f_2[h'^1, \phi_2], 
 \end{align} 
 
@@ -265,7 +265,7 @@ h_d' = g[h_d, \phi[h_{1:d-1}]].
 
 
 \begin{align}
-&h_2 = h'^2 - f_2[h'^1, \phi_2] \\
+&h_2 = h'^2 - f_2[h'^1, \phi_2] \notag \\
 &h_1 = h'^1 - f_1[h_2, \phi_1]. 
 \end{align} 
 
@@ -303,7 +303,7 @@ y = z + f[z]
 雅可比行列式不容易直接计算，但可以通过一系列技巧近似计算其对数值。
 
 \begin{align}
-\log \left[ I + \frac{\partial f(h, \phi)}{\partial h} \right] &= \text{trace} \left[ \log \left( I + \frac{\partial f(h, \phi)}{\partial h} \right) \right] \\
+\log \left[ I + \frac{\partial f(h, \phi)}{\partial h} \right] &= \text{trace} \left[ \log \left( I + \frac{\partial f(h, \phi)}{\partial h} \right) \right] \notag \\
 &= \sum_{k=1}^{\infty} (-1)^{k-1} \text{trace} \left[ \left( \frac{\partial f(h, \phi)}{\partial h} \right)^k \right], 
 \end{align} 
 
@@ -311,13 +311,13 @@ y = z + f[z]
 
 其中利用了 \(\log|A| = \text{trace}[\log|A|]\) 的恒等式，并将其展开为幂级数。
 
-即便是截断该级数，计算各项的迹值仍然计算量大。因此，我们采用 *Hutchinson 迹估计器*（Hutchinson's trace estimator）来进行近似。考虑均值为 0 且方差为 I 的正态随机变量 \(\epsilon\)，矩阵 A 的迹可以估计为：
+即便是截断该级数，计算各项的迹值仍然计算量大。因此，我们采用 \textbf{Hutchinson 迹估计器}（Hutchinson's trace estimator）来进行近似。考虑均值为 0 且方差为 I 的正态随机变量 \(\epsilon\)，矩阵 A 的迹可以估计为：
 
 \begin{equation}
 \begin{aligned}
-\text{trace}[A] &= \text{trace} [\mathbb{E} [\epsilon \epsilon^T]] \\
-&= \text{trace} [\mathbb{E} [A \epsilon \epsilon^T]] \\
-&= \mathbb{E} [\text{trace} [A \epsilon \epsilon^T]] \\
+\text{trace}[A] &= \text{trace} [\mathbb{E} [\epsilon \epsilon^T]]  \\
+&= \text{trace} [\mathbb{E} [A \epsilon \epsilon^T]]  \\
+&= \mathbb{E} [\text{trace} [A \epsilon \epsilon^T]]  \\
 &= \mathbb{E} [\text{trace} [\epsilon^T A \epsilon]] \\
 &= \mathbb{E} [\epsilon^T A \epsilon], \\
 \end{aligned} 

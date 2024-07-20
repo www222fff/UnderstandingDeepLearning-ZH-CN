@@ -27,7 +27,7 @@ Pr(x) = \int Pr(x|z)Pr(z)dz.
 
 
 \begin{align}
-&Pr(z = n) = \lambda_n \\
+&Pr(z = n) = \lambda_n \notag \\
 &Pr(x|z = n) = \mathcal{N}_{x}(\mu_n, \sigma^2_n). 
 \end{align} 
 
@@ -36,8 +36,8 @@ Pr(x) = \int Pr(x|z)Pr(z)dz.
 
 
 \begin{align}
-Pr(x) &= \sum_{n=1}^{N} Pr(x, z = n) \\
-&= \sum_{n=1}^{N} Pr(x|z = n) \cdot Pr(z = n) \\
+Pr(x) &= \sum_{n=1}^{N} Pr(x, z = n) \notag \\
+&= \sum_{n=1}^{N} Pr(x|z = n) \cdot Pr(z = n) \notag \\
 &= \sum_{n=1}^{N} \lambda_n \cdot \mathcal{Norm}_x(\mu_n, \sigma^2_n). 
 \end{align} 
 
@@ -71,8 +71,8 @@ Pr(x|z, \phi) = \text{Norm}_x\left[f(z, \phi), \sigma^2 I\right].
 
 
 \begin{align}
-Pr(x|\phi) &= \int Pr(x|z, \phi) dz \\
-&= \int Pr(x|z, \phi) \cdot Pr(z) dz \\
+Pr(x|\phi) &= \int Pr(x|z, \phi) dz \notag \\
+&= \int Pr(x|z, \phi) \cdot Pr(z) dz \notag \\
 &= \int \text{Norm}_x\left[f(z, \phi), \sigma^2 I\right] \cdot \text{Norm}_z[0, I] dz. 
 \end{align} 
 
@@ -159,7 +159,7 @@ g(\mathbb{E}[y]) \geq \mathbb{E}[g(y)].
 
 
 \begin{align}
-\log[Pr(x|\phi)] &= \log \left[ \int Pr(x, z|\phi) dz \right] \\
+\log[Pr(x|\phi)] &= \log \left[ \int Pr(x, z|\phi) dz \right] \notag \\
 &= \log \left[ \int \frac{q(z)}{q(z)} Pr(x, z|\phi) dz \right], 
 \end{align} 
 
@@ -192,10 +192,10 @@ ELBO[\phi, \theta] = \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\thet
 
 
 \begin{align}
-ELBO[\theta, \phi] &= \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\theta)} \right] dz \\
-&= \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)Pr(x|\phi)}{q(z|\theta)} \right] dz \\
-&= \int q(z|\theta) \log [Pr(x|\phi)] dz + \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)}{q(z|\theta)} \right] dz \\
-&= \log [Pr(x|\phi)] + \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)}{q(z|\theta)} \right] dz \\
+ELBO[\theta, \phi] &= \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\theta)} \right] dz \notag \\
+&= \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)Pr(x|\phi)}{q(z|\theta)} \right] dz \notag \\
+&= \int q(z|\theta) \log [Pr(x|\phi)] dz + \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)}{q(z|\theta)} \right] dz \notag \\
+&= \log [Pr(x|\phi)] + \int q(z|\theta) \log \left[ \frac{Pr(z|x, \phi)}{q(z|\theta)} \right] dz \notag \\
 &= \log [Pr(x|\phi)] - D_{KL} \left[ q(z|\theta) || Pr(z|x, \phi) \right]. 
 \end{align} 
 
@@ -216,9 +216,9 @@ ELBO[\theta, \phi] &= \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\the
 
 
 \begin{align}
-ELBO[\theta, \phi] &= \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\theta)} \right] dz \\
-&= \int q(z|\theta) \log \left[ \frac{Pr(x|z, \phi)Pr(z)}{q(z|\theta)} \right] dz \\
-&= \int q(z|\theta) \log [Pr(x|z, \phi)] dz + \int q(z|\theta) \log \left[ \frac{Pr(z)}{q(z|\theta)} \right] dz \\
+ELBO[\theta, \phi] &= \int q(z|\theta) \log \left[ \frac{Pr(x, z|\phi)}{q(z|\theta)} \right] dz \notag \\
+&= \int q(z|\theta) \log \left[ \frac{Pr(x|z, \phi)Pr(z)}{q(z|\theta)} \right] dz \notag \\
+&= \int q(z|\theta) \log [Pr(x|z, \phi)] dz + \int q(z|\theta) \log \left[ \frac{Pr(z)}{q(z|\theta)} \right] dz \notag \\
 &= \int q(z|\theta) \log [Pr(x|z, \phi)] dz - D_{KL} \left[ q(z|\theta) || Pr(z) \right], 
 \end{align} 
 
@@ -333,8 +333,8 @@ z^* = \mu + \Sigma^{1/2} \cdot e^*,
 
 
 \begin{align}
-Pr(x) &= \int Pr(x|z)Pr(z)dz \\
-&= \mathbb{E}_{z} [Pr(x|z)] \\
+Pr(x) &= \int Pr(x|z)Pr(z)dz \notag \\
+&= \mathbb{E}_{z} [Pr(x|z)] \notag \\
 &= \mathbb{E}_{z} [\text{Norm}_x[f(z, \phi), \sigma^2 I]]. 
 \end{align}
 
@@ -349,8 +349,8 @@ Pr(x) \approx \frac{1}{N} \sum_{n=1}^{N} Pr(x|z_n).
 
 
 \begin{align}
-Pr(x) &= \int \frac{Pr(x|z)Pr(z)}{q(z)}q(z)dz \\
-&= \mathbb{E}_{q(z)} \left[\frac{Pr(x|z)Pr(z)}{q(z)}\right] \\
+Pr(x) &= \int \frac{Pr(x|z)Pr(z)}{q(z)}q(z)dz \notag \\
+&= \mathbb{E}_{q(z)} \left[\frac{Pr(x|z)Pr(z)}{q(z)}\right] \notag \\
 &\approx \frac{1}{N} \sum_{n=1}^{N} \frac{Pr(x|z_n)Pr(z_n)}{q(z_n)}, 
 \end{align} 
 
@@ -502,7 +502,7 @@ D_{KL} [q(z|x) || Pr(z|x, \phi)] = \int (q(z|x) \log \frac{q(z|x)}{Pr(z|x, \phi)
 
 
 \begin{align}
-\frac{\partial}{\partial\phi} E_{P_{r(x|\phi)}} [f[x]] &= E_{P_{r(x|\phi)}} \left[ f[x] \frac{\partial}{\partial\phi} \log(P_{r(x|\phi)}) \right] \\
+\frac{\partial}{\partial\phi} E_{P_{r(x|\phi)}} [f[x]] &= E_{P_{r(x|\phi)}} \left[ f[x] \frac{\partial}{\partial\phi} \log(P_{r(x|\phi)}) \right] \notag \\
 &\approx \frac{1}{I} \sum_{i=1}^{I} f[x_i] \frac{\partial}{\partial\phi} \log(P_{r(x_i|\phi)}). 
 \end{align} 
 

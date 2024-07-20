@@ -51,7 +51,7 @@ sa_n[x_1, \ldots, x_N] = \sum_{m=1}^N \alpha[x_m, x_n]v_m.
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerRouting.png}
-\caption{自注意力机制如何实现路由。自注意力机制处理 \(N\) 个输入 \(x_1, ..., x_N \in \mathbb{R}^D\)（此处 \(N = 3\)，\(D = 4\)），并分别计算出 \(N\) 个值向量。第 \(n\) 个输出 \(sa_n[x_1, ... x_N]\)（简称 \(sa_{n, [x]}\)）是通过对这 \(N\) 个值向量进行加权求和得到的，其中每个权重都是正值并且总和为1。a) 对于输出 \(sa_{1, [x]}\)，是通过将第一个值向量乘以 \(0.1\)，第二个值向量乘以 \(0.3\)，第三个值向量乘以 \(0.6\) 来计算得出。b) 输出 \(sa_{2, [x]}\) 的计算方式相同，但此时的权重分别为 \(0.5, 0.2\) 和 \(0.3\)。c) 输出 \(sa_{3, [x]}\) 的权重又是不同的。因此，每个输出可以视为是对 \(N\) 个值进行了不同的路由处理。}
+\caption{自注意力机制如何实现路由。自注意力机制处理 \(N\) 个输入 \(x_1, ..., x_N \in \mathbb{R}^D\)（此处 \(N = 3\)，\(D = 4\)），并分别计算出 \(N\) 个值向量。第 \(n\) 个输出 \(sa_n[x_1, ... x_N]\)（简称 \(sa_{n, [x]}\)）是通过对这 \(N\) 个值向量进行加权求和得到的，其中每个权重都是正值并且总和为1。a) 对于输出 \(sa_1 [x_\cdot]\)，是通过将第一个值向量乘以 \(0.1\)，第二个值向量乘以 \(0.3\)，第三个值向量乘以 \(0.6\) 来计算得出。b) 输出 \(sa_2 [x_\cdot]\) 的计算方式相同，但此时的权重分别为 \(0.5, 0.2\) 和 \(0.3\)。c) 输出 \(sa_3 [x_\cdot]\) 的权重又是不同的。因此，每个输出可以视为是对 \(N\) 个值进行了不同的路由处理。}
 \end{figure}
 
 
@@ -74,7 +74,7 @@ sa_n[x_1, \ldots, x_N] = \sum_{m=1}^N \alpha[x_m, x_n]v_m.
 
 
 \begin{align}
-q_n = \beta_q + \Omega_qx_n \\
+q_n = \beta_q + \Omega_qx_n \notag \\
 k_m = \beta_k + \Omega_kx_m, 
 \end{align}
 
@@ -83,7 +83,7 @@ k_m = \beta_k + \Omega_kx_m,
 
 
 \begin{align}
-a[x_m, x_n] &= \text{softmax}_{m} [k_.^T q_n] \\
+a[x_m, x_n] &= \text{softmax}_{m} [k_.^T q_n] \notag \\
 &= \frac{\exp[k_m^T q_n]}{\sum_{m'=1}^N \exp[k_{m'}^T q_n]}, 
 \end{align} 
 
@@ -114,8 +114,8 @@ a[x_m, x_n] &= \text{softmax}_{m} [k_.^T q_n] \\
 
 
 \begin{align}
-V[X] = \beta_v 1^T + \Omega_v X \\
-Q[X] = \beta_q 1^T + \Omega_q X \\
+V[X] = \beta_v 1^T + \Omega_v X \notag \\
+Q[X] = \beta_q 1^T + \Omega_q X \notag \\
 K[X] = \beta_k 1^T + \Omega_k X 
 \end{align} 
 
@@ -167,8 +167,8 @@ Sa[X] = V \cdot \text{Softmax} \left( \frac{K^T Q}{\sqrt{D_q}} \right).
 
 
 \begin{align}
-V_h = \beta_{vh}1^T + \Omega_{vh}X \\
-Q_h = \beta_{qh}1^T + \Omega_{qh}X \\
+V_h = \beta_{vh}1^T + \Omega_{vh}X \notag \\
+Q_h = \beta_{qh}1^T + \Omega_{qh}X \notag \\
 K_h = \beta_{kh}1^T + \Omega_{kh}X. 
 \end{align} 
 
@@ -198,10 +198,10 @@ MhSa[X] = \Omega_c \left[ Sa_1[X]^T, Sa_2[X]^T, \ldots, Sa_H[X]^T \right]^T .
 自注意力仅是更大的 Transformer 层结构中的一环。它由一个多头自注意力单元组成（使得各个词语的表示能够互相影响），接着是一个对每个词分别进行处理的全连接网络 mlp[x•]。这两个部分都采用了残差网络的设计（即，它们的输出会被加到输入上）。此外，通常在自注意力和全连接网络后都会加入层归一化（LayerNorm）操作。这与批归一化（BatchNorm）相似，但它是基于单个输入序列中所有 token 的统计数据来进行归一化的（见第11.4节和图11.14）。完整层的操作流程如下（见图12.7）：
 
 \begin{align}
-X \leftarrow X + MhSa[X] \\
-X \leftarrow \text{LayerNorm}[X] \\
-x_n \leftarrow x_n + \text{mlp}[x_n] \\
-X \leftarrow \text{LayerNorm}[X], \\
+X \leftarrow X + MhSa[X] \notag \\
+X \leftarrow \text{LayerNorm}[X] \notag \\
+x_n \leftarrow x_n + \text{mlp}[x_n] \notag \\
+X \leftarrow \text{LayerNorm}[X], \notag \\
 \quad \forall n \in \{1,...,N\} 
 \end{align} 
 
@@ -237,7 +237,7 @@ X \leftarrow \text{LayerNorm}[X], \\
 
 
 \subsection{嵌入}
-词汇表 \(V\) 中的每个 token 都映射到一个唯一的*词嵌入*中，整个词汇表的嵌入向量存储在矩阵 \(\Omega_e \in \mathbb{R}^{D \times |V|}\) 中。为此，首先将 \(N\) 个输入 token 编码进矩阵 \(T \in \mathbb{R}^{|V| \times N}\) 中，其中第 \(n\) 列对应第 \(n\) 个 token，是一个 \(|V| \times 1\) 的*独热编码*（即，除了对应于该 token 的条目为一之外，其他所有条目都为零的向量）。输入嵌入通过计算 \(X = \Omega_e T\) 获得，\(\Omega_e\) 像任何其他网络参数一样进行学习（图 12.9）。典型的嵌入大小 \(D\) 为 1024，总词汇量 \(|V|\) 为 30,000，因此即使在主网络处理之前，\(\Omega_e\) 中就已经有了大量的参数需要学习。
+词汇表 \(V\) 中的每个 token 都映射到一个唯一的\textbf{词嵌入}中，整个词汇表的嵌入向量存储在矩阵 \(\Omega_e \in \mathbb{R}^{D \times |V|}\) 中。为此，首先将 \(N\) 个输入 token 编码进矩阵 \(T \in \mathbb{R}^{|V| \times N}\) 中，其中第 \(n\) 列对应第 \(n\) 个 token，是一个 \(|V| \times 1\) 的\textbf{独热编码}（即，除了对应于该 token 的条目为一之外，其他所有条目都为零的向量）。输入嵌入通过计算 \(X = \Omega_e T\) 获得，\(\Omega_e\) 像任何其他网络参数一样进行学习（图 12.9）。典型的嵌入大小 \(D\) 为 1024，总词汇量 \(|V|\) 为 30,000，因此即使在主网络处理之前，\(\Omega_e\) 中就已经有了大量的参数需要学习。
 
 \begin{figure}[ht!]
 \centering
@@ -253,7 +253,7 @@ X \leftarrow \text{LayerNorm}[X], \\
 \section{Encoder 模型案例: BERT}
 BERT 是一种编码器模型，采用 30,000 个 token 的词汇表。输入 token 转换为 1024 维的词向量后，经过 24 层 Transformer 处理。每层含有 16 个自注意力机制的头部，每个头部的查询、键和值的维度均为 64（即，\(\Omega_{vh}, \Omega_{qh}, \Omega_{kh}\) 矩阵的尺寸是 1024 x 64）。全连接层的隐藏层维度为 4096。总参数量约为 3.4 亿。在 BERT 推出时，这一规模被认为很大，但如今相比最先进模型显得小多了。
 
-像 BERT 这样的编码器模型运用了*迁移学习*。在预训练阶段，通过大规模文本语料的*自我监督*学习，训练 Transformer 架构的参数，目的是使模型掌握语言的统计特性。在*微调阶段*，模型通过较少量的监督学习数据进行调整，以解决特定的任务。
+像 BERT 这样的编码器模型运用了\textbf{迁移学习}。在预训练阶段，通过大规模文本语料的\textbf{自我监督}学习，训练 Transformer 架构的参数，目的是使模型掌握语言的统计特性。在\textbf{微调阶段}，模型通过较少量的监督学习数据进行调整，以解决特定的任务。
 
 \subsection{预训练}
 预训练阶段，网络通过自我监督训练，利用大量数据进行学习而无需人工标记。BERT 的自监督任务是从大量网络文本中预测缺失的词语（图 12.10）。训练时，最大输入长度限制为 512 个 token，批量大小设置为 256，整个系统训练一百万步，相当于 33 亿词语料库的大约 50 轮迭代。
@@ -291,11 +291,11 @@ BERT 是一种编码器模型，采用 30,000 个 token 的词汇表。输入 to
 GPT3 构建了一种自回归语言模型。以句子 “It takes great courage to let yourself appear weak” 为例，假设以完整单词作为 Token，该句子的概率可以表示如下：
 
 \begin{align}
-&\Pr(\text{It takes great courage to let yourself appear weak}) =\\
-& \Pr(\text{It}) \times \Pr(\text{takes|It}) \times \Pr(\text{great|It takes}) \times \Pr(\text{courage|It takes great}) \times \\
-&\Pr(\text{to|It takes great courage}) \times \Pr(\text{let|It takes great courage to}) \times  \\
-& \Pr(\text{yourself|It takes great courage to let}) \times \\
-& \Pr(\text{appear|It takes great courage to let yourself}) \times \\
+&\Pr(\text{It takes great courage to let yourself appear weak}) = \notag \\
+& \Pr(\text{It}) \times \Pr(\text{takes|It}) \times \Pr(\text{great|It takes}) \times \Pr(\text{courage|It takes great}) \times \notag \\
+&\Pr(\text{to|It takes great courage}) \times \Pr(\text{let|It takes great courage to}) \times  \notag \\
+& \Pr(\text{yourself|It takes great courage to let}) \times \notag \\
+& \Pr(\text{appear|It takes great courage to let yourself}) \times \notag \\
 & \Pr(\text{weak|It takes great courage to let yourself appear}). 
 \end{align} 
 
@@ -307,7 +307,7 @@ GPT3 构建了一种自回归语言模型。以句子 “It takes great courage 
 这种自回归公式展示了最大化 Token 的对数概率与下一 Token 预测任务之间的直接联系。
 
 \subsection{遮掩自注意力}
-训练解码器时，我们致力于最大化输入文本在自回归模型下的对数概率。理想情况下，我们希望一次性传入整个句子并计算所有对数概率及其梯度。但这样做存在一个问题：若传入整个句子，计算对数 \begin{equation}Pr(great|It takes)\end{equation} 时，既能访问到答案“great”，也能访问到右侧上下文“courage to let yourself appear weak”，这可能导致系统通过作弊而非学习来预测下一个词，从而无法正确训练。
+训练解码器时，我们致力于最大化输入文本在自回归模型下的对数概率。理想情况下，我们希望一次性传入整个句子并计算所有对数概率及其梯度。但这样做存在一个问题：若传入整个句子，计算对数 \(Pr(great|It takes)\) 时，既能访问到答案“great”，也能访问到右侧上下文“courage to let yourself appear weak”，这可能导致系统通过作弊而非学习来预测下一个词，从而无法正确训练。
 
 幸运的是，在 Transformer 网络的自注意力层中，Token 之间的相互作用可以解决这个问题。通过确保对答案和右侧上下文的注意力得分为零，可以避免这个问题。这通过在自注意力计算中将相应的点积设为负无穷大后通过 softmax 函数前实现，称为遮掩自注意力。其效果是让图 12.1 中所有向上倾斜的箭头的权重变为零。
 
@@ -327,9 +327,9 @@ GPT3 构建了一种自回归语言模型。以句子 “It takes great courage 
 \subsection{GPT-3 与少样本学习}
 像 GPT3 这类大型语言模型采用了这些理念，并在巨大的规模上进行了应用。在 GPT3 中，序列长度达到了 2048 个 Token，总批次大小为 3200 万 Token。模型包含 96 层 Transformer（其中一些层实现了稀疏版本的注意力机制），每层处理的词嵌入大小为 12288。自注意力层拥有 96 个头，值、查询和键的维度均为 128。它利用了 3000 亿个 Token 进行训练，总计含有 1750 亿个参数。
 
-下面是一个 GPT3 模型文本完成的例子，模型接收的文本以斜体显示，而生成的文本以加粗显示：
+下面是一个 GPT3 模型文本完成的例子，模型接收的文本以普通形态显示，而生成的文本以加粗显示：
 
-*Understanding Deep Learning is a new textbook from MIT Press by Simon Prince that*’\textbf{s designed to offer an accessible, broad introduction to the field. Deep learning is a branch of machine learning that is concerned with algorithms that learn from data that is unstructured or unlabeled. The book is divided into four sections:}
+Understanding Deep Learning is a new textbook from MIT Press by Simon Prince that’\textbf{s designed to offer an accessible, broad introduction to the field. Deep learning is a branch of machine learning that is concerned with algorithms that learn from data that is unstructured or unlabeled. The book is divided into four sections:}
 
 1. \textbf{Introduction to deep learning} 
 2. \textbf{Deep learning architecture}
@@ -343,18 +343,16 @@ GPT3 构建了一种自回归语言模型。以句子 “It takes great courage 
 
 这种规模的学习模型一个令人惊奇的特性是，它们能够在不进行特定任务的微调的情况下执行许多任务。如果我们提供几个正确的问题/答案对之后再提出一个问题，它们通常能够通过完成序列来正确回答最后一个问题。纠正英语语法就是一个例子。
 
-```
-Poor English input: I eated the purple berries.  
-Good English output: I ate the purple berries.  
-Poor English input: Thank you for picking me as your designer. I’d appreciate it.  
-Good English output: Thank you for choosing me as your designer. I appreciate it.  
-Poor English input: The mentioned changes have done. or I did the alteration that you requested. or I changed things you wanted and did the modifications.  
-Good English output: The requested changes have been made. or I made the alteration that you requested. or I changed things you wanted and made the modifications.  
-Poor English input: I’d be more than happy to work with you in another project.  
-Good English output: I’d be more than happy to work with you on another project.
-
+\begin{itemize}
+    \item Poor English input: I eated the purple berries.  
+    \item Good English output: I ate the purple berries.  
+    \item Poor English input: The mentioned changes have done. or I did the alteration that you requested. or I changed things you wanted and did the modifications. 
+    \item Good English output: The requested changes have been made. or I made the alteration that you requested. or I changed things you wanted and made the modifications.  
+    \item Poor English input: I’d be more than happy to work with you in another project. 
+    \item Good English output: I’d be more than happy to work with you on another project. 
+\end{itemize}
 (result from Brown et al., 2020)
-```
+
 
 在这个例子中，提供给 GPT3 的橙色文本包含了一系列成对的示例作为上下文，随后系统便生成了青色的正确答案。这一现象适用于多种场合，如根据自然语言描述生成代码片段、进行算术运算、实现语言间的翻译以及回答文本段落相关的问题。因此，人们认为庞大的语言模型具备少样本学习的能力；它们能够依据寥寥几个示例学习完成新的任务。然而，在实践中，这些模型的表现却是不稳定的，而且它们是如何基于已学习的示例进行推理拓展，而非仅仅进行插值或者直接复制，这一点还不够明确。
 
@@ -489,8 +487,8 @@ Sa[X] = V \cdot Softmax\left( \frac{K^TQ}{\sqrt{D_q}} \right),
 
 
 \begin{align}
-V &= \beta_v 1^T + \Omega_v X \\
-Q &= \beta_q 1^T + \Omega_q (X + \Pi) \\
+V &= \beta_v 1^T + \Omega_v X \notag \\
+Q &= \beta_q 1^T + \Omega_q (X + \Pi) \notag \\
 K &= \beta_k 1^T + \Omega_k (X + \Pi). 
 \end{align} 
 
