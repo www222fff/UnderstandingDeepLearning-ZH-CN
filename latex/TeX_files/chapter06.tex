@@ -71,7 +71,7 @@ L(\phi) = \sum_{i=1}^I e_i = \sum_{i=1}^I (f(x_i, \phi) - y_i)^2 = \sum_{i=1}^I 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter6/TrainLRMin.png}
-	\caption{图 6.1 线性回归模型的梯度下降。a) 训练集由 12 对输入/输出数据对 {xi , yi} 组成。b) 损失函数图展示了梯度下降的迭代过程。从点 0 出发，我们沿最陡峭的下降方向前进，直至无法进一步降低损失，从而到达点 1。然后，我们重复此过程，测量点 1 的梯度并继续下降到点 2，以此类推。c) 通过热图可以更直观地展示这一过程，图中的亮度代表了损失大小。仅经过四轮迭代，我们已经非常接近最小损失值。d) 点 0 处参数（线条最浅）的模型对数据的描述非常不准确，但随着每轮迭代，模型的拟合度都有所提升。点 4 处参数（线条最深）的模型已能合理描述训练数据。}
+	\caption{线性回归模型的梯度下降。a) 训练集由 12 对输入/输出数据对 \({x_i , y_i}\) 组成。b) 损失函数图展示了梯度下降的迭代过程。从点 0 出发，我们沿最陡峭的下降方向前进，直至无法进一步降低损失，从而到达点 1。然后，我们重复此过程，测量点 1 的梯度并继续下降到点 2，以此类推。c) 通过热图可以更直观地展示这一过程，图中的亮度代表了损失大小。仅经过四轮迭代，我们已经非常接近最小损失值。d) 点 0 处参数（线条最浅）的模型对数据的描述非常不准确，但随着每轮迭代，模型的拟合度都有所提升。点 4 处参数（线条最深）的模型已能合理描述训练数据。}
 	\end{figure}
 
 \subsection{Gabor模型示例}
@@ -95,13 +95,13 @@ L(\phi) = \sum_{i=1}^I (f(x_i, \phi) - y_i)^2
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter6/TrainGaborModel.png}
-\caption{图 6.2 Gabor 模型。这个非线性模型将单一输入 x 映射到单一输出 y，拥有参数组\(\phi= [\phi_0 , \phi_1]T\)。它描述了一个振幅随距离中心增加而减小的正弦波函数。\(\phi_0\) 参数决定了波峰的位置，随 \(\phi_0\) 增大，波形向左移动。\(\phi_1\) 参数控制波形相对于中心的压缩程度，\(\phi_1\) 增大时，波形变得更窄。a–c) 展示了具有不同参数的模型。}
+\caption{Gabor 模型。这个非线性模型将单一输入 x 映射到单一输出 y，拥有参数组\(\phi= [\phi_0 , \phi_1]T\)。它描述了一个振幅随距离中心增加而减小的正弦波函数。\(\phi_0\) 参数决定了波峰的位置，随 \(\phi_0\) 增大，波形向左移动。\(\phi_1\) 参数控制波形相对于中心的压缩程度，\(\phi_1\) 增大时，波形变得更窄。a–c) 展示了具有不同参数的模型。}
 \end{figure}
 	
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter6/TrainGaborData.png}
-\caption{图 6.3 用于拟合 Gabor 模型的训练数据。训练集包含了 28 组输入/输出样本 {xi,yi}。这些样本是通过在区间 [−15, 15] 内均匀采样 xi，然后将样本值通过参数设为\(\phi\)= [0.0,16.6]T 的 Gabor 模型处理，并加入正态分布的噪声生成的。}
+\caption{用于拟合 Gabor 模型的训练数据。训练集包含了 28 组输入/输出样本 {xi,yi}。这些样本是通过在区间 [−15, 15] 内均匀采样 xi，然后将样本值通过参数设为\(\phi\)= [0.0,16.6]T 的 Gabor 模型处理，并加入正态分布的噪声生成的。}
 \end{figure}
 
 \subsection{局部最小值与鞍点}
@@ -135,7 +135,7 @@ Gabor 模型具有两个参数，因此我们可以通过以下两种方式找�
 \end{figure}
 
 \subsection{批次和周期}
-引入随机性的机制很简单。在每次迭代时，算法随机选择训练数据的一个子集，并仅根据这些示例计算梯度。这个子集称为*小批量*（minibatch）或简称*批次*（batch）。因此，模型参数\(\phi_t\)在第t次迭代的更新规则为：
+引入随机性的机制很简单。在每次迭代时，算法随机选择训练数据的一个子集，并仅根据这些示例计算梯度。这个子集称为\textbf{小批量}（minibatch）或简称\textbf{批次}（batch）。因此，模型参数\(\phi_t\)在第t次迭代的更新规则为：
 \begin{equation}
 \phi_{t+1} \leftarrow \phi_t - \alpha \cdot \sum_{i \in B_t} \frac{\partial \mathcal{L}[\phi]}{\partial \phi} 
 \end{equation}
@@ -241,7 +241,7 @@ SGD不一定按传统意义上“收敛”。然而，我们希望当接近全�
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter6/TrainADAM.png}
-\caption{图 6.9 自适应矩估计（Adam）。a) 该损失函数在垂直方向上迅速变化，在水平方向上变化缓慢。若使用适合垂直进展的学习率进行全批梯度下降，算法达到最终水平位置需时甚久。b) 若学习率设置利于水平进展，则会在垂直方向过冲，导致不稳定。c) 一个简单方法是每步沿每个轴固定距离移动，以两个方向都下降。这需要通过归一化梯度大小并保留方向来完成。但这通常不会精确收敛至最小值，而是在其周边振荡（如最后两点间）。d) Adam 算法利用动量优化梯度估计和归一化，确保路径更平滑。}
+\caption{自适应矩估计（Adam）。a) 该损失函数在垂直方向上迅速变化，在水平方向上变化缓慢。若使用适合垂直进展的学习率进行全批梯度下降，算法达到最终水平位置需时甚久。b) 若学习率设置利于水平进展，则会在垂直方向过冲，导致不稳定。c) 一个简单方法是每步沿每个轴固定距离移动，以两个方向都下降。这需要通过归一化梯度大小并保留方向来完成。但这通常不会精确收敛至最小值，而是在其周边振荡（如最后两点间）。d) Adam 算法利用动量优化梯度估计和归一化，确保路径更平滑。}
 \end{figure}
 
 如第7章所述，神经网络参数的梯度大小可能取决于它们在网络中的深度。Adam 有助于补偿这一趋势，并在不同层之间平衡变化。实际上，由于它避免了图 6.9a–b 中描述的情况，Adam 对初始学习率的敏感度较低，因此不需要复杂的学习率调整策略。
@@ -256,15 +256,18 @@ SGD不一定按传统意义上“收敛”。然而，我们希望当接近全�
 
 本章内容适用于任何模型的优化。下一章将专门探讨与神经网络训练相关的两个问题。首先是如何使用著名的反向传播算法（Backpropagation Algorithm）计算损失函数相对于神经网络参数的梯度。其次是在优化开始之前如何正确初始化网络参数。如果初始化不当，优化过程使用的梯度可能会异常大或小，从而妨碍训练进程。
 
-\section{Notes}
+\section{笔记}
 \textbf{优化算法}：优化算法在工程学中被广泛使用，一般倾向于使用“目标函数”而非损失函数或成本函数。梯度下降法由 Cauchy 在 1847 年提出，而随机梯度下降的概念至少可以追溯到 Robbins \& Monro 的 1951 年工作。两者之间的一种现代中间方案是随机方差减小下降（Stochastic Variance-Reduced Descent, Johnson \& Zhang, 2013），在该方法中，全梯度定期计算，与随机更新交替进行。优化算法，特别是针对神经网络的，可以参考 Ruder (2016)、Bottou 等 (2018) 以及 Sun (2020) 的综述。Bottou (2012) 探讨了 SGD 的最佳实践，包括无重复的随机选择。
 
 \textbf{凸性、极小值与鞍点}：如果函数上任意两点间的连线（弦）都不与函数相交，则该函数是凸的。这可以通过分析海森矩阵（Hessian Matrix，即二阶导数矩阵）来验证：
 \begin{equation}
-H[\phi] = \begin{bmatrix}
-	\frac{\partial^2 L}{\partial \phi_0^2} & \frac{\partial^2 L}{\partial \phi_0 \partial \phi_1}  \\
-	\frac{\partial^2 L}{\partial \phi_1 \partial \phi_0} & \frac{\partial^2 L}{\partial \phi_1^2}  \\
-\end{bmatrix} 
+\mathbf{H}[\phi] = 
+\begin{bmatrix}
+\frac{\partial^2 L}{\partial \phi_0^2} & \frac{\partial^2 L}{\partial \phi_0 \partial \phi_1} & \cdots & \frac{\partial^2 L}{\partial \phi_0 \partial \phi_N} \\
+\frac{\partial^2 L}{\partial \phi_1 \partial \phi_0} & \frac{\partial^2 L}{\partial \phi_1^2} & \cdots & \frac{\partial^2 L}{\partial \phi_1 \partial \phi_N} \\
+\vdots & \vdots & \ddots & \vdots \\
+\frac{\partial^2 L}{\partial \phi_N \partial \phi_0} & \frac{\partial^2 L}{\partial \phi_N \partial \phi_1} & \cdots & \frac{\partial^2 L}{\partial \phi_N^2}
+\end{bmatrix}	
 \end{equation}
 
 如果海森矩阵在所有可能的参数值上都是正定的（具有正特征值），则该函数是凸的；损失函数将呈现为光滑的碗状（如图 6.1c 所示），使得训练过程相对简单。存在单一的全局最小值，不会有局部最小值或鞍点。
@@ -295,15 +298,15 @@ H[\phi] = \begin{bmatrix}
 
 \textbf{穷尽搜索}：本章讨论的所有算法都是迭代的。一个完全不同的方法是对网络参数进行量化，并使用 SAT 解算器（Mézard \& Mora，2009）穷尽搜索结果离散化的参数空间。这种方法有可能找到全局最小值，并确保没有其他更低的损失存在，但只对非常小的模型实用。
 
-\section{Problems}
+\section{习题}
 问题 6.1 证明方程 6.5 中最小二乘损失函数的导数可以通过方程 6.7 中的表达式给出。
 
 问题 6.2 若 Hessian 矩阵 \(H[\phi]\) 的特征值在任何位置都是正值，则该表面为凸面。在这种情况下，该表面存在一个唯一的最小值，使得优化变得简单。求线性回归模型（方程 6.5）的 Hessian 矩阵的代数表达式，
 
 \begin{equation}
 H[\phi] = \begin{bmatrix}
-\frac{\partial^2 L}{\partial \phi_0^2} & \frac{\partial^2 L}{\partial \phi_0 \partial \phi_1} \notag \\
-\frac{\partial^2 L}{\partial \phi_1 \partial \phi_0} & \frac{\partial^2 L}{\partial \phi_1^2} \notag \\
+\frac{\partial^2 L}{\partial \phi_0^2} & \frac{\partial^2 L}{\partial \phi_0 \partial \phi_1}  \\
+\frac{\partial^2 L}{\partial \phi_1 \partial \phi_0} & \frac{\partial^2 L}{\partial \phi_1^2}  \\
 \end{bmatrix} 
 \end{equation}
 

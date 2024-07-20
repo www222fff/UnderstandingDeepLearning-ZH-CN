@@ -13,7 +13,7 @@
 
 
 \begin{align}
-	\hat{\phi} &= \underset{\phi}{\text{argmin}} [L[\phi]] \\
+	\hat{\phi} &= \underset{\phi}{\text{argmin}} [L[\phi]] \notag \\
 	&= \underset{\phi}{\text{argmin}} \left[ \sum_{i=1}^I l_i(x_i, y_i) \right], 
 \end{align} 
 
@@ -110,7 +110,7 @@
 
 
 \begin{align}
-	\tilde{L}_{SGD}[\phi] &= \tilde{L}_{GD}[\phi] + \frac{\alpha}{4B} \sum_{b=1}^{B} \left\| \frac{\partial L_b}{\partial \phi} - \frac{\partial L}{\partial \phi} \right\|^2 \\
+	\tilde{L}_{SGD}[\phi] &= \tilde{L}_{GD}[\phi] + \frac{\alpha}{4B} \sum_{b=1}^{B} \left\| \frac{\partial L_b}{\partial \phi} - \frac{\partial L}{\partial \phi} \right\|^2 \notag \\
 	&= L[\phi] + \frac{\alpha}{4} \left\| \frac{\partial L}{\partial \phi} \right\|^2 + \frac{\alpha}{4B} \sum_{b=1}^{B} \left\| \frac{\partial L_b}{\partial \phi} - \frac{\partial L}{\partial \phi} \right\|^2 . 
 \end{align} 
 
@@ -277,7 +277,7 @@ Pr(y|x, \{x_i, y_i\}) = \int Pr(y|x, \phi)Pr(\phi | \{x_i, y_i\})d\phi.
 	\caption{正则化方法。本章讨论的正则化方法通过以下四种机制之一来提高模型的泛化能力：一些方法通过平滑模型函数来实现；其他方法通过增加有效的数据量来达到；第三种方法是结合多个模型，以此来减少拟合过程中的不确定性；最后一种方法则鼓励训练过程趋向于一个广阔的最小值区域，使得参数估计的微小误差影响降低（也参见图 20.11）。}
 \end{figure}
 
-\section{Notes}
+\section{笔记}
 在 Kukačka 等人（2017）的研究中，提供了深度学习中正则化技术的综述和分类体系。本章讨论中遗漏了 BatchNorm（Szegedy 等人，2016）及其变种，这些内容将在第 11 章详细介绍。
 
 正则化方面，L2 正则化通过惩罚网络权重的平方和来促使输出函数变化更加平滑，是应用最广泛的正则化方法。它有时也被称作 Frobenius 范数正则化，因为它惩罚了权重矩阵的 Frobenius 范数。此外，它经常被误称为“权重衰减”，虽然权重衰减实际上是 Hanson \& Pratt（1988）提出的一种不同技术，通过以下方式更新参数 \(\phi\)：
@@ -320,9 +320,9 @@ Pr(y|x, \{x_i, y_i\}) = \int Pr(y|x, \phi)Pr(\phi | \{x_i, y_i\})d\phi.
 
 
 \begin{align}
-	\phi[\alpha] &\approx \phi + \alpha \frac{\partial \phi}{\partial t} + \frac{\alpha^2}{2} \frac{\partial^2 \phi}{\partial t^2} \\
-	&\approx \phi + \alpha (g[\phi] + \alpha g_1[\phi]) + \frac{\alpha^2}{2} \left( \frac{\partial g[\phi]}{\partial \phi} g[\phi] + \alpha \frac{\partial g_1[\phi]}{\partial \phi} g[\phi] \right)_{\phi=\phi_0} \\
-	&= \phi + \alpha (g[\phi] + \alpha g_1[\phi]) + \frac{\alpha^2}{2} \left( \frac{\partial g[\phi]}{\partial \phi} g[\phi] + \alpha \frac{\partial g_1[\phi]}{\partial \phi} g[\phi] \right)_{\phi=\phi_0} \\
+	\phi[\alpha] &\approx \phi + \alpha \frac{\partial \phi}{\partial t} + \frac{\alpha^2}{2} \frac{\partial^2 \phi}{\partial t^2} \notag \\
+	&\approx \phi + \alpha (g[\phi] + \alpha g_1[\phi]) + \frac{\alpha^2}{2} \left( \frac{\partial g[\phi]}{\partial \phi} g[\phi] + \alpha \frac{\partial g_1[\phi]}{\partial \phi} g[\phi] \right)_{\phi=\phi_0} \notag \\
+	&= \phi + \alpha (g[\phi] + \alpha g_1[\phi]) + \frac{\alpha^2}{2} \left( \frac{\partial g[\phi]}{\partial \phi} g[\phi] + \alpha \frac{\partial g_1[\phi]}{\partial \phi} g[\phi] \right)_{\phi=\phi_0} \notag \\
 	&\approx \phi + \alpha g[\phi] + \alpha^2 \left( g_1[\phi] + \frac{1}{2} \frac{\partial g[\phi]}{\partial \phi} g[\phi] \right)_{\phi=\phi_0} , 
 \end{align} 
 
@@ -337,7 +337,7 @@ g_1[\phi] = - \frac{1}{2} \frac{\partial g[\phi]}{\partial \phi} g[\phi].
 
 
 \begin{align}
-	\frac{\partial \phi}{\partial t} &\approx g[\phi] + \alpha g_1[\phi] \\
+	\frac{\partial \phi}{\partial t} &\approx g[\phi] + \alpha g_1[\phi] \notag \\
 	&= -\frac{\partial L}{\partial \phi} - \frac{\alpha}{2} \left( \frac{\partial^2 L}{\partial \phi^2} \right) \frac{\partial L}{\partial \phi}. 
 \end{align} 
 
@@ -388,7 +388,7 @@ NLP的自监督学习可以基于预测遮蔽词（Devlin等人，2019）、预�
 
 文本的增强方法包括在字符级别通过交换、删除和插入字母添加噪声（Belinkov \& Bisk, 2018；Feng等人，2020），或通过生成对抗性示例（Ebrahimi等人，2018）、使用常见的拼写错误（Coulombe, 2018）、随机交换或删除词（Wei \& Zou, 2019）、使用同义词（Kolomiyets等人，2011）、改变形容词（Li等人，2017c）、被动化（Min等人，2020）、使用生成模型创建新数据（Qiu等人，2020）以及往返翻译到另一种语言再翻译回来（Aiken \& Park, 2010）。文本增强方法的综述由Bayer等人（2022）提供。
 
-\section{Problems}
+\section{习题}
 \textbf{问题 9.1} 考虑一个模型，其参数的先验分布是均值为零、方差为 \(\sigma_{\phi}^2\) 的正态分布，表达式为：
 
 \begin{equation}

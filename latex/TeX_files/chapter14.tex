@@ -99,7 +99,7 @@ Pr(y) = \frac{1}{I} \sum_{i=1}^{I} Pr(y|x_i^*)
 \section{总结}
 无监督模型能够在缺少标签的情况下掌握数据集的结构。这些模型中的一部分具有生成性，能够创造新的数据示例。再进一步，其中的一些模型是基于概率的，不仅能生成新的示例，还能对观测到的数据赋予概率。接下来四章将讨论的模型以一个已知分布的潜在变量 z 作为起点。随后，一个深度神经网络将潜在变量映射到观察到的数据空间。我们探讨了生成模型所期望的属性，并介绍了旨在量化其性能的度量指标。
 
-\section{Notes}
+\section{笔记}
 热门的生成模型包括生成对抗网络（Generative Adversarial Networks, GANs, Goodfellow 等，2014）、变分自编码器（Variational Autoencoders, VAEs, Kingma \& Welling，2014）、规范化流（Normalizing Flows, Rezende \& Mohamed，2015）、扩散模型（Diffusion Models, Sohl-Dickstein 等，2015; Ho 等，2020）、自回归模型（Autoregressive Models, Bengio 等，2000; Van den Oord 等，2016b）以及基于能量的模型（Energy-Based Models, LeCun 等，2006）。除能量模型外，本书讨论了所有这些模型。Bond-Taylor 等（2022）提供了关于生成模型的最新综述。
 
 \textbf{评估}：Salimans 等（2016）提出了 Inception 分数，而 Heusel 等（2017）提出了 Fréchet Inception 距离，两者均基于 Inception V3 模型的 Pool-3 层（Szegedy 等，2016）。Nash 等（2021）采用了该网络更早的层级，这些层级保留了更多空间信息，确保图像的空间统计特征得到复制。Kynkäänniemi 等（2019）引入了流形精度/召回方法。Barratt \& Sharma（2018）对 Inception 分数进行了详细讨论并指出其缺陷。Borji（2022）讨论了评估生成模型不同方法的优点和缺点。

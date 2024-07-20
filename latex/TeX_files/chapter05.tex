@@ -12,7 +12,7 @@
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter5/LossDataTypes.png}
-	\caption{a) 回归任务中，目标是基于训练数据 {xi,yi}（橙色点）从输入 x 预测出一个实数输出 y。对于每个输入值 x，机器学习模型预测输出 \(y \in R\) 的分布 P(y|x)（青色曲线展示了 x = 2.0 和 x = 7.0 时的分布）。损失函数的目的是使根据相应输入 xi 预测出的分布最大化观测到的训练输出 yi 的概率。b) 在分类任务中，为预测离散类别 \(y \in {1, 2, 3, 4}\)，我们采用离散概率分布，模型因此针对 xi 的每个值预测 yi 的四个可能值的概率分布直方图。c) 在预测计数 \(y \in {0, 1, 2, ...}\) 和 d) 预测方向 \(y \in (−\pi, \pi]\) 的任务中，我们分别采用定义在正整数集和圆周域上的分布。}
+	\caption{a) 回归任务中，目标是基于训练数据 \({x_i,y_i}\)（橙色点）从输入 x 预测出一个实数输出 y。对于每个输入值 x，机器学习模型预测输出 \(y \in R\) 的分布 P(y|x)（青色曲线展示了 x = 2.0 和 x = 7.0 时的分布）。损失函数的目的是使根据相应输入 \(x_i\) 预测出的分布最大化观测到的训练输出 \(y_i\) 的概率。b) 在分类任务中，为预测离散类别 \(y \in {1, 2, 3, 4}\)，我们采用离散概率分布，模型因此针对 \(x_i\) 的每个值预测 \(y_i\) 的四个可能值的概率分布直方图。c) 在预测计数 \(y \in {0, 1, 2, ...}\) 和 d) 预测方向 \(y \in (−\pi, \pi]\) 的任务中，我们分别采用定义在正整数集和圆周域上的分布。}
 \end{figure}
 
 
@@ -133,9 +133,11 @@ Pr(y|f(x, \phi), \sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left[ -\frac{(y
 
 
 \begin{align}
-	\hat{\phi} &= argmin_{\phi} \left[ -\sum_{i=1}^{I} \log \left[ \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left[ -\frac{(y_i - f(x_i, \phi))^2}{2\sigma^2} \right] \right] \right] \notag \\
-	&= argmin_{\phi} \left[ -\sum_{i=1}^{I} ( \log \frac{1}{\sqrt{2\pi\sigma^2}} - \frac{(y_i - f(x_i, \phi))^2}{2\sigma^2} ) \right] \notag \\
-	&= argmin_{\phi} \left[ \sum_{i=1}^{I} \frac{(y_i - f(x_i, \phi))^2}{2\sigma^2} \right] 
+\hat{\phi} &= \arg\min_{\phi} \left[ -\sum_{i=1}^{I} \log \left[ \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left[ -\frac{(y_i - f[x_i, \phi])^2}{2\sigma^2} \right] \right] \right] \notag \\
+&= \arg\min_{\phi} \left[ -\sum_{i=1}^{I} \left( \log \left[ \frac{1}{\sqrt{2\pi\sigma^2}} \right] - \frac{(y_i - f[x_i, \phi])^2}{2\sigma^2} \right) \right] \notag \\
+&= \arg\min_{\phi} \left[ -\sum_{i=1}^{I} \left( -\frac{(y_i - f[x_i, \phi])^2}{2\sigma^2} \right) \right] \notag \\
+&= \arg\min_{\phi} \left[ \sum_{i=1}^{I} \frac{(y_i - f[x_i, \phi])^2}{2\sigma^2} \right] \notag \\
+&= \arg\min_{\phi} \left[ \sum_{i=1}^{I} (y_i - f[x_i, \phi])^2 \right]
 \end{align}
 
 在这里，我们去除了与 \(\phi\) 无关的项，并忽略了常数缩放因子，因为它不影响最小值的位置。
@@ -153,7 +155,7 @@ L[\phi] = \sum_{i=1}^{I} (y_i - f(x_i, \phi))^2
 网络现在不直接预测 \(y\)，而是预测 \(y\) 的正态分布均值 \(\mu = f(x, \phi)\)。在进行推断时，我们通常寻求一个最佳的单点估计，因此我们选择预测分布的最大值：
 
 \begin{equation}
-\hat{y} = argmax_y [Pr(y|f(x, \phi))] 
+\hat{y} = \arg\max_y [Pr(y|f(x, \phi))] 
 \end{equation}
 
 
@@ -173,7 +175,7 @@ L[\phi] = \sum_{i=1}^{I} (y_i - f(x_i, \phi))^2
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter5/LossNormalRegression.png}
-	\caption{最小二乘法与正态分布最大似然损失的等效性。a) 参照图 2.2 中的线性模型。最小二乘法通过最小化模型预测值 \(f[xi,\phi]\)（绿线）与真实输出值 yi（橙色点）之间差异（虚线表示）的平方和来进行优化。在此例中，模型拟合非常准确，因此这些差异非常小（比如，对于被特别标出的两个点）。b) 当参数设置不当时，模型拟合效果较差，导致平方差异显著增加。c) 最小二乘法的原理是假设模型预测的是输出值的正态分布的平均值，并且我们通过最大化概率来优化它。在第一种情况下，由于模型拟合得很好，所以数据的概率 Pr(yi|xi)（水平橙色虚线）较高（相应的负对数概率较小）。d) 在第二种情况下，由于模型拟合效果差，因此概率较低，负对数概率较高。}
+	\caption{最小二乘法与正态分布最大似然损失的等效性。a) 参照图 2.2 中的线性模型。最小二乘法通过最小化模型预测值 \(f[x_i,\phi]\)（绿线）与真实输出值 \(y_i\)（橙色点）之间差异（虚线表示）的平方和来进行优化。在此例中，模型拟合非常准确，因此这些差异非常小（比如，对于被特别标出的两个点）。b) 当参数设置不当时，模型拟合效果较差，导致平方差异显著增加。c) 最小二乘法的原理是假设模型预测的是输出值的正态分布的平均值，并且我们通过最大化概率来优化它。在第一种情况下，由于模型拟合得很好，所以数据的概率 \(Pr(y_i|x_i)\)（水平橙色虚线）较高（相应的负对数概率较小）。d) 在第二种情况下，由于模型拟合效果差，因此概率较低，负对数概率较高。}
 \end{figure}
 
 
@@ -268,7 +270,7 @@ L[\phi] = \sum_{i=1}^{I} -\left[(1 - y_i) \log [1 - sig[f(x_i, \phi)]] + y_i \lo
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter5/LossCategorical.png}
-	\caption{分类分布。分类分布为超过两个的 K 类别分配概率值，相应的概率为 \(\lambda_1,\lambda_2,...,\lambda_K\)。这里有五个类别，因此 K = 5。为保证其为一个有效的概率分布，每个参数 \(\lambda_k\) 都应处于 [0, 1] 的范围内，并且所有 K 个参数的总和必须等于 1。}
+	\caption{分类分布。分类分布为超过两个的 K 类别分配概率值，相应的概率为 \(\lambda_1,\lambda_2,...,\lambda_K\). 这里有五个类别，因此 \(K = 5\)。为保证其为一个有效的概率分布，每个参数 \(\lambda_k\) 都应处于 [0, 1] 的范围内，并且所有 K 个参数的总和必须等于 1。}
 \end{figure}
 
 
@@ -303,10 +305,10 @@ Pr(y = k|x) = softmax_k[f(x, \phi)]
 \end{equation}
 损失函数是训练数据的负对数似然：
 
-\begin{equation}
-L[\phi] = -\sum_{i=1}^{I} \log \left[ softmax_{y_i} [f(x_i, \phi)] \right]
-= -\sum_{i=1}^{I} \left[ f_{y_i}[x_i, \phi] - \log \left( \sum_{k'=1}^{K} \exp [f_{k'}[x_i, \phi]] \right) \right],
-\end{equation}
+\begin{align}
+L[\phi] &= -\sum_{i=1}^{I} \log \left[ softmax_{y_i} [f(x_i, \phi)] \right] \notag \\
+&= -\sum_{i=1}^{I} \left[ f_{y_i}[x_i, \phi] - \log \left( \sum_{k'=1}^{K} \exp [f_{k'}[x_i, \phi]] \right) \right],
+\end{align}
 
 
 其中 \(f_k[x, \phi]\) 是神经网络的第 \(k\) 个输出。由于将在第5.7节中解释的原因，这被称为多类别交叉熵损失。
@@ -371,7 +373,7 @@ q(y) = \frac{1}{I} \sum_{i=1}^{I} \delta[y - y_i]
 
 
 \begin{align}
-	\hat{\theta} &= argmin_{\theta} \left[ \int_{-\infty}^{\infty} q(y) \log [q(y)] dy - \int_{-\infty}^{\infty} q(y) \log [Pr(y|\theta)] dy \right] \\
+	\hat{\theta} &= argmin_{\theta} \left[ \int_{-\infty}^{\infty} q(y) \log [q(y)] dy - \int_{-\infty}^{\infty} q(y) \log [Pr(y|\theta)] dy \right] \notag \\
 	&= argmin_{\theta} \left[ -\int_{-\infty}^{\infty} q(y) \log [Pr(y|\theta)] dy \right], 
 \end{align}
 
@@ -380,7 +382,7 @@ q(y) = \frac{1}{I} \sum_{i=1}^{I} \delta[y - y_i]
 
 
 \begin{align}
-	\hat{\theta} &= argmin_{\theta} \left[ \int_{-\infty}^{\infty} \left( \frac{1}{I} \sum_{i=1}^{I} \delta[y - y_i] \right) \log [Pr(y|\theta)] dy \right] \\
+	\hat{\theta} &= argmin_{\theta} \left[ \int_{-\infty}^{\infty} \left( \frac{1}{I} \sum_{i=1}^{I} \delta[y - y_i] \right) \log [Pr(y|\theta)] dy \right] \notag \\
 	&= argmin_{\theta} \left[ -\sum_{i=1}^{I} \log [Pr(y_i|\theta)] \right], 
 \end{align} 
 
@@ -403,19 +405,19 @@ q(y) = \frac{1}{I} \sum_{i=1}^{I} \delta[y - y_i]
 在之前的章节中，我们开发了神经网络模型。在本章，我们为决定模型如何根据一组给定参数描述训练数据的效果，开发了损失函数。下一章将考虑模型训练，我们的目标是找到能使这种损失最小化的模型参数。
 
 
-\section{Notes}
+\section{笔记}
 
-基于正态分布的损失函数：Nix \& Weigend (1994) 和 Williams (1996) 研究了异方差非线性回归 (heteroscedastic nonlinear regression)，其中输出的均值和方差都是输入的函数。在无监督学习的背景下，Burda 等人 (2016) 使用了基于具有对角协方差的多变量正态分布的损失函数，而 Dorta 等人 (2018) 使用了基于具有完全协方差的正态分布的损失函数。
+\textbf{基于正态分布的损失函数}：Nix \& Weigend (1994) 和 Williams (1996) 研究了异方差非线性回归 (heteroscedastic nonlinear regression)，其中输出的均值和方差都是输入的函数。在无监督学习的背景下，Burda 等人 (2016) 使用了基于具有对角协方差的多变量正态分布的损失函数，而 Dorta 等人 (2018) 使用了基于具有完全协方差的正态分布的损失函数。
 
-稳健回归：Qi 等人 (2020) 研究了最小化平均绝对误差而非平均平方误差的回归模型特性。这种损失函数基于对输出采用拉普拉斯分布的假设，并估计给定输入的中位数输出，而非均值。Barron (2019) 提出了一种参数化稳健度的损失函数。在概率背景下解释时，它产生了一个包括正态分布和柯西分布作为特例的单变量概率分布族。
+\textbf{稳健回归}：Qi 等人 (2020) 研究了最小化平均绝对误差而非平均平方误差的回归模型特性。这种损失函数基于对输出采用拉普拉斯分布的假设，并估计给定输入的中位数输出，而非均值。Barron (2019) 提出了一种参数化稳健度的损失函数。在概率背景下解释时，它产生了一个包括正态分布和柯西分布作为特例的单变量概率分布族。
 
-估计分位数：有时，我们可能不想在回归任务中估计均值或中位数，而是希望预测一个分位数。例如，这对风险模型很有用，我们希望知道真实值在 90% 的时间内会小于预测值。这被称为分位数回归 (Koenker & Hallock, 2001)。这可以通过拟合一个异方差回归模型，然后基于预测的正态分布估计分位数来完成。或者，分位数可以直接使用分位数损失（也称为弹球损失）来估计。在实践中，这最小化了数据与模型的绝对偏差，但在一个方向上对偏差的权重比另一个方向更大。最近的研究探索了同时预测多个分位数以获得整体分布形状的概念（Rodrigues & Pereira, 2020）。
+\textbf{估计分位数}：有时，我们可能不想在回归任务中估计均值或中位数，而是希望预测一个分位数。例如，这对风险模型很有用，我们希望知道真实值在 90% 的时间内会小于预测值。这被称为分位数回归 (Koenker & Hallock, 2001)。这可以通过拟合一个异方差回归模型，然后基于预测的正态分布估计分位数来完成。或者，分位数可以直接使用分位数损失（也称为弹球损失）来估计。在实践中，这最小化了数据与模型的绝对偏差，但在一个方向上对偏差的权重比另一个方向更大。最近的研究探索了同时预测多个分位数以获得整体分布形状的概念（Rodrigues & Pereira, 2020）。
 
-类别不平衡和焦点损失：Lin 等人 (2017c) 讨论了分类问题中的数据不平衡问题。如果某些类别的示例数量远大于其他类别，则标准的最大似然损失就不再适用；模型可能会专注于提高对主导类别中已分类良好示例的信心，而对代表性较差的类别分类不佳。Lin 等人 (2017c) 引入了焦点损失，该损失添加了一个额外的参数，用于减弱分类良好示例的影响，以提高性能。
+\textbf{类别不平衡和焦点损失}：Lin 等人 (2017c) 讨论了分类问题中的数据不平衡问题。如果某些类别的示例数量远大于其他类别，则标准的最大似然损失就不再适用；模型可能会专注于提高对主导类别中已分类良好示例的信心，而对代表性较差的类别分类不佳。Lin 等人 (2017c) 引入了焦点损失，该损失添加了一个额外的参数，用于减弱分类良好示例的影响，以提高性能。
 
-学习排名：Cao 等人 (2007)，Xia 等人 (2008)，和 Chen 等人 (2009) 都在学习排名数据的损失函数中使用了 Plackett-Luce 模型。这是学习排名的列表式方法，因为模型一次性处理整个待排名的对象列表。其他方法包括点式方法，其中模型处理单个对象，以及对式方法，其中模型处理对象对。Chen 等人 (2009) 总结了学习排名的不同方法。
+\textbf{学习排名}：Cao 等人 (2007)，Xia 等人 (2008)，和 Chen 等人 (2009) 都在学习排名数据的损失函数中使用了 Plackett-Luce 模型。这是学习排名的列表式方法，因为模型一次性处理整个待排名的对象列表。其他方法包括点式方法，其中模型处理单个对象，以及对式方法，其中模型处理对象对。Chen 等人 (2009) 总结了学习排名的不同方法。
 
-其他数据类型：Fan 等人 (2020) 使用基于贝塔分布的损失来预测 0 到 1 之间的值。Jacobs 等人 (1991) 和 Bishop (1994) 研究了适用于多模态数据的混合密度网络。这些模型将输出建模为基于输入的高斯混合（见图 5.14）。Prokudin 等人 (2018) 使用了 von Mises 分布来预测方向（见图 5.13）。Fallah 等人 (2009) 使用泊松分布构建了预测计数的损失函数（见图 5.15）。Ng 等人 (2017) 使用基于伽马分布的损失函数来预测持续时间。
+\textbf{其他数据类型}：Fan 等人 (2020) 使用基于贝塔分布的损失来预测 0 到 1 之间的值。Jacobs 等人 (1991) 和 Bishop (1994) 研究了适用于多模态数据的混合密度网络。这些模型将输出建模为基于输入的高斯混合（见图 5.14）。Prokudin 等人 (2018) 使用了 von Mises 分布来预测方向（见图 5.13）。Fallah 等人 (2009) 使用泊松分布构建了预测计数的损失函数（见图 5.15）。Ng 等人 (2017) 使用基于伽马分布的损失函数来预测持续时间。
 
 \begin{figure}[ht!]
 	\centering
@@ -423,9 +425,9 @@ q(y) = \frac{1}{I} \sum_{i=1}^{I} \delta[y - y_i]
 	\caption{Figure5.13}
 \end{figure}
 
-`图 5.13 冯·米塞斯分布定义在圆周上，范围是 \((−\pi, \pi]\)。它由两个参数构成：平均值 \(\mu\) 决定了分布峰值的位置；浓度参数 K（大于 0）起着类似于方差倒数的作用，因此 \(\frac{1}{\sqrt{\kappa}}\) 可以大致看作是与正态分布的标准差相对应的量。`
+图 5.13 冯·米塞斯分布定义在圆周上，范围是 \((−\pi, \pi]\)。它由两个参数构成：平均值 \(\mu\) 决定了分布峰值的位置；浓度参数 K（大于 0）起着类似于方差倒数的作用，因此 \(\frac{1}{\sqrt{\kappa}}\) 可以大致看作是与正态分布的标准差相对应的量。
 
-非概率方法：采用本章讨论的概率方法并不是严格必要的，但这在近年来已成为默认方法；任何旨在减少模型输出与训练输出之间距离的损失函数都是足够的，距离可以用任何看似合理的方式定义。有几种著名的非概率机器学习模型用于分类，包括支持向量机 (Vapnik, 1995; Cristianini \& Shawe-Taylor, 2000)，它们使用铰链损失，以及 AdaBoost (Freund \& Schapire, 1997)，它们使用指数损失。
+\textbf{非概率方法}：采用本章讨论的概率方法并不是严格必要的，但这在近年来已成为默认方法；任何旨在减少模型输出与训练输出之间距离的损失函数都是足够的，距离可以用任何看似合理的方式定义。有几种著名的非概率机器学习模型用于分类，包括支持向量机 (Vapnik, 1995; Cristianini \& Shawe-Taylor, 2000)，它们使用铰链损失，以及 AdaBoost (Freund \& Schapire, 1997)，它们使用指数损失。
 
 
 \section{习题}
