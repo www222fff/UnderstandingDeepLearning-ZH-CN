@@ -26,10 +26,9 @@ x_j^* = g[z_j, \theta] = z_j + \theta,
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GanGaussMotivation.png}
-\caption{Figure15.1}
+\caption{GAN 机制。a) 给定一个参数化函数（生成器），它可以合成样本（橙色箭头）并且接收一批真实样本（青色箭头）。接着，我们对鉴别器进行训练，使其能区分真实样本与生成样本（S形曲线表示样本为真实的估计概率）。b) 通过调整生成器的参数，降低鉴别器对样本合成性的判断准确度（此处通过将橙色样本向右移动实现）。随后更新鉴别器。c) 通过交替更新生成器和鉴别器，使生成样本与真实样本变得难以区分，同时减少改变生成器的动力（即 S形函数的斜率）。}
 \end{figure}
 
-`图 15.1 GAN 机制。a) 给定一个参数化函数（生成器），它可以合成样本（橙色箭头）并且接收一批真实样本（青色箭头）。接着，我们对鉴别器进行训练，使其能区分真实样本与生成样本（S形曲线表示样本为真实的估计概率）。b) 通过调整生成器的参数，降低鉴别器对样本合成性的判断准确度（此处通过将橙色样本向右移动实现）。随后更新鉴别器。c) 通过交替更新生成器和鉴别器，使生成样本与真实样本变得难以区分，同时减少改变生成器的动力（即 S形函数的斜率）。`
 
 
 \subsection{GAN 损失函数}
@@ -74,10 +73,9 @@ x_j^* = g[z_j, \theta] = z_j + \theta,
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GanDiscrimGen.png}
-\caption{Figure15.2}
+\caption{GAN 损失函数。一个潜变量 zj 从基本分布中提取，并通过生成器生成样本 x∗。一批生成样本 {x∗j } 和真实样本 {xi} 被送至鉴别器，后者为每个样本分配一个真实性的概率。调整鉴别器参数 \(\phi\)，以提高对真实样本的识别概率，降低对生成样本的识别概率。同时调整生成器参数 \(\theta\)，使其能够让鉴别器更倾向于将生成样本判定为真实。}
 \end{figure}
 
-`图 15.2 GAN 损失函数。一个潜变量 zj 从基本分布中提取，并通过生成器生成样本 x∗。一批生成样本 {x∗j } 和真实样本 {xi} 被送至鉴别器，后者为每个样本分配一个真实性的概率。调整鉴别器参数 \(\phi\)，以提高对真实样本的识别概率，降低对生成样本的识别概率。同时调整生成器参数 \(\theta\)，使其能够让鉴别器更倾向于将生成样本判定为真实。`
 
 \subsection{深度卷积生成式对抗网络（DCGAN）}
 深度卷积生成式对抗网络（DCGAN）是早期专为图像生成设计的GAN架构（参见图15.3）。生成器\(g[z, \theta]\)接收的输入是一个从均匀分布中采样的100维潜变量\(z\)。首先，通过线性变换将其映射到一个具有1024个通道的4x4空间表示中。紧接着是四层卷积操作，每层采用分步卷积，实现分辨率加倍（即步长为0.5的卷积）。在最终层，64x64x3的信号通过一个tanh函数处理，生成一个取值范围在\([-1, 1]\)内的图像\(x^*\)。鉴别器\(f(\cdot, \phi)\)采用标准的卷积网络架构，在最后一层卷积操作后，图像尺寸被缩减到1x1，通道数为1。这个单一数值经过sigmoid函数\(\text{sig}[\cdot]\)处理后，得到最终的输出概率。
@@ -87,18 +85,16 @@ x_j^* = g[z_j, \theta] = z_j + \theta,
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GanDCGANArch.png}
-\caption{Figure15.3}
+\caption{DCGAN 架构。在生成器中，一个 100D 潜变量 z 从均匀分布中抽取，并通过线性变换被映射到一个 4×4、1024 通道的表示。这个表示随后通过多个卷积层进行处理，逐步上采样并减少通道数。最终，通过一个 tanh 函数将 64×64×3 的表示映射到一个固定范围，用于表示图像。鉴别器则由一个标准的卷积网络组成，用于判断输入是真实样本还是生成样本。}
 \end{figure}
 
-`图 15.3 DCGAN 架构。在生成器中，一个 100D 潜变量 z 从均匀分布中抽取，并通过线性变换被映射到一个 4×4、1024 通道的表示。这个表示随后通过多个卷积层进行处理，逐步上采样并减少通道数。最终，通过一个 tanh 函数将 64×64×3 的表示映射到一个固定范围，用于表示图像。鉴别器则由一个标准的卷积网络组成，用于判断输入是真实样本还是生成样本。`
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GANDCGANResults.png}
-\caption{Figure15.4}
+\caption{来自 DCGAN 模型的合成图像。a) 随机抽取的样本，基于在人脸数据集上训练的 DCGAN。b) 使用 ImageNet 数据库的随机样本（参见图 10.15）。c) 基于 LSUN 场景理解数据集的随机抽取样本。据 Radford 等（2015）改编。}
 \end{figure}
 
-`图 15.4 来自 DCGAN 模型的合成图像。a) 随机抽取的样本，基于在人脸数据集上训练的 DCGAN。b) 使用 ImageNet 数据库的随机样本（参见图 10.15）。c) 基于 LSUN 场景理解数据集的随机抽取样本。据 Radford 等（2015）改编。`
 \subsection{训练GAN的困难}
 理论上，生成式对抗网络（GAN）的概念相对简单。然而，GAN的训练实践却异常困难。举例来说，为了确保深度卷积GAN（DCGAN）能够稳定训练，需要采取以下措施：(i)采用步进卷积实现上下采样；(ii)在生成器和鉴别器中使用批量归一化（BatchNorm），但分别在最末层和首层除外；(iii)在鉴别器中应用leaky ReLU激活函数（参见图3.13）；及(iv)采用Adam优化器，但其动量系数需低于常规设置。这种情况不太常见，因为大部分深度学习模型对这类设置相对不敏感。
 
@@ -107,10 +103,9 @@ x_j^* = g[z_j, \theta] = z_j + \theta,
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GANModeCollapse.png}
-\caption{Figure15.5}
+\caption{模式坍塌。使用与 DCGAN 参数和层数相似的 MLP 生成器，在 LSUN 场景理解数据集上训练得到的 GAN 合成图像。这些样本质量低，且多数相似。根据 Arjovsky 等（2017）改编。}
 \end{figure}
 
-`图 15.5 模式坍塌。使用与 DCGAN 参数和层数相似的 MLP 生成器，在 LSUN 场景理解数据集上训练得到的 GAN 合成图像。这些样本质量低，且多数相似。根据 Arjovsky 等（2017）改编。`
 
 \section{提高稳定性}
 要弄清楚为什么GAN训练难度大，首先需要深入理解损失函数的实际含义。
@@ -149,8 +144,10 @@ L[\phi] &= \int Pr(x^*) \log [1 - sig[f(x^*, \phi)]] dx^* + \int Pr(x) \log [sig
 
 
 \begin{align}
-D_{JS} [ Pr(x^*) \| Pr(x) ] &= \frac{1}{2} D_{KL} \left[ Pr(x^*) \| \frac{Pr(x^*) + Pr(x)}{2} \right] + \frac{1}{2} D_{KL} \left[ Pr(x) \| \frac{Pr(x^*) + Pr(x)}{2} \right] \\
-&= \frac{1}{2} \int Pr(x^*) \log \left[ \frac{2Pr(x^*)}{Pr(x^*) + Pr(x)} \right] dx^* + \frac{1}{2} \int Pr(x) \log \left[ \frac{2Pr(x)}{Pr(x^*) + Pr(x)} \right] dx. 
+D_{JS} [ Pr(x^*) \| Pr(x) ] &= \frac{1}{2} D_{KL} \left[ Pr(x^*) \| \frac{Pr(x^*) + Pr(x)}{2} \right] \\
+&+ \frac{1}{2} D_{KL} \left[ Pr(x) \| \frac{Pr(x^*) + Pr(x)}{2} \right] \\
+&= \frac{1}{2} \int Pr(x^*) \log \left[ \frac{2Pr(x^*)}{Pr(x^*) + Pr(x)} \right] dx^* \\
+&+ \frac{1}{2} \int Pr(x) \log \left[ \frac{2Pr(x)}{Pr(x^*) + Pr(x)} \right] dx. 
 \end{align} 
 
 
@@ -168,18 +165,16 @@ D_{JS} [ Pr(x^*) \| Pr(x) ] &= \frac{1}{2} D_{KL} \left[ Pr(x^*) \| \frac{Pr(x^*
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GanGaussMotivationProb.png}
-\caption{Figure15.6}
+\caption{GAN 损失函数问题。当生成样本（橙色箭头）与真实样本（青色箭头）容易区分时，鉴别器（sigmoid）在样本处的斜率可能非常平缓；因此，用于更新生成器参数的梯度可能非常微小。}
 \end{figure}
 
-`图 15.6 GAN 损失函数问题。当生成样本（橙色箭头）与真实样本（青色箭头）容易区分时，鉴别器（sigmoid）在样本处的斜率可能非常平缓；因此，用于更新生成器参数的梯度可能非常微小。`
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GanGradients.png}
-\caption{Figure15.7}
+\caption{DCGAN 的生成器梯度消失问题。生成器在第 1、10 和 25 个训练周期后冻结，而鉴别器继续进行训练。生成器的梯度迅速下降（注意对数刻度）；若鉴别器过于精准，生成器的梯度将消失。根据 Arjovsky \& Bottou (2017) 改编。}
 \end{figure}
 
-`图 15.7 DCGAN 的生成器梯度消失问题。生成器在第 1、10 和 25 个训练周期后冻结，而鉴别器继续进行训练。生成器的梯度迅速下降（注意对数刻度）；若鉴别器过于精准，生成器的梯度将消失。根据 Arjovsky \& Bottou (2017) 改编。`
 
 \subsection{Wasserstein 距离}
 前面的部分讨论了两点：(i) GAN 损失可以被理解为不同概率分布间距离的表达，以及 (ii) 当生成样本与真实样例过于容易区分时，这种距离的梯度会降为零。一个自然的改进方向是采用一种具备更佳特性的距离衡量标准。
@@ -208,15 +203,15 @@ D_w [ Pr(x) || q(x) ] = \min_{P} \left[ \sum_{i,j} P_{ij} \cdot |i - j| \right],
 
 
 \begin{table}[h!]
-    \centering
-    \begin{tabular}{|l|l|}
-    \hline
-    \textbf{Primal form} & \textbf{Dual form} \\ \hline
-    \begin{tabular}[c]{@{}l@{}}minimize $c^T p$, \\ such that $Ap = b$ \\ and $p \geq 0$\end{tabular} & \begin{tabular}[c]{@{}l@{}}maximize $b^T f$, \\ such that $A^T f \leq c$\end{tabular} \\ \hline
-    \end{tabular}
-    \caption{Primal and Dual Forms}
-    \label{tab:primal_dual}
-    \end{table}
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Primal form} & \textbf{Dual form} \\ \hline
+\begin{tabular}[c]{@{}l@{}}minimize $c^T p$, \\ such that $Ap = b$ \\ and $p \geq 0$\end{tabular} & \begin{tabular}[c]{@{}l@{}}maximize $b^T f$, \\ such that $A^T f \leq c$\end{tabular} \\ \hline
+\end{tabular}
+\caption{Primal and Dual Forms}
+\label{tab:primal_dual}
+\end{table}
     
 
 
@@ -237,10 +232,9 @@ D_w [Pr(x) || q(x)] = \max_f \left[ \sum_i Pr(x = i)f_i - \sum_j q(x = j)f_j \ri
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GANWassersteinDist.png}
-\caption{Figure15.8}
+\caption{Wasserstein 距离或 earth mover’s distance。a) 考虑离散分布 P r(x = i)。b) 我们希望移动概率质量以形成目标分布 q(x = j)。c) 运输计划 P 确定了从 i 到 j 的质量转移量。例如，青色高亮的方块 p54 表示从 i = 5 到 j = 4 将转移的质量。运输计划的元素必须非负，对 j 的总和应等于 P r(x = i)，对 i 的总和应等于 q(x = j)。因此，P 是一个联合概率分布。d) 元素 i 与 j 之间的距离矩阵。最优运输计划 P 旨在最小化 P 与距离矩阵点乘的总和（即 Wasserstein 距离），因此 P 的元素倾向于聚集在距离成本最低的对角线附近。根据 Hermann (2017) 改编。}
 \end{figure}
 
-`图 15.8 Wasserstein 距离或 earth mover’s distance。a) 考虑离散分布 P r(x = i)。b) 我们希望移动概率质量以形成目标分布 q(x = j)。c) 运输计划 P 确定了从 i 到 j 的质量转移量。例如，青色高亮的方块 p54 表示从 i = 5 到 j = 4 将转移的质量。运输计划的元素必须非负，对 j 的总和应等于 P r(x = i)，对 i 的总和应等于 q(x = j)。因此，P 是一个联合概率分布。d) 元素 i 与 j 之间的距离矩阵。最优运输计划 P 旨在最小化 P 与距离矩阵点乘的总和（即 Wasserstein 距离），因此 P 的元素倾向于聚集在距离成本最低的对角线附近。根据 Hermann (2017) 改编。`
 
 
 \subsection{连续分布的 Wasserstein 距离}
@@ -288,34 +282,30 @@ Wasserstein 方法为 GAN 训练带来了更高的稳定性。不过，要生成
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GANProgressive.png}
-\caption{Figure15.9}
+\caption{逐步增长的 GAN 训练。a) 初始阶段，生成器被训练生成非常小的图像（4×4），鉴别器则被训练识别这些图像是合成的还是降采样的真实图像。b) 在这个低分辨率的训练完成后，为生成器添加更多层来生成更大的图像（8×8），鉴别器也增加相应的降采样层。c) 此过程持续进行，依次生成更大的图像（如16×16等）。通过这种方式，可以训练出能产生极为逼真的高分辨率图像的 GAN。d) 使用相同的潜变量，在不同阶段生成的逐步增大分辨率的图像。据 Wolf (2021)，采用 Karras 等人 (2018) 的方法。}
 \end{figure}
 
-`图 15.9 逐步增长的 GAN 训练。a) 初始阶段，生成器被训练生成非常小的图像（4×4），鉴别器则被训练识别这些图像是合成的还是降采样的真实图像。b) 在这个低分辨率的训练完成后，为生成器添加更多层来生成更大的图像（8×8），鉴别器也增加相应的降采样层。c) 此过程持续进行，依次生成更大的图像（如16×16等）。通过这种方式，可以训练出能产生极为逼真的高分辨率图像的 GAN。d) 使用相同的潜变量，在不同阶段生成的逐步增大分辨率的图像。据 Wolf (2021)，采用 Karras 等人 (2018) 的方法。`
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GANTruncation.png}
-\caption{Figure15.10}
+\caption{样本截断。通过拒绝偏离均值超过\(\tau\)标准差的潜变量 z 的样本，可以权衡 GAN 样本的质量与多样性。a) 当这个阈值较大（\(\tau\) = 2.0）时，样本在视觉上多样但可能有缺陷。b-c) 随着这个阈值的降低，样本的平均视觉质量提升，但多样性减少。d) 当阈值非常小，样本看起来几乎相同。通过合理选择这个阈值，可以提高 GAN 结果的平均质量。根据 Brock 等人 (2019) 改编。}
 \end{figure}
 
-`图 15.10 样本截断。通过拒绝偏离均值超过\(\tau\)标准差的潜变量 z 的样本，可以权衡 GAN 样本的质量与多样性。a) 当这个阈值较大（\(\tau\) = 2.0）时，样本在视觉上多样但可能有缺陷。b-c) 随着这个阈值的降低，样本的平均视觉质量提升，但多样性减少。d) 当阈值非常小，样本看起来几乎相同。通过合理选择这个阈值，可以提高 GAN 结果的平均质量。根据 Brock 等人 (2019) 改编。`
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GANProgressiveResults.png}
-\caption{Figure15.11}
+\caption{逐步增长法。这种方法在训练 CELEBA-HQ 数据集时能生成逼真的人脸图像，在训练 LSUN 分类时则能生成更为复杂和多变的对象。据 Karras 等（2018）改编。}
 \end{figure}
 
-`图 15.11 逐步增长法。这种方法在训练 CELEBA-HQ 数据集时能生成逼真的人脸图像，在训练 LSUN 分类时则能生成更为复杂和多变的对象。据 Karras 等（2018）改编。`
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GANProgressiveInterp.png}
-\caption{Figure15.12}
+\caption{遍历 LSUN 汽车数据集上训练的渐进式 GAN 的潜空间。在潜空间中的移动使得汽车图像平滑地变化，这种现象通常仅在短距离轨迹中有效；最终，潜变量移至一个区域，导致产生不现实的图像。据 Karras 等（2018）改编。}
 \end{figure}
 
-`图 15.12 遍历 LSUN 汽车数据集上训练的渐进式 GAN 的潜空间。在潜空间中的移动使得汽车图像平滑地变化，这种现象通常仅在短距离轨迹中有效；最终，潜变量移至一个区域，导致产生不现实的图像。据 Karras 等（2018）改编。`
 \section{条件生成}
 尽管 GAN 能够生成逼真的图像，但它们并不允许指定图像的具体属性，比如无法选择生成的面孔的头发颜色、种族或年龄，除非针对每种属性组合训练单独的 GAN。条件生成模型则为我们提供了这种属性控制的能力。
 \subsection{条件 GAN}
@@ -326,20 +316,18 @@ Wasserstein 方法为 GAN 训练带来了更高的稳定性。不过，要生成
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GanConditional.png}
-\caption{Figure15.13}
+\caption{条件生成。a) 条件 GAN 的生成器还接收一个描述图像特征的属性向量 c。如常规做法，鉴别器接收真实或生成的样本，但现在它还得接收属性向量，以鼓励样本同时符合逼真性和属性兼容性。b) 辅助分类器 GAN（ACGAN）的生成器采用一个离散属性变量。鉴别器需要判断输入是真实还是合成，并正确识别类别。c) InfoGAN 把潜变量分成噪声 z 和未指定的随机属性 c。鉴别器需要辨识输入的真实性，并重构这些属性。实践中，这意味着变量 c 对应于具有现实世界解释的数据的显著特征（即，潜空间被解耦）。}
 \end{figure}
 
-`图 15.13 条件生成。a) 条件 GAN 的生成器还接收一个描述图像特征的属性向量 c。如常规做法，鉴别器接收真实或生成的样本，但现在它还得接收属性向量，以鼓励样本同时符合逼真性和属性兼容性。b) 辅助分类器 GAN（ACGAN）的生成器采用一个离散属性变量。鉴别器需要判断输入是真实还是合成，并正确识别类别。c) InfoGAN 把潜变量分成噪声 z 和未指定的随机属性 c。鉴别器需要辨识输入的真实性，并重构这些属性。实践中，这意味着变量 c 对应于具有现实世界解释的数据的显著特征（即，潜空间被解耦）。`
 \subsection{辅助分类器 GAN}
 辅助分类器 GAN（ACGAN）通过简化条件生成的要求——判别器需要正确识别出属性——来实现其功能（见图 15.13b）。对于有 C 类别的离散属性，判别器接收真实或合成图像作为输入，并输出 C + 1 个结果；其中第一个结果经过 sigmoid 函数处理，用于预测样本是真实还是生成的，而其他输出通过 softmax 函数处理，预测样本属于各个类别的概率。采用此方法训练的网络能够生成 ImageNet 中的多类图像（见图 15.14）。
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GANACGANResults.png}
-\caption{Figure15.14}
+\caption{辅助分类器 GAN。生成器接收类别标签和潜向量作为输入。鉴别器不仅需判断数据点是否真实，还要预测类别标签。该模型在十个 ImageNet 类别上进行训练，生成的样本包括帝王蝶、金翅雀、雏菊、红腿鹬和灰鲸等。据 Odena 等（2017）改编。}
 \end{figure}
 
-`图 15.14 辅助分类器 GAN。生成器接收类别标签和潜向量作为输入。鉴别器不仅需判断数据点是否真实，还要预测类别标签。该模型在十个 ImageNet 类别上进行训练，生成的样本包括帝王蝶、金翅雀、雏菊、红腿鹬和灰鲸等。据 Odena 等（2017）改编。`
 
 \subsection{InfoGAN}
 与条件 GAN 和 ACGAN 不同，它们生成具有特定属性的样本，InfoGAN（见图 15.13c）则旨在自动发现重要属性。生成器接收一个由随机噪声变量 z 和随机属性变量 c 组成的向量，而判别器则负责判断图像的真假并估计属性变量。
@@ -349,10 +337,9 @@ Wasserstein 方法为 GAN 训练带来了更高的稳定性。不过，要生成
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GanInfoGAN.png}
-\caption{Figure15.15}
+\caption{图 15.15 InfoGAN 在 MNIST 数据集上的应用。a) MNIST 数据库的训练样本包含 28×28 像素的手写数字图像。b) 第一个属性 c1 是一个具有 10 个类别的分类变量；每一列展示了使用其中一个类别生成的样本。InfoGAN 能够复原十个数字。属性向量 c2 和 c3 是连续的。c) 从左到右，每列代表在其他潜变量保持不变时 c2 的不同值，这个属性似乎与字符的方向有关。d) 第三个属性与笔画的粗细度相关。据 Chen 等（2016b）改编。}
 \end{figure}
 
-``图 15.15 InfoGAN 在 MNIST 数据集上的应用。a) MNIST 数据库的训练样本包含 28×28 像素的手写数字图像。b) 第一个属性 c1 是一个具有 10 个类别的分类变量；每一列展示了使用其中一个类别生成的样本。InfoGAN 能够复原十个数字。属性向量 c2 和 c3 是连续的。c) 从左到右，每列代表在其他潜变量保持不变时 c2 的不同值，这个属性似乎与字符的方向有关。d) 第三个属性与笔画的粗细度相关。据 Chen 等（2016b）改编。``
 
 \section{图像翻译}
 虽然对抗性判别器 (adversarial discriminator) 最初是在生成对抗网络 (GAN) 中用于生成随机样本的背景下提出的，但它也可作为一种偏好于现实感的先验，用于将一种数据形式转换成另一种形式的任务中。这种应用最常见于图像处理，例如将灰度图像转换成彩色、将噪声图像清理成干净的图像、将模糊图像转换成清晰的图像，或是将草图转换成照片级逼真的图像。
@@ -369,10 +356,9 @@ Pix2Pix 模型（图 15.16）是一个网络 \(x = g[c, \theta]\)，通过一个
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GANPix2Pix.png}
-\caption{Figure15.16}
+\caption{Pix2Pix 模型。a) 这个模型利用 U-Net（参见图 11.10）将输入图像转换成不同风格的预测结果。例如，它能将灰度图像转换为看似真实的彩色版本。U-Net 的训练基于两种损失：内容损失鼓励输出图像结构与输入相似，而对抗损失则确保灰度和彩色图像对在图像的每个局部区域内难以区分。这个框架能够适用于多种任务，包括 b) 将地图转换为卫星图像，c) 将包包的素描转换为逼真图像，d) 彩色化处理，以及 e) 将标签地图转换为逼真的建筑立面图。据 Isola 等（2017）改编。}
 \end{figure}
 
-`图 15.16 Pix2Pix 模型。a) 这个模型利用 U-Net（参见图 11.10）将输入图像转换成不同风格的预测结果。例如，它能将灰度图像转换为看似真实的彩色版本。U-Net 的训练基于两种损失：内容损失鼓励输出图像结构与输入相似，而对抗损失则确保灰度和彩色图像对在图像的每个局部区域内难以区分。这个框架能够适用于多种任务，包括 b) 将地图转换为卫星图像，c) 将包包的素描转换为逼真图像，d) 彩色化处理，以及 e) 将标签地图转换为逼真的建筑立面图。据 Isola 等（2017）改编。`
 
 \subsection{对抗性损失}
 Pix2Pix 模型的判别器尝试判断图像翻译任务中的前后图像对是否合理。这样做的不便之处在于，我们需要真实的前后对来利用判别器损失。幸运的是，存在一种更简单的方法可以在监督学习的背景下，不需要额外的标注训练数据，就能利用对抗性判别器的力量。
@@ -384,10 +370,9 @@ Pix2Pix 模型的判别器尝试判断图像翻译任务中的前后图像对是
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GanSuperRes.png}
-\caption{Figure15.17}
+\caption{超分辨率生成对抗网络（SRGAN）。a) 利用残差连接的卷积网络被训练来将图像分辨率提高四倍。这个模型旨在使内容尽可能接近真实的高分辨率图像，同时通过对抗损失惩罚那些可与真实高分辨率图像区分开的结果。b) 采用双三次插值法上采样的图像。c) 使用 SRGAN 上采样的图像。d) 再次采用双三次插值法上采样的图像。e) 再次使用 SRGAN 上采样的图像。据 Ledig 等（2017）改编。}
 \end{figure}
 
-`图 15.17 超分辨率生成对抗网络（SRGAN）。a) 利用残差连接的卷积网络被训练来将图像分辨率提高四倍。这个模型旨在使内容尽可能接近真实的高分辨率图像，同时通过对抗损失惩罚那些可与真实高分辨率图像区分开的结果。b) 采用双三次插值法上采样的图像。c) 使用 SRGAN 上采样的图像。d) 再次采用双三次插值法上采样的图像。e) 再次使用 SRGAN 上采样的图像。据 Ledig 等（2017）改编。`
 
 \subsection{CycleGAN}
 对抗性损失假设我们拥有用于主监督网络的标记前后图像。CycleGAN 解决了当我们拥有两组具有独特风格但无匹配对的数据时的情况。一个例子是将照片转换为莫奈的艺术风格。虽然存在许多照片和莫奈的画作，但它们之间没有直接对应关系。CycleGAN 利用了一个理念：若图像先转换成一种风格（例如，照片→莫奈），然后再转换回原始风格，应能恢复原图。
@@ -397,10 +382,9 @@ CycleGAN 的损失函数是三种损失的加权和（图 15.18）。内容损�
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GANCycleGAN.png}
-\caption{Figure15.18}
+\caption{CycleGAN。同时训练两个模型，一个模型将第一种风格的图像（马）转换成第二种风格的图像（斑马），另一个模型则进行相反的映射。循环一致性损失确保这两个模型能够成功地进行领域转换并恢复到原图。除此之外，两个对抗损失使转换后的图像在目标领域中看起来更真实（此处以斑马为例）。内容损失确保每次映射前后图像的细节和布局保持一致性（即斑马和马的位置和姿态相同，背景也相同）。据 Zhu 等（2017）改编。}
 \end{figure}
 
-`图 15.18 CycleGAN。同时训练两个模型，一个模型将第一种风格的图像（马）转换成第二种风格的图像（斑马），另一个模型则进行相反的映射。循环一致性损失确保这两个模型能够成功地进行领域转换并恢复到原图。除此之外，两个对抗损失使转换后的图像在目标领域中看起来更真实（此处以斑马为例）。内容损失确保每次映射前后图像的细节和布局保持一致性（即斑马和马的位置和姿态相同，背景也相同）。据 Zhu 等（2017）改编。`
 
 \section{StyleGAN}
 StyleGAN 是一款较为先进的生成对抗网络 (GAN)，它能够将数据集中的变异分解为有意义的组件，每个组件都由一小部分潜变量控制。特别地，StyleGAN 能够在不同层级上调控输出图像，并明确区分风格与噪声。在处理人脸图像时，大尺度的变化包括脸型和头部姿势；中尺度变化涉及面部特征的形态和细节；而细尺度变化则涵盖头发和皮肤颜色。风格成分指的是对人类显著的图像特征，而噪声成分则指图像中不那么重要的变化，比如头发的精确位置、胡渣、雀斑或皮肤毛孔等。
@@ -416,18 +400,16 @@ StyleGAN 的主要生成分支以一个学习得到的 4×4、512 通道的常�
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GanStyleGANArch.png}
-\caption{Figure15.19}
+\caption{StyleGAN。其核心流程（中间行）起始于一个固定的学习表示（灰色框）。通过多层卷积和逐步上采样过程生成最终图像。不同尺度的噪声（顶行）通过周期性加入具有每通道缩放的高斯变量 z• 来实现。高斯风格变量 z 通过全连接网络转换成中间变量 w（底行），用于在流程的不同阶段调整每个通道的均值和方差。}
 \end{figure}
 
-`图 15.19 StyleGAN。其核心流程（中间行）起始于一个固定的学习表示（灰色框）。通过多层卷积和逐步上采样过程生成最终图像。不同尺度的噪声（顶行）通过周期性加入具有每通道缩放的高斯变量 z• 来实现。高斯风格变量 z 通过全连接网络转换成中间变量 w（底行），用于在流程的不同阶段调整每个通道的均值和方差。`
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter15/GANStyleGANResults.png}
-\caption{Figure15.20}
+\caption{StyleGAN 结果。前四列展示了不同尺度下风格的系统性变化。第五列显示了增大噪声幅度的效果。最后两列在两个不同的尺度上展示了不同的噪声向量变化。}
 \end{figure}
 
-`图 15.20 StyleGAN 结果。前四列展示了不同尺度下风格的系统性变化。第五列显示了增大噪声幅度的效果。最后两列在两个不同的尺度上展示了不同的噪声向量变化。`
 
 \section{总结}
 GAN（生成对抗网络）通过学习一个生成器网络，可以将随机噪声变换成与训练集中的数据相似的数据。为了达成这一目标，训练生成器时会用到一个鉴别器网络，该网络试图区分出真实的样本与生成的样本。接着，生成器会被调整，以便它产生的数据更加被鉴别器认为是“真实”的。这个思想的原始表述存在一个问题，即当判定样本是真实还是生成的变得容易时，训练信号会变弱。这促成了 Wasserstein GAN 的发展，它能够提供一个更稳定的训练信号。

@@ -14,7 +14,11 @@ f(x, \phi) = \beta_3 + \Omega_3h_3
 \end{align} 
 
 
-其中激活函数 \(a[\cdot]\) 分别作用于输入的每个元素。模型参数 \(\phi = \{\beta_0,\Omega_0,\beta_1,\Omega_1,\beta_2,\Omega_2,\beta_3,\Omega_3\}\) 包括每层之间的偏置向量 \(\beta_k\) 和权重矩阵 \(\Omega_k\)（见图 7.1）。
+其中激活函数 \(a[\cdot]\) 分别作用于输入的每个元素。模型参数 
+\begin{equation*}
+\phi = \{\beta_0,\Omega_0,\beta_1,\Omega_1,\beta_2,\Omega_2,\beta_3,\Omega_3\}    
+\end{equation*}
+包括每层之间的偏置向量 \(\beta_k\) 和权重矩阵 \(\Omega_k\)（见图 7.1）。
 
 
 此外，我们定义了单个损失项 \(l_i\) 来返回基于模型预测 \(f(x_i, \phi)\) 对训练输入 \(x_i\) 的真实标签 \(y_i\) 的负对数似然。例如，这可能是指最小平方损失 \(l_i = (f(x_i, \phi) - y_i)^2\)。总损失是所有训练数据上这些损失项的和：

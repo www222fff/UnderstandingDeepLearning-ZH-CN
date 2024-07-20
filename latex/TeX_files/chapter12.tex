@@ -51,10 +51,9 @@ sa_n[x_1, \ldots, x_N] = \sum_{m=1}^N \alpha[x_m, x_n]v_m.
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerRouting.png}
-\caption{Figures12.1}
+\caption{自注意力机制如何实现路由。自注意力机制处理 \(N\) 个输入 \(x_1, ..., x_N \in \mathbb{R}^D\)（此处 \(N = 3\)，\(D = 4\)），并分别计算出 \(N\) 个值向量。第 \(n\) 个输出 \(sa_n[x_1, ... x_N]\)（简称 \(sa_{n, [x]}\)）是通过对这 \(N\) 个值向量进行加权求和得到的，其中每个权重都是正值并且总和为1。a) 对于输出 \(sa_{1, [x]}\)，是通过将第一个值向量乘以 \(0.1\)，第二个值向量乘以 \(0.3\)，第三个值向量乘以 \(0.6\) 来计算得出。b) 输出 \(sa_{2, [x]}\) 的计算方式相同，但此时的权重分别为 \(0.5, 0.2\) 和 \(0.3\)。c) 输出 \(sa_{3, [x]}\) 的权重又是不同的。因此，每个输出可以视为是对 \(N\) 个值进行了不同的路由处理。}
 \end{figure}
 
-`图 12.1 自注意力机制如何实现路由。自注意力机制处理 \(N\) 个输入 \(x_1, ..., x_N \in \mathbb{R}^D\)（此处 \(N = 3\)，\(D = 4\)），并分别计算出 \(N\) 个值向量。第 \(n\) 个输出 \(sa_n[x_1, ... x_N]\)（简称 \(sa_{n, [x]}\)）是通过对这 \(N\) 个值向量进行加权求和得到的，其中每个权重都是正值并且总和为1。a) 对于输出 \(sa_{1, [x]}\)，是通过将第一个值向量乘以 \(0.1\)，第二个值向量乘以 \(0.3\)，第三个值向量乘以 \(0.6\) 来计算得出。b) 输出 \(sa_{2, [x]}\) 的计算方式相同，但此时的权重分别为 \(0.5, 0.2\) 和 \(0.3\)。c) 输出 \(sa_{3, [x]}\) 的权重又是不同的。因此，每个输出可以视为是对 \(N\) 个值进行了不同的路由处理。`
 
 \subsection{值的计算与加权}
 方程 12.2 揭示了对每个输入 \(x_n \in \mathbb{R}^D\) 应用相同的权重 \(\Omega_v \in \mathbb{R}^{D \times D}\) 和偏置 \(\beta_v \in \mathbb{R}^D\)。由于这种运算与序列的长度 \(N\) 呈线性关系，相比于一个将所有 \(DN\) 输入与所有 \(DN\) 输出相关联的全连接网络，它需要更少的参数。可以将这一计算过程视作一个执行了参数共享的稀疏矩阵运算（见图 12.2b）。
@@ -64,10 +63,9 @@ sa_n[x_1, \ldots, x_N] = \sum_{m=1}^N \alpha[x_m, x_n]v_m.
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerSA1.png}
-\caption{Figure12.2}
+\caption{针对三个维度为 \(D = 4\) 的输入 \(x_n\) 的自注意力。a) 每个输入 \(x_n\) 都独立地通过相同的权重 \(\Omega\)（相同的颜色代表相同的权重）和偏置 \(\beta\)（未展示）进行操作，以形成值 \(\beta + \Omega x_n\)。每个输出都是这些值的线性组合，共享的注意力权重 \(a[x_m, x_n]\) 确定了第 \(m\) 个值对第 \(n\) 个输出的影响。b) 矩阵展示了输入与值之间的线性转换 \(\Omega\) 的块稀疏性。c) 另一个矩阵展示了连接值与输出的注意力权重的稀疏性。}
 \end{figure}
 
-`图 12.2 针对三个维度为 \(D = 4\) 的输入 \(x_n\) 的自注意力。a) 每个输入 \(x_n\) 都独立地通过相同的权重 \(\Omega\)（相同的颜色代表相同的权重）和偏置 \(\beta\)（未展示）进行操作，以形成值 \(\beta + \Omega x_n\)。每个输出都是这些值的线性组合，共享的注意力权重 \(a[x_m, x_n]\) 确定了第 \(m\) 个值对第 \(n\) 个输出的影响。b) 矩阵展示了输入与值之间的线性转换 \(\Omega\) 的块稀疏性。c) 另一个矩阵展示了连接值与输出的注意力权重的稀疏性。`
 
 \subsection{注意力权重的计算}
 在前一节中，我们看到了输出是通过两个连续的线性变换产生的；对于每个输入 \(x_m\)，独立计算得到的值向量 \(\beta_v + \Omega_vx_m\) 随后被注意力权重 \(\alpha[x_m, x_n]\) 线性整合。然而，自注意力的整个计算过程实际上是 *非线性* 的。很快我们就会发现，注意力权重本身实际上是输入的非线性函数。这是一个 *超网络* 的范例，即一个网络分支计算另一分支的权重。
@@ -95,10 +93,9 @@ a[x_m, x_n] &= \text{softmax}_{m} [k_.^T q_n] \\
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerSA2.png}
-\caption{Figure12.3}
+\caption{计算注意力权重。a) 对每个输入 \(x_n\) 计算查询向量 \(q_n = \beta_q + \Omega_qx_n\) 和键向量 \(k_n = \beta_k + \Omega_kx_n\)。b) 每个查询向量与三个键向量的点积经过 softmax 函数处理，得到非负的、和为一的注意力权重。c) 这些注意力权重通过图 12.2c 所示的稀疏矩阵来指导值向量（见图 12.1）的路由。}
 \end{figure}
 
-`图 12.3 计算注意力权重。a) 对每个输入 \(x_n\) 计算查询向量 \(q_n = \beta_q + \Omega_qx_n\) 和键向量 \(k_n = \beta_k + \Omega_kx_n\)。b) 每个查询向量与三个键向量的点积经过 softmax 函数处理，得到非负的、和为一的注意力权重。c) 这些注意力权重通过图 12.2c 所示的稀疏矩阵来指导值向量（见图 12.1）的路由。`
 
 
 “查询”和“键”的术语源于信息检索领域，这里的含义是：点积操作测量输入之间的相似度，因此权重 \(a[x_0, x_n]\) 取决于第 \(n^{th}\) 查询与所有键的相对相似度。softmax 函数确保了键向量之间的“竞争”，以决定它们对最终结果的贡献度。查询和键的维度必须一致。不过，这与值的维度可以不同，值的维度通常与输入的尺寸相同，保证了表示的尺寸不发生变化。
@@ -106,7 +103,11 @@ a[x_m, x_n] &= \text{softmax}_{m} [k_.^T q_n] \\
 \subsection{自注意力机制概述}
 第 \(n^{th}\) 个输出是对所有输入应用了相同线性变换 \(v\) 的加权总和，其中 \(v = \beta_v + \Omega_vx\)，而这些注意力权重均为正值且总和为一。权重的计算基于输入 \(x_n\) 与其他输入间相似度的度量。尽管没有使用激活函数，但是这个过程因点积和 softmax 操作而呈现非线性特性。
 
-这种机制满足了初始设定的需求。首先，存在一组共享的参数集 \(\Phi = \{\beta_v,\Omega_v,\beta_q,\Omega_q,\beta_k,\Omega_k\}\)，它不依赖于输入的数量 N，使得网络能够处理不同长度的序列。其次，输入（单词）间存在相互连接，且这些连接的强度是基于注意力权重直接反映了输入本身的特性。
+这种机制满足了初始设定的需求。首先，存在一组共享的参数集 
+\begin{equation*}
+\Phi = \{\beta_v,\Omega_v,\beta_q,\Omega_q,\beta_k,\Omega_k\}    
+\end{equation*}
+它不依赖于输入的数量 N，使得网络能够处理不同长度的序列。其次，输入（单词）间存在相互连接，且这些连接的强度是基于注意力权重直接反映了输入本身的特性。
 
 \subsection{矩阵表示法}
 如果将 \(N\) 个输入 \(x_n\) 视为构成了一个 \(D \times N\) 矩阵 \(X\) 的列，则可以将上述过程更简洁地表述。值、查询和键的计算可以表示为：
@@ -131,10 +132,9 @@ Sa[X] = V · Softmax[K^T Q].
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerBlockSA.png}
-\caption{Figure12.4}
+\caption{自注意力的矩阵表示法。如果将 N 个输入向量 \(xn\) 存放在 D×N 矩阵 X 的列中，则可以高效地实施自注意力。输入 X 分别被查询矩阵 Q、键矩阵 K 和值矩阵 V 所处理。随后，通过矩阵乘法计算点积，并对结果矩阵的每列应用 softmax 操作以计算注意力权重。最后，这些值根据注意力权重进行后乘，生成与输入尺寸相同的输出。}
 \end{figure}
 
-`图 12.4 自注意力的矩阵表示法。如果将 N 个输入向量 \(xn\) 存放在 D×N 矩阵 X 的列中，则可以高效地实施自注意力。输入 X 分别被查询矩阵 Q、键矩阵 K 和值矩阵 V 所处理。随后，通过矩阵乘法计算点积，并对结果矩阵的每列应用 softmax 操作以计算注意力权重。最后，这些值根据注意力权重进行后乘，生成与输入尺寸相同的输出。`
 
 \section{点乘自注意力的扩展}
 在上一节里，我们讨论了自注意力。本节将介绍三种实际应用中常用的扩展技术。
@@ -149,10 +149,9 @@ Sa[X] = V · Softmax[K^T Q].
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerPE.png}
-\caption{Figure12.5}
+\caption{位置编码。自注意力架构对输入的排列顺序不敏感。为了使处于不同位置的输入能够被区分处理，可以在数据矩阵中加入位置编码矩阵 \(\Pi\)。因为每一列都是独一无二的，从而可以识别不同的位置。这里的位置编码采用了预定义的程序化的正弦模式（必要时可扩展到更多的 \(N\) 值）。但在其他场景中，位置编码是通过学习得到的。}
 \end{figure}
 
-`图 12.5 位置编码。自注意力架构对输入的排列顺序不敏感。为了使处于不同位置的输入能够被区分处理，可以在数据矩阵中加入位置编码矩阵 \(\Pi\)。因为每一列都是独一无二的，从而可以识别不同的位置。这里的位置编码采用了预定义的程序化的正弦模式（必要时可扩展到更多的 \(N\) 值）。但在其他场景中，位置编码是通过学习得到的。`
 
 \subsection{缩放点积自注意力}
 注意力计算中的点积可能会产生较大的数值，导致 softmax 函数的参数进入一个区域，其中最大的数值几乎占据主导地位。这使得对 softmax 函数输入的微小变化几乎不影响输出（即，梯度非常小），从而增加了模型训练的难度。为避免此问题，通过查询和键的维度 \(D_q\)（即 \(\Omega_q\) 和 \(\Omega_k\) 的行数，这两者必须相同）的平方根来对点积进行缩放：
@@ -191,10 +190,9 @@ MhSa[X] = \Omega_c \left[ Sa_1[X]^T, Sa_2[X]^T, \ldots, Sa_H[X]^T \right]^T .
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerBlockSAMultiHead.png}
-\caption{Figure12.6}
+\caption{多头自注意力。自注意力通过多个独立的“头”并行进行，每个头拥有自己的查询、键和值。示例中展示了两个头，分别用青色和橙色框标出。它们的输出先是垂直堆叠，随后通过另一线性变换 \(\Omega_c\) 进行重组。}
 \end{figure}
 
-`图 12.6 多头自注意力。自注意力通过多个独立的“头”并行进行，每个头拥有自己的查询、键和值。示例中展示了两个头，分别用青色和橙色框标出。它们的输出先是垂直堆叠，随后通过另一线性变换 \(\Omega_c\) 进行重组。`
 
 \section{Transformer 层}
 自注意力仅是更大的 Transformer 层结构中的一环。它由一个多头自注意力单元组成（使得各个词语的表示能够互相影响），接着是一个对每个词分别进行处理的全连接网络 mlp[x•]。这两个部分都采用了残差网络的设计（即，它们的输出会被加到输入上）。此外，通常在自注意力和全连接网络后都会加入层归一化（LayerNorm）操作。这与批归一化（BatchNorm）相似，但它是基于单个输入序列中所有 token 的统计数据来进行归一化的（见第11.4节和图11.14）。完整层的操作流程如下（见图12.7）：
@@ -213,10 +211,9 @@ X \leftarrow \text{LayerNorm}[X], \\
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerBlock.png}
-\caption{Figure12.7}
+\caption{Transformer层。输入是一个包含每个输入 Token 的 D 维词嵌入的 D × N 矩阵，输出也是同等大小的矩阵。Transformer 层包含了一系列操作步骤：首先是多头注意力模块，让词嵌入间互相影响，形成了残差块处理，即输入加回到输出中。其次，执行了层归一化（LayerNorm）操作。再接下来是第二个残差层，此处相同的全连接神经网络分别作用于每个词表示（列）。最终，再次应用层归一化。}
 \end{figure}
 
-`图 12.7 Transformer层。输入是一个包含每个输入 Token 的 D 维词嵌入的 D × N 矩阵，输出也是同等大小的矩阵。Transformer 层包含了一系列操作步骤：首先是多头注意力模块，让词嵌入间互相影响，形成了残差块处理，即输入加回到输出中。其次，执行了层归一化（LayerNorm）操作。再接下来是第二个残差层，此处相同的全连接神经网络分别作用于每个词表示（列）。最终，再次应用层归一化。`
 
 \section{面向自然语言处理的 Transformers}
 
@@ -235,10 +232,9 @@ X \leftarrow \text{LayerNorm}[X], \\
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerBPE.png}
-\caption{Figure12.8}
+\caption{子词Token化。a) 选自一首童谣的文本段落。最初的 Token 是字符和空格（用下划线表示），它们的出现频率展示在表格中。b) 每轮迭代，子词 Token 化器寻找并合并出现频率最高的相邻 Token 对（此例中为 se），新建一个 Token 同时减少原有 Token s 和 e 的计数。c) 第二轮迭代中，算法合并了 e 和空格字符 \_。注意，被合并的第一个 Token 的末字符不能是空格，以避免跨单词合并。d) 经过 22 轮迭代，Token 化为字母、单词片段和常见单词的混合体。e) 持续这一过程，Token 最终能够代表完整单词。f) 随时间推移，随着字母和单词片段的不断增加再合并，Token 数量先是增加后减少。在实际应用中，会处理极大量的单词，并在达到预设的词汇量大小时停止算法。标点和大写字母也被视为独立字符。}
 \end{figure}
 
-`图 12.8 子词Token化。a) 选自一首童谣的文本段落。最初的 Token 是字符和空格（用下划线表示），它们的出现频率展示在表格中。b) 每轮迭代，子词 Token 化器寻找并合并出现频率最高的相邻 Token 对（此例中为 se），新建一个 Token 同时减少原有 Token s 和 e 的计数。c) 第二轮迭代中，算法合并了 e 和空格字符 \_。注意，被合并的第一个 Token 的末字符不能是空格，以避免跨单词合并。d) 经过 22 轮迭代，Token 化为字母、单词片段和常见单词的混合体。e) 持续这一过程，Token 最终能够代表完整单词。f) 随时间推移，随着字母和单词片段的不断增加再合并，Token 数量先是增加后减少。在实际应用中，会处理极大量的单词，并在达到预设的词汇量大小时停止算法。标点和大写字母也被视为独立字符。`
 
 \subsection{嵌入}
 词汇表 \(V\) 中的每个 token 都映射到一个唯一的*词嵌入*中，整个词汇表的嵌入向量存储在矩阵 \(\Omega_e \in \mathbb{R}^{D \times |V|}\) 中。为此，首先将 \(N\) 个输入 token 编码进矩阵 \(T \in \mathbb{R}^{|V| \times N}\) 中，其中第 \(n\) 列对应第 \(n\) 个 token，是一个 \(|V| \times 1\) 的*独热编码*（即，除了对应于该 token 的条目为一之外，其他所有条目都为零的向量）。输入嵌入通过计算 \(X = \Omega_e T\) 获得，\(\Omega_e\) 像任何其他网络参数一样进行学习（图 12.9）。典型的嵌入大小 \(D\) 为 1024，总词汇量 \(|V|\) 为 30,000，因此即使在主网络处理之前，\(\Omega_e\) 中就已经有了大量的参数需要学习。
@@ -246,10 +242,9 @@ X \leftarrow \text{LayerNorm}[X], \\
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerVocabulary.png}
-\caption{Figure12.9}
+\caption{输入嵌入矩阵 \(X \in RD×N\) 包含 N 个长度为 D 的嵌入，通过乘以一个包含整个词汇的嵌入 \(\Omega_e\) 和一个列中含有对应单词或子词索引的 one-hot 向量矩阵来创建。词汇矩阵 \(\Omega_e\) 作为模型的参数之一，并随其他参数一同学习。需要注意的是，矩阵 X 中单词 an 的两个嵌入是相同的。}
 \end{figure}
 
-`图 12.9 输入嵌入矩阵 \(X \in RD×N\) 包含 N 个长度为 D 的嵌入，通过乘以一个包含整个词汇的嵌入 \(\Omega_e\) 和一个列中含有对应单词或子词索引的 one-hot 向量矩阵来创建。词汇矩阵 \(\Omega_e\) 作为模型的参数之一，并随其他参数一同学习。需要注意的是，矩阵 X 中单词 an 的两个嵌入是相同的。`
 
 \subsection{Transformer 模型}
 最终，代表文本的嵌入矩阵 X 被传递通过一系列 K 个 Transformer 层，形成了所谓的 Transformer 模型。Transformer 模型分为三种类型：编码器将文本嵌入转化为能够支持多种任务的表示；解码器预测接下来的 token 以继续输入文本；编码器-解码器用于序列到序列的任务，如将一串文本转换成另一串（例如，机器翻译）。这些不同的模型变体将分别在第 12.6 至 12.8 节中进行描述。
@@ -268,10 +263,9 @@ BERT 是一种编码器模型，采用 30,000 个 token 的词汇表。输入 to
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerEncoder.png}
-\caption{Figure12.10}
+\caption{类似BERT的编码器预训练。输入 Token（及一个表示序列开始的特殊 \texttt{\textless cls\textgreater} Token）被转换成单词嵌入。这里，嵌入以行的形式表示，因此标记为“单词嵌入”的盒子是 $X^T$。这些嵌入通过一系列的 Transformer 层进行处理（橙色连线表示在这些层中，每个 Token 都会关注其他所有 Token），以生成一组输出嵌入。一小部分输入 Token 被随机替换为通用的 \texttt{\textless mask\textgreater} Token。预训练的目标是根据输出嵌入预测缺失的单词。因此，输出嵌入经过 softmax 函数处理，并使用多类分类损失。这种方法的优势在于它利用了左右上下文来预测缺失单词，但缺点是数据利用率不高；例如，处理七个 Token 只为损失函数增加两项内容。}
 \end{figure}
 
-`图 12.10 类似BERT的编码器预训练。输入 Token（及一个表示序列开始的特殊 \texttt{\textless cls\textgreater} Token）被转换成单词嵌入。这里，嵌入以行的形式表示，因此标记为“单词嵌入”的盒子是 $X^T$。这些嵌入通过一系列的 Transformer 层进行处理（橙色连线表示在这些层中，每个 Token 都会关注其他所有 Token），以生成一组输出嵌入。一小部分输入 Token 被随机替换为通用的 \texttt{\textless mask\textgreater} Token。预训练的目标是根据输出嵌入预测缺失的单词。因此，输出嵌入经过 softmax 函数处理，并使用多类分类损失。这种方法的优势在于它利用了左右上下文来预测缺失单词，但缺点是数据利用率不高；例如，处理七个 Token 只为损失函数增加两项内容。`
 
 \subsection{微调}
 
@@ -286,10 +280,9 @@ BERT 是一种编码器模型，采用 30,000 个 token 的词汇表。输入 to
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerEncoderFineTune.png}
-\caption{Figure12.11}
+\caption{预训练后的细化调整。在预训练完成后，编码器会利用手动标注的数据进行细化调整，以应对特定的任务。通常，会向编码器添加线性变换层或多层感知机（MLP）来生成需要的输出。a) 文本分类任务示例。在这个情绪分类任务中，使用 \texttt{\textless cls\textgreater} token 的嵌入来预测评论是否为正面。b) 单词分类任务示例。在这个命名实体识别任务中，用每个单词的嵌入来判断该词是属于人名、地名、组织名还是非实体。}
 \end{figure}
 
-`图 12.11 预训练后的细化调整。在预训练完成后，编码器会利用手动标注的数据进行细化调整，以应对特定的任务。通常，会向编码器添加线性变换层或多层感知机（MLP）来生成需要的输出。a) 文本分类任务示例。在这个情绪分类任务中，使用 \texttt{\textless cls\textgreater} token 的嵌入来预测评论是否为正面。b) 单词分类任务示例。在这个命名实体识别任务中，用每个单词的嵌入来判断该词是属于人名、地名、组织名还是非实体。`
 
 \section{Decoder 模型案例: GPT3}
 本节将对 GPT3 这一解码器模型进行高层次的描述。其基本架构与编码器模型极其相似，包括了一系列操作于学习得到的词嵌入上的 Transformer 层。然而，其目标不同。编码器的目的是构建能够被细微调整用于解决更多具体 NLP 任务的文本表示。相对地，解码器的唯一目的是生成序列中的下一 Token。通过将扩展序列重新输入模型，解码器能够生成连贯的文本段落。
@@ -323,9 +316,8 @@ GPT3 构建了一种自回归语言模型。以句子 “It takes great courage 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerDecoder.png}
-\caption{Figure12.12}
+\caption{训练 GPT3 类解码器网络。Token 通过映射转换为词嵌入，序列开始处加上特殊的 \texttt{\textless start\textgreater} token。这些嵌入通过一系列使用掩蔽自注意力的 Transformer 层进行传递。在这种设置下，句子中的每个位置只能关注到它自己的嵌入和序列中之前的 Token（橙色连线表示）。每个位置的目标是预测序列中下一真实 Token 的概率。即在第一个位置，预测 Token It 的概率；第二个位置，预测 Token takes 的概率；依此类推。掩蔽自注意力确保了系统不能通过查看后续输入进行作弊。自回归任务有效地利用了数据，因为每个词都对损失函数有贡献，但它仅考虑了每个词的左侧上下文。}
 \end{figure}
-`图 12.12 训练 GPT3 类解码器网络。Token 通过映射转换为词嵌入，序列开始处加上特殊的 \texttt{\textless start\textgreater} token。这些嵌入通过一系列使用掩蔽自注意力的 Transformer 层进行传递。在这种设置下，句子中的每个位置只能关注到它自己的嵌入和序列中之前的 Token（橙色连线表示）。每个位置的目标是预测序列中下一真实 Token 的概率。即在第一个位置，预测 Token It 的概率；第二个位置，预测 Token takes 的概率；依此类推。掩蔽自注意力确保了系统不能通过查看后续输入进行作弊。自回归任务有效地利用了数据，因为每个词都对损失函数有贡献，但它仅考虑了每个词的左侧上下文。`
 
 \subsection{利用解码器生成文本}
 自回归语言模型是本书讨论的第一个生成模型示例。它定义了文本序列上的概率模型，可以用来生成新的、看起来合理的文本样本。生成文本时，我们从一段输入文本（可能仅为一个特殊的 \texttt{\textless start\textgreater} 标记，表示序列的开始）开始，并将其输入网络，然后网络输出可能的后续 Token 的概率分布。接下来，我们可以选择概率最高的 Token 或从此概率分布中采样。新扩展的序列被再次输入解码器网络，该网络输出下一个 Token 的概率分布。通过重复此过程，我们可以生成大量文本。得益于遮掩自注意力的机制，早期的计算可以在生成后续 Token 时被重用，使得计算过程十分高效。
@@ -374,18 +366,16 @@ Good English output: I’d be more than happy to work with you on another projec
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerEncoderDecoder.png}
-\caption{Figure12.13}
+\caption{编码器-解码器架构。两个句子输入系统，目标是将第一个句子翻译成第二个。a) 第一个句子通过标准编码器进行处理。b) 第二个句子通过解码器处理，该解码器不仅使用掩蔽自注意力，还通过交叉注意力关注编码器的输出嵌入（橙色矩形表示）。损失函数与解码器模型相同，目标是最大化输出序列中下一个词的概率。}
 \end{figure}
 
-`图 12.13 编码器-解码器架构。两个句子输入系统，目标是将第一个句子翻译成第二个。a) 第一个句子通过标准编码器进行处理。b) 第二个句子通过解码器处理，该解码器不仅使用掩蔽自注意力，还通过交叉注意力关注编码器的输出嵌入（橙色矩形表示）。损失函数与解码器模型相同，目标是最大化输出序列中下一个词的概率。`
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerBlockSACross.png}
-\caption{Figure12.14}
+\caption{交叉注意力。计算流程与标准自注意力一致，但查询是基于解码器嵌入 \(X_{dec}\) 计算的，键和值则来自编码器嵌入 \(X_{enc}\)。在翻译场景中，编码器包含源语言信息，解码器则含有目标语言的统计信息。}
 \end{figure}
 
-`图 12.14 交叉注意力。计算流程与标准自注意力一致，但查询是基于解码器嵌入 \(X_{dec}\) 计算的，键和值则来自编码器嵌入 \(X_{enc}\)。在翻译场景中，编码器包含源语言信息，解码器则含有目标语言的统计信息。`
 \section{面向长序列的 Transformers}
 在Transformer编码器模型中，每个Token都会与序列中的其他Token进行相互作用，导致其计算复杂度随着序列长度的增长而平方级增加。而在解码器模型中，每个Token仅与前面出现的Token进行交互，虽然交互数量大致减少了一半，但复杂度的增长依旧是平方级的。这种交互关系可以通过交互矩阵来形象展示（见图 12.15a–b）。
 
@@ -396,10 +386,9 @@ Good English output: I’d be more than happy to work with you on another projec
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerLongRange.png}
-\caption{Figure12.15}
+\caption{自注意力的交互矩阵。a) 在编码器中，每个 Token 与其他所有 Token 相互作用，计算量随 Token 数量二次方增长。b) 在解码器中，每个 Token 仅与前面的 Token 交互，复杂度依然是二次方。c) 使用卷积结构可以降低编码器中的复杂度。d) 解码器的卷积结构。e–f) 解码器使用二次和三次膨胀率的卷积结构。g) 另一种策略是让选定的 Token 与所有其他 Token（在编码器中）或之前的所有 Token（在解码器中，如图所示）进行交互。h) 或者，可以引入全局 Token（左两列和上两行），它们与所有 Token 以及彼此相互作用。}
 \end{figure}
 
-`图 12.15 自注意力的交互矩阵。a) 在编码器中，每个 Token 与其他所有 Token 相互作用，计算量随 Token 数量二次方增长。b) 在解码器中，每个 Token 仅与前面的 Token 交互，复杂度依然是二次方。c) 使用卷积结构可以降低编码器中的复杂度。d) 解码器的卷积结构。e–f) 解码器使用二次和三次膨胀率的卷积结构。g) 另一种策略是让选定的 Token 与所有其他 Token（在编码器中）或之前的所有 Token（在解码器中，如图所示）进行交互。h) 或者，可以引入全局 Token（左两列和上两行），它们与所有 Token 以及彼此相互作用。`
 \section{面向图像的 Transformers}
 Transformer 最初是针对文本数据而开发的，它们在这一领域取得的巨大成功促使人们开始尝试将其应用于图像数据。虽然这一尝试初看不太乐观——一方面，图像的像素数量远超过句子中的单词数量，使得自注意力机制的二次方计算复杂度成为实践中的瓶颈；另一方面，卷积神经网络因能自然处理图像的二维结构且对空间平移表现出等变性，从而显示出良好的先验偏好。然而，Transformer网络需要通过学习来掌握这种处理能力。
 
@@ -415,10 +404,9 @@ ImageGPT作为一个Transformer解码器，构建了一种图像像素的自回�
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerIGPT.png}
-\caption{Figure12.16}
+\caption{ImageGPT。a) 使用自回归模型 ImageGPT 生成的图像。图像的生成从左上角的像素开始，该像素基于其位置的估计经验分布选择。随后的像素基于前一个像素依次生成，沿着行直到达到图像的右下角。对每个像素，Transformer 解码器按照方程 12.15 生成一个条件分布，并从中抽样。这个过程反复进行，直到生成下一个像素，以此类推。b) 图像补全。在每个示例中，图像的下半部被移除（最顶行），ImageGPT 逐像素补全剩余部分（展示了三种不同的补全效果）。}
 \end{figure}
 
-`图 12.16 ImageGPT。a) 使用自回归模型 ImageGPT 生成的图像。图像的生成从左上角的像素开始，该像素基于其位置的估计经验分布选择。随后的像素基于前一个像素依次生成，沿着行直到达到图像的右下角。对每个像素，Transformer 解码器按照方程 12.15 生成一个条件分布，并从中抽样。这个过程反复进行，直到生成下一个像素，以此类推。b) 图像补全。在每个示例中，图像的下半部被移除（最顶行），ImageGPT 逐像素补全剩余部分（展示了三种不同的补全效果）。`
 \subsection{视觉Transformer (ViT)}
 视觉Transformer (ViT) 通过将图像分割成16×16的小块来解决图像分辨率的挑战（见图12.17）。每个小块通过一个学习到的线性变换降维，并输入到Transformer网络中。这种模型也采用了标准的一维位置编码。
 
@@ -428,10 +416,9 @@ ViT是一个包含\texttt{\textless cls\textgreater}标记的编码模型（参�
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerVisionTransformer.png}
-\caption{Figure12.17}
+\caption{视觉 Transformer（ViT）。视觉 Transformer 将图像切分成一个个小块（原始实现中为 16×16 大小）。每个小块通过学习到的线性变换映射成一个小块嵌入。这些小块嵌入输入到 Transformer 编码器网络中，并利用 \texttt{\textless cls\textgreater} token 来预测图像的类别概率。}
 \end{figure}
 
-`图 12.17 视觉 Transformer（ViT）。视觉 Transformer 将图像切分成一个个小块（原始实现中为 16×16 大小）。每个小块通过学习到的线性变换映射成一个小块嵌入。这些小块嵌入输入到 Transformer 编码器网络中，并利用 \texttt{\textless cls\textgreater} token 来预测图像的类别概率。`
 
 \subsection{多尺度视觉Transformers}
 与卷积架构处理图像的单一尺度不同，已有多种Transformer模型被提出，它们在多个尺度上处理图像。这些模型通常从高分辨率小块和少数通道开始，逐渐降低分辨率的同时增加通道数。
@@ -445,10 +432,9 @@ ViT是一个包含\texttt{\textless cls\textgreater}标记的编码模型（参�
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerSWIN_compressed.png}
-\caption{Figure12.18}
+\caption{移动窗口（SWin）Transformer（Liu et al., 2021c）。a) 原始图像。b) SWin Transformer 将图像分割成窗口网格，每个窗口进一步细分为小块。在每个窗口内，Transformer 网络对小块单独应用自注意力。c) 在交替的层中，窗口位置会发生移动，改变小块间相互作用的组合，让信息能够在整幅图像中传递。d) 经过若干层处理后，2×2的小块表示合并，从而增加有效的小块（和窗口）尺寸。e) 在此新的较低分辨率下，交替层使用移动窗口。f) 最终，分辨率降至只剩一个窗口，此时小块覆盖整个图像。}
 \end{figure}
 
-`图 12.18 移动窗口（SWin）Transformer（Liu et al., 2021c）。a) 原始图像。b) SWin Transformer 将图像分割成窗口网格，每个窗口进一步细分为小块。在每个窗口内，Transformer 网络对小块单独应用自注意力。c) 在交替的层中，窗口位置会发生移动，改变小块间相互作用的组合，让信息能够在整幅图像中传递。d) 经过若干层处理后，2×2的小块表示合并，从而增加有效的小块（和窗口）尺寸。e) 在此新的较低分辨率下，交替层使用移动窗口。f) 最终，分辨率降至只剩一个窗口，此时小块覆盖整个图像。`
 
 \section{总结}
 本章对自注意力机制及Transformer架构进行了介绍，随后阐述了编码器、解码器及编解码器模型的概念和作用。Transformer主要处理一系列高维嵌入数据，其在每一层的计算复杂度较低，并且大量计算可通过矩阵的形式实现并行处理。每个输入嵌入与其他嵌入相互作用，使得模型能够捕捉文本中的远距离依赖关系。但是，随着序列长度的增加，计算量会以二次方形式上升；一个减少计算复杂度的策略是对交互矩阵进行稀疏处理。
@@ -463,10 +449,9 @@ ViT是一个包含\texttt{\textless cls\textgreater}标记的编码模型（参�
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{png/chapter12/TransformerRNN.png}
-\caption{Figure12.19}
+\caption{循环神经网络（RNNs）。单词嵌入依序通过一系列相同的神经网络。每个网络产生两个输出：一个是输出嵌入，另一个（通过橙色箭头）反馈到下一个网络，连同下一个单词嵌入一起。每个输出嵌入既包含单词本身的信息，也包含其在前一句子片段中上下文的信息。理论上，最终输出包含整个句子的信息，可以像 Transformer 编码器模型中的 \texttt{\textless cls\textgreater} token 那样用于支持分类任务。然而，RNNs 有时候会随时间“遗忘”更早出现的 Token。}
 \end{figure}
 
-`图 12.19 循环神经网络（RNNs）。单词嵌入依序通过一系列相同的神经网络。每个网络产生两个输出：一个是输出嵌入，另一个（通过橙色箭头）反馈到下一个网络，连同下一个单词嵌入一起。每个输出嵌入既包含单词本身的信息，也包含其在前一句子片段中上下文的信息。理论上，最终输出包含整个句子的信息，可以像 Transformer 编码器模型中的 \texttt{\textless cls\textgreater} token 那样用于支持分类任务。然而，RNNs 有时候会随时间“遗忘”更早出现的 Token。`
 
 \textbf{递归神经网络}（Recurrent Neural Networks, RNNs）：在 Transformer 出现之前，很多领先的 NLP 应用采用了递归神经网络（简称 RNNs）。"递归"这一术语最早由 Rumelhart 等人在 1985 年提出，但其核心思想最少可追溯至 1969 年的 Minsky \& Papert。RNNs 逐一处理输入序列中的元素（在 NLP 中通常指词汇）。每一步，网络同时接收新的输入和基于前一时间点的隐藏状态计算出的信息（即递归连接）。最终输出包含了对整个输入序列的理解，这种表示支持了如分类或翻译等 NLP 任务。RNNs 也被应用于解码场景，其中生成的 token 被作为下一次序列输入的一部分反馈给模型。例如，PixelRNN 通过 RNNs 构建了一个图像的自回归模型。
 
@@ -488,7 +473,8 @@ ViT是一个包含\texttt{\textless cls\textgreater}标记的编码模型（参�
 
 \textbf{自注意力（Self-attention）与其他模型间的关系}：自注意力计算与其他模型紧密相关。首先，它是一个超网络（Hypernetwork）的实例，其特点是利用网络的一部分确定另一部分的权重：注意力矩阵构成了一个稀疏网络层的权重，这个层负责将输入值映射到输出（图 12.3）。合成器（Synthesizer）模型（Tay 等，2021）通过直接用一个神经网络为每一行的注意力矩阵从相对应的输入生成，简化了这个概念。虽然输入Token之间不再直接相互作用来生成注意力权重，这种方法效果仍然出乎意料地好。Wu 等人（2019）提出了一个产生具有卷积结构注意力矩阵的系统，让Token关注它们的邻居。门控多层感知机（Gated Multi-layer Perceptron）（Wu 等，2019）计算出一个矩阵，这个矩阵将值进行点乘操作，从而改变它们而不将它们混合。Transformer也与快速权重记忆系统（Fast Weight Memory Systems）紧密相关，后者是超网络概念的先驱（Schlag 等，2021）。
 
-从路由机制（图 12.1）的角度来看，自注意力还与胶囊网络（Capsule Networks）（Sabour 等，2017）有关。胶囊网络捕捉图像中的层级关系，例如，较低层次的网络可能检测到面部的各个部分（如鼻子、嘴巴），这些部分在更高层的胶囊中被组合（路由），以代表一个面孔。但胶囊网络通过协议来进行路由。与此不同，自注意力中，输入间通过softmax运算竞争，以决定它们对输出的贡献。而在胶囊网络中，是层的输出互相竞争，以获得早期层的输入。将自注意力视为路由网络后，我们可以探讨是否有必要使路由动态化（即根据数据变化）。随机合成器（Random Synthesizer）（Tay 等，2021）彻底移除了注意力矩阵对输入的依赖，改为使用预设的随机值或学习到的值。这种方法在多种任务中都表现得出乎意料地好。
+从路由机制（图 12.1）的角度来看，自注意力还与胶囊网络(Capsule Networks)
+(Sabour 等，2017)有关。胶囊网络捕捉图像中的层级关系，例如，较低层次的网络可能检测到面部的各个部分（如鼻子、嘴巴），这些部分在更高层的胶囊中被组合（路由），以代表一个面孔。但胶囊网络通过协议来进行路由。与此不同，自注意力中，输入间通过softmax运算竞争，以决定它们对输出的贡献。而在胶囊网络中，是层的输出互相竞争，以获得早期层的输入。将自注意力视为路由网络后，我们可以探讨是否有必要使路由动态化（即根据数据变化）。随机合成器（Random Synthesizer）（Tay 等，2021）彻底移除了注意力矩阵对输入的依赖，改为使用预设的随机值或学习到的值。这种方法在多种任务中都表现得出乎意料地好。
 
 多头自注意力还与图神经网络（第13章会详细讨论）、卷积（Cordonnier 等，2020）、循环神经网络（Choromanski 等，2020）以及在霍普菲尔德网络（Hopfield Networks）中的记忆检索（Ramsauer 等，2021）有着密切联系。想了解更多有关Transformers与其他模型间关系的信息，请参阅Prince（2021a）。
 
@@ -539,7 +525,7 @@ Wang 等人（2020年）比较了在BERT中使用不同位置编码的Transforme
 \textbf{结合图像与文本}：CLIP（Radford 等人，2021年）通过对比性预训练任务，学习了图像及其标题的联合编码器。该系统处理 N 张图像及其标题，并产生一个反映图像与标题之间相容性的矩阵。损失函数旨在让正确的配对得分高，错误的配对得分低。Ramesh 等人（2021年和2022年）训练了一个扩散解码器，用于反转 CLIP 图像编码器，进行基于文本条件的图像生成（参见第18章）。
 
 
-/section{Problems}
+\section{Problems}
 \textbf{问题 12.1} 考虑一个自注意力机制，它处理 N 个长度为 D 的输入并产生大小相同的 N 个输出。计算查询（Queries）、键（Keys）和值（Values）时一共使用了多少个权重和偏置？将会有多少个注意力权重 a[•, •]？在一个全连接网络中，如果关联所有 DN 个输入和所有 DN 个输出，将会有多少个权重和偏置？
 
 \textbf{问题 12.2} 我们为何希望自注意力机制的输入与输出大小一致？

@@ -206,7 +206,7 @@ L[\phi] = \sum_{i=1}^{I} (y_i - f(x_i, \phi))^2
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{png/chapter5/LossHeteroscedastic.png}
-	\caption{同方差回归与异方差回归比较。a) 在同方差回归中，一个简单的神经网络模型根据输入 x 预测输出分布的平均值 μ。b) 这种情况下，尽管输出的均值（用蓝线表示）随输入 x 呈分段线性变化，方差却始终保持不变（通过箭头和灰色区域表示的 ±2 标准差来展示）。c) 异方差回归的浅层神经网络除了预测均值外，还会预测输出的方差 \(\sigma_2\)（更精确地说，是计算方差的平方根，然后再平方）。d) 如此一来，标准差也随输入 x 呈分段线性变化。}
+	\caption{同方差回归与异方差回归比较。a) 在同方差回归中，一个简单的神经网络模型根据输入 x 预测输出分布的平均值 \(\mu\)。b) 这种情况下，尽管输出的均值（用蓝线表示）随输入 x 呈分段线性变化，方差却始终保持不变（通过箭头和灰色区域表示的 ±2 标准差来展示）。c) 异方差回归的浅层神经网络除了预测均值外，还会预测输出的方差 \(\sigma_2\)（更精确地说，是计算方差的平方根，然后再平方）。d) 如此一来，标准差也随输入 x 呈分段线性变化。}
 \end{figure}
 
 \begin{figure}[ht!]
@@ -441,7 +441,13 @@ q(y) = \frac{1}{I} \sum_{i=1}^{I} \delta[y - y_i]
 \begin{equation}
 L = -(1 - y) \log [1 - \text{sig}[f[x, \phi]]] - y \log [\text{sig}[f[x, \phi]]] 
 \end{equation}
-其中 \(\text{sig}[\cdot]\) 在方程 5.32 中定义。当训练标签 \(y = 0\) 时（1）以及当 \(y = 1\) 时（2），将这种损失作为变换后的网络输出 \(\text{sig}[f[x, \phi]] \in [0, 1]\) 的函数绘制出来。 \\
+
+其中 \(\text{sig}[\cdot]\) 在方程 5.32 中定义。将这种损失作为变换后的网络输出 
+
+\begin{equation*}
+	\text{sig}[f[x, \phi]] \in [0, 1]	
+\end{equation*}
+的函数绘制出来。(i) 当训练标签 \(y = 0\) 时 \hspace*{\fill} (ii) 当 \(y = 1\) 时 \hspace*{\fill} 
 
 
 \textbf{问题 5.3}* 假设我们想构建一个模型，基于本地气压 \(x\) 的测量来预测占主导地位的风向 \(y\)（以弧度表示）。适用于圆形域的分布是 von Mises distribution（见图 5.13）：
@@ -449,7 +455,10 @@ L = -(1 - y) \log [1 - \text{sig}[f[x, \phi]]] - y \log [\text{sig}[f[x, \phi]]]
 \begin{equation}
 Pr(y|\mu, \kappa) = \frac{\exp[\kappa \cos(y - \mu)]}{2\pi \cdot \text{Bessel}_0[\kappa]} 
 \end{equation}
-其中 \(\mu\) 是平均方向的度量，\(\kappa\) 是集中度的度量（即方差的倒数）。项 \(\text{Bessel}_0[\kappa]\) 是阶数为 0 的修改过的贝塞尔函数。使用第 5.2 节的配方来开发用于学习模型 \(f[x, \phi]\) 参数 \(\mu\) 的损失函数，以预测最有可能的风向。你的解决方案应将集中度 \(\kappa\) 视为常数。你会如何进行推理？ \\
+
+其中 \(\mu\) 是平均方向的度量，\(\kappa\) 是集中度的度量（即方差的倒数）。
+
+\(\text{Bessel}_0[\kappa]\) 是阶数为 0 的修改过的贝塞尔函数。使用第 5.2 节的配方来开发用于学习模型 \(f[x, \phi]\) 参数 \(\mu\) 的损失函数，以预测最有可能的风向。你的解决方案应将集中度 \(\kappa\) 视为常数。你会如何进行推理？ 
 
 \textbf{问题 5.4}* 有时，对于输入 \(x\) 的输出 \(y\) 是多模态的（见图 5.14a）；对于给定输入，有多个有效的预测。在这里，我们可能使用正态分量的加权和作为输出的分布。这被称为高斯混合 (Gaussian Mixture) 模型。例如，两个高斯的混合具有参数 \(\Theta = \{\lambda, \mu_1, \sigma_1^2, \mu_2, \sigma_2^2\}\)：
 
