@@ -34,4 +34,7 @@ Published by MIT Press Dec 5th 2023.
 - [X] Chapter 20 - Why does deep learning work? 为什么深度学习有效？
 - [X] Chapter 21 - Deep learning and ethics 深度学习与伦理
 
-Latex 版本正在编写中，各位可以先点击⭐️star，等编写完成打包成PDF后会在公众号等平台上通知大家的😁。
+## 2024-07-20 Update
+根据原markdown版本重写的latex版本已经发布，pdf已经上传至release。
+
+后续的update只会针对latex版本，包括针对最新的原英文版进行更新以及一些错误的修复。
