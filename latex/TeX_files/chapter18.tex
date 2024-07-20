@@ -236,8 +236,8 @@ Pr(x|\phi_1...T) = \int Pr(x, z_1...T|\phi_1...T)dz_1...T.
 
 
 \begin{align}
-\log \left[ Pr(x|\phi_1...T) \right] &= \log \left[ \int Pr(x, z_1...T|\phi_1...T)dz_1...T \right] \\
-&= \log \left[ \int \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} q(z_1...T|x) dz_1...T \right] \\
+\log \left[ Pr(x|\phi_1...T) \right] &= \log \left[ \int Pr(x, z_1...T|\phi_1...T)dz_1...T \right] \notag \\
+&= \log \left[ \int \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} q(z_1...T|x) dz_1...T \right]  \notag \\
 &\geq \int q(z_1...T|x) \log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] dz_1...T. 
 \end{align} 
 
@@ -272,8 +272,10 @@ q(z_t|z_{t-1}) = q(z_t|z_{t-1}, x)q(z_t|x) / q(z_{t-1}|x),
 代入这个结果得到：
 
 \begin{align}
-\log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] &= \log \left[ \frac{Pr(x|z_1, \phi_1)}{q(z_1|x)} \right] + \log \left[ \frac{\prod_{t=2}^{T} Pr(z_{t-1}|z_t, \phi_t) \cdot q(z_{t-1}|x)}{\prod_{t=2}^{T} q(z_t|z_{t-1}, x) \cdot q(z_t|x)} \right] + \log \left[ \frac{Pr(z_T)}{q(z_T|x)} \right] \\
-&= \log \left[ \frac{Pr(x|z_1, \phi_1)}{q(z_1|x)} \right] + \log \left[ \prod_{t=2}^{T} \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_t|z_{t-1}, x)} \right] + \log \left[ \frac{Pr(z_T)}{q(z_T|x)} \right] \\
+\log \left[ \frac{Pr(x, z_1...T|\phi_1...T)}{q(z_1...T|x)} \right] &= \log \left[ \frac{Pr(x|z_1, \phi_1)}{q(z_1|x)} \right] + \log \left[ \frac{\prod_{t=2}^{T} Pr(z_{t-1}|z_t, \phi_t) \cdot q(z_{t-1}|x)}{\prod_{t=2}^{T} q(z_t|z_{t-1}, x) \cdot q(z_t|x)} \right] \notag \\
+&+ \log \left[ \frac{Pr(z_T)}{q(z_T|x)} \right]  \notag \\
+&= \log \left[ \frac{Pr(x|z_1, \phi_1)}{q(z_1|x)} \right] + \log \left[ \prod_{t=2}^{T} \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_t|z_{t-1}, x)} \right] \notag \\ 
+&+ \log \left[ \frac{Pr(z_T)}{q(z_T|x)} \right]  \notag \\
 &\approx \log \left[ Pr(x|z_1, \phi_1) \right] + \sum_{t=2}^{T} \log \left[ \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_t|z_{t-1}, x)} \right], 
 \end{align} 
 
@@ -286,7 +288,8 @@ q(z_t|z_{t-1}) = q(z_t|z_{t-1}, x)q(z_t|x) / q(z_{t-1}|x),
 \begin{align}
 \text{ELBO}[\phi_{1...T}] &= \int q(z_{1...T|x}) \log \frac{Pr(x, z_{1...T}|\phi_{1...T})}{q(z_{1...T|x})} dz_{1...T} \\
 &\approx \int q(z_{1...T|x}) \left( \log [Pr(x|z_1, \phi_1)] + \sum_{t=2}^T \log \frac{Pr(z_{t-1}|z_t, \phi_t)}{q(z_{t-1}|z_t, x)} \right) dz_{1...T} \\
-&= E_{q(z_{1|x})} \left[ \log [Pr(x|z_1, \phi_1)] \right] - \sum_{t=2}^T E_{q(z_{t|x})} \left[ D_{KL} \left[ q(z_{t-1}|z_t, x)||Pr(z_{t-1}|z_t, \phi_t) \right] \right],
+&= E_{q(z_{1|x})} \left[ \log [Pr(x|z_1, \phi_1)] \right] \\
+&- \sum_{t=2}^T E_{q(z_{t|x})} \left[ D_{KL} \left[ q(z_{t-1}|z_t, x)||Pr(z_{t-1}|z_t, \phi_t) \right] \right],
 \end{align}
 
 
@@ -312,9 +315,10 @@ ELBO 中的 KL 散度项衡量了 \(Pr(z_{t-1}|z_t, \phi_t)\) 与 \(q(z_{t-1}|z_
 
 两个正态分布之间的 KL 散度有一个封闭形式的表达式。此外，这个表达式中的许多项不依赖于 \(\phi\)（见问题 18.8），表达式简化为均值之间的平方差加上一个常数 C：
 
-\begin{equation}
-D_{KL} \left[ q(z_{t-1}|z_t, x)||Pr(z_{t-1}|z_t, \phi_t) \right] = \frac{1}{2\sigma^2_t} \left| \left| \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} - \sqrt{\frac{\beta_t}{1 - \alpha_t}} z_t + \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} x - f_t[z_t, \phi] \right| \right|^2 + C. 
-\end{equation}
+\begin{align}
+&D_{KL} \left[ q(z_{t-1}|z_t, x)||Pr(z_{t-1}|z_t, \phi_t) \right] = \\
+&\frac{1}{2\sigma^2_t} \left| \left| \frac{(1 - \alpha_{t-1})}{1 - \alpha_t} - \sqrt{\frac{\beta_t}{1 - \alpha_t}} z_t + \sqrt{\frac{\alpha_{t-1}\beta_t}{1 - \alpha_t}} x - f_t[z_t, \phi] \right| \right|^2 + C. 
+\end{align}
 
 \subsection{扩散损失函数}
 为了拟合模型，我们需要最大化 ELBO，并将其通过参数 \(\phi_{1...T}\) 来实现。我们将这个过程转化为最小化问题，方法是乘以负一，并用样本来近似期望值，以此来定义损失函数：
@@ -391,9 +395,10 @@ x = \frac{1}{\sqrt{\alpha_t}} \cdot z_t - \frac{\sqrt{1 - \alpha_t}}{\sqrt{\alph
 
 最后，将这个结果代回损失函数（方程 18.29），我们得到：
 
-\begin{equation}
-L(\phi_{1...T}) = \sum_{i=1}^I -\log \text{Norm}_{x_i} [f_1[z_{i1}, \phi_1], \sigma^2_{1}] + \sum_{t=2}^T \frac{1}{2\sigma^2_t} \left| \left| \left( \frac{1}{\sqrt{1 - \beta_t}}z_{it} - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}}\epsilon_{it} \right) - f_t[z_{it}, \phi_t] \right| \right|^2, 
-\end{equation}
+\begin{align}
+L(\phi_{1...T}) &= \sum_{i=1}^I -\log \text{Norm}_{x_i} [f_1[z_{i1}, \phi_1], \sigma^2_{1}] \\
+&+ \sum_{t=2}^T \frac{1}{2\sigma^2_t} \left| \left| \left( \frac{1}{\sqrt{1 - \beta_t}}z_{it} - \frac{\beta_t}{\sqrt{1 - \alpha_t}\sqrt{1 - \beta_t}}\epsilon_{it} \right) - f_t[z_{it}, \phi_t] \right| \right|^2, 
+\end{align}
 
 \subsection{网络的重参数化}
 现在我们用新模型 \(\hat{\epsilon} = g_t[z_t, \phi_t]\) 替换原有的模型中的 \(\hat{z}_{t-1} = f_t[z_t, \phi_t]\) 部分，这个新模型用于预测与 \(x\) 混合生成 \(z_t\) 的噪声 \(\epsilon\)：
@@ -403,9 +408,10 @@ f_t[z_t, \phi_t] = \frac{1}{\sqrt{1 - \beta_t}}z_t - \frac{\beta_t}{\sqrt{1 - \a
 \quad 
 \end{equation}
 将这个新模型代入方程 18.34，我们得到以下准则：
-\begin{equation}
-L(\phi_1...T) = \sum_{i=1}^{I} -\log \left[  \left( \text{Norm}_{x_i} [f_1(z_{i1}, \phi_1), \sigma_1^2 I] \right) \right] + \sum_{t=2}^{T} \frac{\beta_t^2}{(1 - \alpha_t)(1 - \beta_t)2\sigma_t^2} \left\| g_t[z_{it}, \phi_t] - \epsilon_{it} \right\|^2 . 
-\end{equation}
+\begin{align}
+L(\phi_1...T) &= \sum_{i=1}^{I} -\log \left[  \left( \text{Norm}_{x_i} [f_1(z_{i1}, \phi_1), \sigma_1^2 I] \right) \right] \\
+&+ \sum_{t=2}^{T} \frac{\beta_t^2}{(1 - \alpha_t)(1 - \beta_t)2\sigma_t^2} \left\| g_t[z_{it}, \phi_t] - \epsilon_{it} \right\|^2 . 
+\end{align}
 
 对数正态分布的表达可以被转换为一个最小二乘损失加上常数 \(C_i\)（参见 5.3.1 节）：
 
