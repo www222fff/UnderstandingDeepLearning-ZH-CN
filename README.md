@@ -38,3 +38,6 @@ Published by MIT Press Dec 5th 2023.
 根据原markdown版本重写的latex版本已经发布，pdf已经上传至release。
 
 后续的update只会针对latex版本，包括针对最新的原英文版进行更新以及一些错误的修复。
+
+## 2024-07-21 Update
+合并了百分号的问题，由于涉及到的地方还挺多，因此还是发了个release。
